@@ -34,6 +34,7 @@ npm run start:dev
 | Méthode | Chemin | Description |
 |---------|--------|-------------|
 | `GET` | `/health` | Santé |
+| `GET` | `/site/manifest` | JSON `content/arbre-de-vie/site.manifest.json` (landing) |
 | `POST` | `/ai/generate-markdown` | Génère un `.md` **synchrone** |
 | `POST` | `/ai/generate-markdown-async` | Enfile un job BullMQ → `{ jobId }` |
 | `GET` | `/ai/jobs/:jobId` | État du job (`state`, `result`, `failedReason`) |

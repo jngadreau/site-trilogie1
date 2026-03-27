@@ -19,6 +19,10 @@ body.mode-image {
   max-width: 72rem;
 }
 
+body.mode-landing {
+  max-width: 42rem;
+}
+
 header h1 {
   font-weight: 600;
   margin: 0 0 0.5rem;
@@ -40,6 +44,7 @@ code {
 
 .tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.35rem;
   margin-bottom: 0.85rem;
 }
@@ -68,6 +73,11 @@ nav {
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 1.25rem;
+  min-height: 0;
+}
+
+nav.nav-hidden {
+  display: none;
 }
 
 nav a {
@@ -104,6 +114,59 @@ main :is(h1, h2, h3) {
 main h1:first-child,
 main h2:first-child {
   margin-top: 0;
+}
+
+.landing {
+  text-align: left;
+}
+
+.landing-hero {
+  margin: -1.25rem -1.5rem 1.25rem;
+  border-radius: 10px 10px 0 0;
+  overflow: hidden;
+  background: #e8efe4;
+}
+
+.landing-hero img {
+  display: block;
+  width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+.landing-title {
+  font-size: 1.65rem;
+  font-weight: 600;
+  margin: 0 0 0.35rem;
+  color: #1e3a1c;
+}
+
+.landing-sub {
+  font-size: 1.05rem;
+  color: #4a5d4a;
+  margin: 0 0 1.25rem;
+}
+
+.landing-body :is(h1, h2, h3) {
+  margin-top: 1rem;
+}
+
+.landing-cta {
+  margin-top: 1.5rem;
+}
+
+.landing-cta a {
+  display: inline-block;
+  padding: 0.55rem 1.15rem;
+  background: #2d5a27;
+  color: #f4f7f2;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.landing-cta a:hover {
+  background: #234620;
 }
 
 .figure-image {

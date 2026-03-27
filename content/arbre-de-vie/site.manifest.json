@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "gameId": "arbre-de-vie",
+  "title": "L'Oracle de l'Arbre de Vie",
+  "subtitle": "Racines, élévation et sagesse du vivant",
+  "hero": {
+    "imageFile": "banner-1.png",
+    "markdownFile": "hero-test.md",
+    "imageAlt": "Visuel promotionnel du jeu L'Arbre de Vie"
+  },
+  "cta": {
+    "label": "Voir la boutique",
+    "href": "https://example.com/boutique",
+    "openInNewTab": true
+  },
+  "meta": {
+    "description": "Oracle L'Arbre de Vie — jeu de cartes Ose Un Pas Vers Toi. Aperçu prototype."
+  }
+}

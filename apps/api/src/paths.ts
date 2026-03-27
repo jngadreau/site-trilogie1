@@ -15,3 +15,12 @@ export function getContentGeneratedArbreDeVieDir(): string {
 export function getGeneratedImagesDir(): string {
   return path.join(getContentGeneratedArbreDeVieDir(), 'images');
 }
+
+/** Contenu éditorial versionné (manifeste, prompts) — pas les seuls fichiers générés. */
+export function getSiteArbreDeVieContentDir(): string {
+  return path.resolve(process.cwd(), '..', '..', 'content', 'arbre-de-vie');
+}
+
+export function getSiteManifestPath(): string {
+  return path.join(getSiteArbreDeVieContentDir(), 'site.manifest.json');
+}

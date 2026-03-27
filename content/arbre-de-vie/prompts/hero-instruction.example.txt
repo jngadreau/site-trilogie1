@@ -1,0 +1,7 @@
+Rédige un bloc « hero » pour la page d’accueil du site web du jeu de cartes oracle « L’Arbre de Vie » (marque Ose Un Pas Vers Toi).
+
+Contraintes :
+- Un titre principal accrocheur (niveau ## en Markdown).
+- Deux courts paragraphes (3–4 phrases au total) qui invitent à découvrir le jeu, sans spoiler tout le livret.
+- Ton chaleureux, ancré dans la nature et la croissance intérieure.
+- Termine par une ligne discrète invitant à faire défiler ou à découvrir les cartes (sans bouton fictif).

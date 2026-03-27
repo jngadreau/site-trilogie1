@@ -7,9 +7,10 @@
 | Répertoire | Rôle |
 |------------|------|
 | [`docs/`](./docs/README.md) | Vision produit, stack, IA, RGPD, jalons. |
+| [`docs/roadmap-taches.md`](./docs/roadmap-taches.md) | Suivi des tâches (court / moyen terme). |
 | [`apps/`](./apps/README.md) | **api** (Grok MD + image + BullMQ), **preview** (Vite), **web** / React ensuite. |
 | [`packages/`](./packages/README.md) | Libs partagées (manifestes, UI, etc.). |
-| [`content/`](./content/README.md) | Données et textes destinés au site (hors masters jeu). |
+| [`content/`](./content/README.md) | Données et textes destinés au site ; **`arbre-de-vie/site.manifest.json`** pour la landing. |
 
 D’autres dossiers (`tools/`, `infra/`, …) pourront être ajoutés selon les besoins.
 
