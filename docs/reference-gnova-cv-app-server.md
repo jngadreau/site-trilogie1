@@ -34,7 +34,14 @@ Le projet utilise le package **`openai`** avec `baseURL` pointant vers l’API G
 - Messages avec **images en base64** (schéma type `image_url` / `url: data:image/...`).
 - Modèle type **`grok-4-fast-non-reasoning`** ou **`grok-2-vision-1212`** selon le flux (voir constantes dans `cv-extraction.constants.ts`).
 
-Pour **générer** des images promo (site oracle), il faudra vérifier si le produit expose un endpoint « image generation » distinct ; le code actuel met surtout l’accent sur **chat** et **vision** (image **en** entrée).
+**Génération d’images (texte → image)** — documentée par xAI ; le code G Nova ne l’utilise pas encore, mais c’est le bon pattern pour les **visuels promo** du site oracle.
+
+- **Doc officielle** : [Image Generation (xAI)](https://docs.x.ai/developers/model-capabilities/images/generation).
+- **Même client** : `new OpenAI({ apiKey, baseURL: 'https://api.x.ai/v1' })`.
+- **Appel** : `client.images.generate({ model: 'grok-imagine-image', prompt: '...', ... })` (voir exemples JS dans la doc).
+- **Paramètres utiles** : `n` (plusieurs variations), `aspect_ratio` (ex. `16:9`, `1:1`), `resolution` (`1k` / `2k`), `response_format: 'b64_json'` pour enregistrer un fichier sans dépendre d’une URL éphémère.
+- **Réponse** : les **URL** renvoyées sont **temporaires** — télécharger ou traiter tout de suite, ou privilégier le **base64** pour écrire dans `content/` ou S3.
+- **Édition d’image** (prompt + image source : éventail de cartes, mockup) : l’API le supporte (`/v1/images/edits`, JSON avec image en URL publique ou data URI). La doc indique que **`images.edit()` du SDK OpenAI** (multipart) **n’est pas** adaptée ; utiliser **requête HTTP JSON**, **xAI SDK**, ou **Vercel AI SDK** selon le cas.
 
 ---
 
@@ -53,7 +60,7 @@ Fichiers d’exemple : `cv-extraction.module.ts`, `job-postings.module.ts`, `bat
 
 1. **Variables d’environnement** : `GROK_API_KEY`, `GROK_API_URL`, Redis (noms exacts à aligner sur `fwk-server-core` / doc du package).
 2. **Un processor BullMQ** « `generate-site-section` » calqué sur **`JobPostingNormalizeProcessor`** : prompt système + utilisateur + écriture du résultat (fichier MD sur disque ou document Mongo plus tard).
-3. **Client Grok** : même pattern `OpenAI` + `chat.completions.create` pour produire du **Markdown** ou du JSON manifeste.
+3. **Client Grok** : `OpenAI` + `chat.completions.create` pour le **texte** ; `OpenAI` + **`images.generate`** (modèle **`grok-imagine-image`**) pour les **images promo**, ou endpoint **edits** pour itérer à partir d’**assets réels** (voir doc xAI ci-dessus).
 4. **Workers** : lancer l’API Nest et un **process** `node dist/worker-*.js` (ou script équivalent) si les jobs ne doivent pas bloquer le thread HTTP.
 
 ---

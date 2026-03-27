@@ -65,7 +65,7 @@ site-trilogie1/
 |------|--------|------|
 | `copy.section` | Fichier **.md** (hero, « À propos », extrait tirage, etc.) | Prompt = extrait livret + consignes éditoriales (ton, longueur, pas de spoil total). |
 | `copy.card_teaser` | MD ou JSON | 1–2 phrases par carte **échantillon** seulement si besoin. |
-| `image.promo` | PNG/WebP (stockage disque ou S3) | Brief = palette Arbre de Vie + contrainte « éventail partiel » ; API Grok image en priorité. |
+| `image.promo` | PNG/WebP (stockage disque ou S3) | Modèle **`grok-imagine-image`** via `client.images.generate` (même base URL xAI que le chat) — voir [doc xAI — Image Generation](https://docs.x.ai/developers/model-capabilities/images/generation) ; **édition** possible avec image source (éventail) via `/images/edits` (pas `images.edit()` multipart OpenAI). |
 | (optionnel) `image.prompt_midjourney` | Fichier **.txt** | Export prompt pour outil externe. |
 
 ### 4.3 Orchestration
@@ -89,7 +89,7 @@ site-trilogie1/
 | J1 | Cartographie | Liste des **sections** du site pilote + champs requis dans `content/` (ce document + mise à jour [projet-sites-jeux-cartes.md](./projet-sites-jeux-cartes.md) si besoin). |
 | J2 | **apps/api** minimal | NestJS + **Grok** (1 route « generate copy ») + healthcheck. |
 | J3 | BullMQ | Même route asynchrone + worker qui écrit un `.md` dans `content/generated`. |
-| J4 | Image | 1 route ou job **Grok image** → fichier image + référence dans un manifeste JSON. |
+| J4 | Image | 1 job **Grok Imagine** (`images.generate` ou `images/edits`) → fichier + entrée manifeste ; prise en compte des **URL temporaires** (téléchargement ou `b64_json`). |
 | J5 | **apps/preview** | 2–3 pages HTML qui consomment le contenu figé (accueil jeu, teaser cartes, CTA). |
 | J6 | Itération contenu | 2–3 cycles prompt → relecture → figement pour affiner le **processus** documenté ici. |
 
