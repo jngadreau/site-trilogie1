@@ -1,12 +1,14 @@
 import { marked } from 'marked';
+import { renderDetailedLanding, type LandingSpec } from './landing-detailed';
 
 const nav = document.getElementById('nav')!;
 const content = document.getElementById('content')!;
 const tabLanding = document.getElementById('tab-landing')!;
+const tabDetailed = document.getElementById('tab-detailed')!;
 const tabMd = document.getElementById('tab-md')!;
 const tabImg = document.getElementById('tab-img')!;
 
-type Mode = 'landing' | 'md' | 'img';
+type Mode = 'landing' | 'detailed' | 'md' | 'img';
 
 interface SiteManifest {
   version: number;
@@ -49,6 +51,7 @@ function parseHash(): { mode: Mode; file: string | null } {
   if (!raw) return { mode: 'landing', file: null };
   const decoded = decodeURIComponent(raw);
   if (decoded === 'landing' || decoded === 'page') return { mode: 'landing', file: null };
+  if (decoded === 'detailed') return { mode: 'detailed', file: null };
   if (decoded.startsWith('md:')) return { mode: 'md', file: decoded.slice(3) };
   if (decoded.startsWith('img:')) return { mode: 'img', file: decoded.slice(4) };
   if (/\.(png|webp|jpe?g)$/i.test(decoded)) return { mode: 'img', file: decoded };
@@ -60,20 +63,26 @@ function setHash(mode: Mode, file: string) {
     window.location.hash = '#landing';
     return;
   }
+  if (mode === 'detailed') {
+    window.location.hash = '#detailed';
+    return;
+  }
   const prefix = mode === 'md' ? 'md:' : 'img:';
   window.location.hash = `#${prefix}${encodeURIComponent(file)}`;
 }
 
 function setModeUi(mode: Mode) {
   document.body.classList.toggle('mode-image', mode === 'img');
-  document.body.classList.toggle('mode-landing', mode === 'landing');
+  document.body.classList.toggle('mode-landing', mode === 'landing' || mode === 'detailed');
+  document.body.classList.toggle('mode-detailed', mode === 'detailed');
   tabLanding.classList.toggle('active', mode === 'landing');
+  tabDetailed.classList.toggle('active', mode === 'detailed');
   tabMd.classList.toggle('active', mode === 'md');
   tabImg.classList.toggle('active', mode === 'img');
 }
 
 function renderNav(mode: Mode, files: string[], active: string | null) {
-  if (mode === 'landing') {
+  if (mode === 'landing' || mode === 'detailed') {
     nav.classList.add('nav-hidden');
     nav.innerHTML = '';
     return;
@@ -199,9 +208,50 @@ async function renderLanding() {
   }
 }
 
+async function renderDetailedPage() {
+  setModeUi('detailed');
+  content.innerHTML = '<p class="placeholder">Chargement de la landing détaillée…</p>';
+
+  const specRes = await fetch('/site/landing-spec');
+  if (!specRes.ok) {
+    if (specRes.status === 404) {
+      setError(
+        `Spec absente (404). Lance d’abord <code>POST /site/generate-landing</code> sur l’API (clé Grok requise), puis recharge.`,
+      );
+    } else {
+      setError(`Landing spec indisponible (${specRes.status}).`);
+    }
+    return;
+  }
+
+  const spec = (await specRes.json()) as LandingSpec;
+  const cardsRes = await fetch('/cards/arbre-de-vie');
+  if (!cardsRes.ok) {
+    setError(`Liste des cartes indisponible (${cardsRes.status}).`);
+    return;
+  }
+  const data = (await cardsRes.json()) as { files: string[] };
+  const cardFiles = data.files ?? [];
+  content.innerHTML = renderDetailedLanding(spec, cardFiles);
+
+  if (spec.meta?.description) {
+    let meta = document.querySelector('meta[name="description"]');
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.setAttribute('name', 'description');
+      document.head.appendChild(meta);
+    }
+    meta.setAttribute('content', spec.meta.description);
+  }
+}
+
 async function render(mode: Mode, file: string) {
   if (mode === 'landing') {
     await renderLanding();
+    return;
+  }
+  if (mode === 'detailed') {
+    await renderDetailedPage();
     return;
   }
 
@@ -233,6 +283,11 @@ async function boot() {
 
     if (hMode === 'landing') {
       await renderLanding();
+      return;
+    }
+
+    if (hMode === 'detailed') {
+      await renderDetailedPage();
       return;
     }
 
@@ -274,6 +329,11 @@ tabLanding.addEventListener('click', () => {
   void renderLanding();
 });
 
+tabDetailed.addEventListener('click', () => {
+  window.location.hash = '#detailed';
+  void renderDetailedPage();
+});
+
 tabMd.addEventListener('click', async () => {
   const mdFiles = await loadMarkdownList();
   if (!mdFiles.length) {
@@ -308,6 +368,10 @@ window.addEventListener('hashchange', () => {
   const { mode, file } = parseHash();
   if (mode === 'landing') {
     void renderLanding();
+    return;
+  }
+  if (mode === 'detailed') {
+    void renderDetailedPage();
     return;
   }
   if (file) void render(mode, file);

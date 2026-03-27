@@ -12,6 +12,10 @@ export default defineConfig({
         target: 'http://127.0.0.1:3040',
         changeOrigin: true,
       },
+      '/cards': {
+        target: 'http://127.0.0.1:3040',
+        changeOrigin: true,
+      },
     },
   },
 });

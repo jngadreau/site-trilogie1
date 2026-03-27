@@ -13,8 +13,9 @@ Document de suivi des tâches (mis à jour au fil des itérations). Les cases `[
 | [x] | **Manifeste** `content/arbre-de-vie/site.manifest.json` (titres, hero image + MD, CTA, meta) |
 | [x] | **GET `/site/manifest`** pour le preview / futur front |
 | [x] | **Vue Accueil** dans le preview (landing = hero + bloc texte depuis le manifeste) |
+| [x] | **Landing détaillée** : Grok → `landing-spec.json`, preview onglet + proxy `/cards` ; **Sharp** éventail `POST /site/compose-fan` |
 | [x] | **Prompts / recettes** — amorce : `content/arbre-de-vie/prompts/` (README + `hero-instruction.example.txt`) ; affiner au fil des générations |
-| [ ] | **Import livret** : script ou endpoint qui injecte un extrait de `oseunpasverstoi-jeux1/Arbre de vie/booklet/` comme `contextMarkdown` |
+| [x] | **Import livret** (prototype) : `LandingGenerationService` lit un extrait du livret via `getBookletDebutArbreDeViePath()` / `BOOKLET_DEBUT_PATH` |
 | [ ] | Affiner la landing (typo, second bloc, footer minimal) |
 
 ---

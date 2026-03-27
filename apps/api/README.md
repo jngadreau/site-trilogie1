@@ -35,6 +35,11 @@ npm run start:dev
 |---------|--------|-------------|
 | `GET` | `/health` | Santé |
 | `GET` | `/site/manifest` | JSON `content/arbre-de-vie/site.manifest.json` (landing) |
+| `GET` | `/site/landing-spec` | JSON `landing-spec.json` (landing détaillée Grok) — 404 si non généré |
+| `POST` | `/site/generate-landing` | Génère `landing-spec.json` + fichiers associés depuis `prompts/landing/` + livret |
+| `GET` | `/cards/arbre-de-vie` | Liste des fichiers image dans `images-jeux/arbre_de_vie/` |
+| `GET` | `/cards/arbre-de-vie/:filename` | Image carte (PNG / JPEG / WebP) |
+| `POST` | `/site/compose-fan` | Corps `{ "files": ["a.png", …], "outputSlug?" }` — composite PNG (Sharp) |
 | `POST` | `/ai/generate-markdown` | Génère un `.md` **synchrone** |
 | `POST` | `/ai/generate-markdown-async` | Enfile un job BullMQ → `{ jobId }` |
 | `GET` | `/ai/jobs/:jobId` | État du job (`state`, `result`, `failedReason`) |

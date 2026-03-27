@@ -25,3 +25,8 @@ npm-debug.log*
 content/generated/**/*.md
 content/generated/**/*.png
 !content/generated/**/.gitkeep
+
+# Landing Grok (optionnel — ne pas versionner si tu préfères régénérer à la volée)
+content/generated/arbre-de-vie/landing-spec.json
+content/generated/arbre-de-vie/landing-shell.html
+content/generated/arbre-de-vie/landing-base.css

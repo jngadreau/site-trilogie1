@@ -23,6 +23,44 @@ body.mode-landing {
   max-width: 42rem;
 }
 
+body.mode-detailed {
+  max-width: 72rem;
+}
+
+/* Fallbacks si le CSS Grok est minimal */
+.ld-root {
+  font-family: var(--font-b, "Source Serif 4", Georgia, serif);
+  color: var(--text, #1a2e1a);
+  background: var(--bg, transparent);
+}
+
+.ld-wrap {
+  max-width: 56rem;
+  margin: 0 auto;
+}
+
+.ld-header .ld-title {
+  font-family: var(--font-h, inherit);
+}
+
+.ld-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+  gap: 0.75rem;
+}
+
+.ld-card-fig img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.ld-placeholder {
+  font-size: 0.95rem;
+  color: #5a6a5a;
+}
+
 header h1 {
   font-weight: 600;
   margin: 0 0 0.5rem;
