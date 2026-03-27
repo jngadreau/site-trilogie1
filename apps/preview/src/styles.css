@@ -11,19 +11,24 @@
 
 body {
   margin: 0 auto;
-  max-width: 52rem;
+  max-width: 56rem;
   padding: 1.5rem;
+}
+
+body.mode-image {
+  max-width: 72rem;
 }
 
 header h1 {
   font-weight: 600;
   margin: 0 0 0.5rem;
+  font-size: 1.35rem;
 }
 
 .hint {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: #4a5d4a;
-  margin: 0 0 1.25rem;
+  margin: 0 0 1rem;
 }
 
 code {
@@ -33,11 +38,36 @@ code {
   border-radius: 4px;
 }
 
+.tabs {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 0.85rem;
+}
+
+.tab {
+  font: inherit;
+  cursor: pointer;
+  padding: 0.45rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background: #dfe9db;
+  color: #2d4a28;
+}
+
+.tab:hover {
+  background: #d0dcc9;
+}
+
+.tab.active {
+  background: #2d5a27;
+  color: #f4f7f2;
+}
+
 nav {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 nav a {
@@ -46,7 +76,7 @@ nav a {
   padding: 0.35rem 0.65rem;
   border-radius: 6px;
   background: #dfe9db;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
 nav a:hover {
@@ -74,6 +104,24 @@ main :is(h1, h2, h3) {
 main h1:first-child,
 main h2:first-child {
   margin-top: 0;
+}
+
+.figure-image {
+  margin: 0;
+  text-align: center;
+}
+
+.figure-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 24px rgba(26, 46, 26, 0.12);
+}
+
+.figure-image figcaption {
+  margin-top: 0.65rem;
+  font-size: 0.85rem;
+  color: #5a6a5a;
 }
 
 .placeholder,

@@ -40,6 +40,8 @@ npm run start:dev
 | `POST` | `/ai/generate-image` | Corps `{ "prompt", "outputSlug?", "aspectRatio?" }` → PNG sous `content/generated/arbre-de-vie/images/` |
 | `GET` | `/ai/generated` | Liste des fichiers `*.md` |
 | `GET` | `/ai/generated/:filename` | JSON `{ filename, body }` (aperçu preview) |
+| `GET` | `/ai/generated-images` | Liste des PNG / WebP / JPEG dans `images/` |
+| `GET` | `/ai/generated-images/:filename` | Fichier image (`Content-Type` adapté, `inline`) |
 
 **Exemple Markdown sync** — voir historique du README ; **async** :
 

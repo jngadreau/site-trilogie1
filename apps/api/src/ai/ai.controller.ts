@@ -5,6 +5,7 @@ import {
   NotFoundException,
   Param,
   Post,
+  StreamableFile,
 } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
@@ -73,5 +74,22 @@ export class AiController {
   async readGenerated(@Param('filename') filename: string) {
     const body = await this.ai.readGeneratedMarkdown(filename);
     return { filename: filename.split('/').pop(), body };
+  }
+
+  @Get('generated-images')
+  async listGeneratedImages() {
+    return this.ai.listGeneratedImages();
+  }
+
+  @Get('generated-images/:filename')
+  async readGeneratedImage(
+    @Param('filename') filename: string,
+  ): Promise<StreamableFile> {
+    const { buffer, mime } = await this.ai.readGeneratedImage(filename);
+    const safeName = filename.split('/').pop() ?? filename;
+    return new StreamableFile(buffer, {
+      type: mime,
+      disposition: `inline; filename="${encodeURIComponent(safeName)}"`,
+    });
   }
 }

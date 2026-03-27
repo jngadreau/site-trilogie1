@@ -166,4 +166,46 @@ export class AiService {
       throw new NotFoundException(safe);
     }
   }
+
+  async listGeneratedImages(): Promise<{ files: string[] }> {
+    const dir = getGeneratedImagesDir();
+    let names: string[] = [];
+    try {
+      names = await readdir(dir);
+    } catch {
+      return { files: [] };
+    }
+    const ok = (n: string) =>
+      /\.(png|webp|jpe?g)$/i.test(n) && !n.startsWith('.');
+    return { files: names.filter(ok).sort() };
+  }
+
+  /** Lecture binaire pour StreamableFile (preview). */
+  async readGeneratedImage(
+    filename: string,
+  ): Promise<{ buffer: Buffer; mime: string }> {
+    const safe = path.basename(filename);
+    if (!/^[\w.-]+\.(png|webp|jpe?g)$/i.test(safe)) {
+      throw new BadRequestException('Invalid filename');
+    }
+    const dir = path.resolve(getGeneratedImagesDir());
+    const full = path.resolve(dir, safe);
+    const rel = path.relative(dir, full);
+    if (rel.startsWith('..') || path.isAbsolute(rel)) {
+      throw new BadRequestException('Invalid path');
+    }
+    let buffer: Buffer;
+    try {
+      buffer = await readFile(full);
+    } catch {
+      throw new NotFoundException(safe);
+    }
+    const lower = safe.toLowerCase();
+    const mime = lower.endsWith('.webp')
+      ? 'image/webp'
+      : lower.endsWith('.jpg') || lower.endsWith('.jpeg')
+        ? 'image/jpeg'
+        : 'image/png';
+    return { buffer, mime };
+  }
 }
