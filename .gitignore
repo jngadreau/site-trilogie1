@@ -20,3 +20,8 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+
+# Sorties IA locales (garder les .gitkeep)
+content/generated/**/*.md
+content/generated/**/*.png
+!content/generated/**/.gitkeep

@@ -7,7 +7,7 @@
 | Répertoire | Rôle |
 |------------|------|
 | [`docs/`](./docs/README.md) | Vision produit, stack, IA, RGPD, jalons. |
-| [`apps/`](./apps/README.md) | **api** (NestJS + Grok + BullMQ), **preview** (HTML d’abord), **web** / React ensuite. |
+| [`apps/`](./apps/README.md) | **api** (Grok MD + image + BullMQ), **preview** (Vite), **web** / React ensuite. |
 | [`packages/`](./packages/README.md) | Libs partagées (manifestes, UI, etc.). |
 | [`content/`](./content/README.md) | Données et textes destinés au site (hors masters jeu). |
 
@@ -19,6 +19,6 @@ Les dépôts / dossiers **sources** (livrets, exports cartes haute définition) 
 
 ## État actuel
 
-- **`apps/api`** : NestJS, `POST /ai/generate-markdown` (Grok → `content/generated/arbre-de-vie/`). Voir [apps/api/README.md](./apps/api/README.md).
+- **`apps/api`** + **`apps/preview`** : génération (MD sync/async, images), lecture des fichiers ; preview Vite sur le port 5175. Voir [apps/api/README.md](./apps/api/README.md) et [apps/preview/README.md](./apps/preview/README.md).
 - Documentation : [processus prototype Arbre de Vie](./docs/processus-prototype-arbre-de-vie.md).
 

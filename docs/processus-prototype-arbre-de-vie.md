@@ -88,9 +88,9 @@ site-trilogie1/
 |---|--------|----------|
 | J1 | Cartographie | Liste des **sections** du site pilote + champs requis dans `content/` (ce document + mise à jour [projet-sites-jeux-cartes.md](./projet-sites-jeux-cartes.md) si besoin). |
 | J2 | **apps/api** minimal | NestJS + **Grok** (1 route « generate copy ») + healthcheck. |
-| J3 | BullMQ | Même route asynchrone + worker qui écrit un `.md` dans `content/generated`. |
-| J4 | Image | 1 job **Grok Imagine** (`images.generate` ou `images/edits`) → fichier + entrée manifeste ; prise en compte des **URL temporaires** (téléchargement ou `b64_json`). |
-| J5 | **apps/preview** | 2–3 pages HTML qui consomment le contenu figé (accueil jeu, teaser cartes, CTA). |
+| J3 | BullMQ | `POST /ai/generate-markdown-async` + worker + `GET /ai/jobs/:id` (Redis requis pour la file). |
+| J4 | Image | `POST /ai/generate-image` — **Grok Imagine** (`b64_json` → PNG sous `content/generated/arbre-de-vie/images/`). |
+| J5 | **apps/preview** | Vite + **marked** (`npm run dev` port 5175), proxy vers l’API ; `GET /ai/generated` pour lister les `.md`. |
 | J6 | Itération contenu | 2–3 cycles prompt → relecture → figement pour affiner le **processus** documenté ici. |
 
 Après J6 : dupliquer le modèle pour **Ganesh** / **Voix chamaniques**, puis page **groupe trilogie** ; ensuite **React** pour la vitrine prod et intégration **jng-fwk** si pertinent.

@@ -1,0 +1,86 @@
+:root {
+  font-family: "Source Serif 4", "Georgia", serif;
+  line-height: 1.6;
+  color: #1a2e1a;
+  background: #f4f7f2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0 auto;
+  max-width: 52rem;
+  padding: 1.5rem;
+}
+
+header h1 {
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+
+.hint {
+  font-size: 0.9rem;
+  color: #4a5d4a;
+  margin: 0 0 1.25rem;
+}
+
+code {
+  font-size: 0.85em;
+  background: #e4ebe0;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+nav a {
+  color: #2d5a27;
+  text-decoration: none;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  background: #dfe9db;
+  font-size: 0.9rem;
+}
+
+nav a:hover {
+  background: #d0dcc9;
+}
+
+nav a.active {
+  background: #2d5a27;
+  color: #f4f7f2;
+}
+
+main {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 2px 12px rgba(26, 46, 26, 0.08);
+  min-height: 8rem;
+}
+
+main :is(h1, h2, h3) {
+  font-weight: 600;
+  margin-top: 1.25rem;
+}
+
+main h1:first-child,
+main h2:first-child {
+  margin-top: 0;
+}
+
+.placeholder,
+.error {
+  color: #6a7a6a;
+}
+
+.error {
+  color: #8b2c2c;
+}
