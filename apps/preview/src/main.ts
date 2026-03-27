@@ -1,5 +1,9 @@
 import { marked } from 'marked';
-import { renderDetailedLanding, type LandingSpec } from './landing-detailed';
+import {
+  injectLandingFontLink,
+  renderDetailedLanding,
+  type LandingSpec,
+} from './landing-detailed';
 
 const nav = document.getElementById('nav')!;
 const content = document.getElementById('content')!;
@@ -212,7 +216,13 @@ async function renderDetailedPage() {
   setModeUi('detailed');
   content.innerHTML = '<p class="placeholder">Chargement de la landing détaillée…</p>';
 
-  const specRes = await fetch('/site/landing-spec');
+  const [specRes, metaRes, cardsRes, imgListRes] = await Promise.all([
+    fetch('/site/landing-spec'),
+    fetch('/cards/arbre-de-vie/metadata'),
+    fetch('/cards/arbre-de-vie'),
+    fetch('/ai/generated-images'),
+  ]);
+
   if (!specRes.ok) {
     if (specRes.status === 404) {
       setError(
@@ -224,15 +234,36 @@ async function renderDetailedPage() {
     return;
   }
 
-  const spec = (await specRes.json()) as LandingSpec;
-  const cardsRes = await fetch('/cards/arbre-de-vie');
+  let spec = (await specRes.json()) as LandingSpec;
+  let cardAspectCss = spec.cardFormat?.cssAspectRatio ?? '51 / 153';
+  if (metaRes.ok) {
+    const meta = (await metaRes.json()) as {
+      cardAspectRatio?: LandingSpec['cardFormat'];
+    };
+    if (meta.cardAspectRatio) {
+      spec = { ...spec, cardFormat: meta.cardAspectRatio };
+      cardAspectCss = meta.cardAspectRatio.cssAspectRatio;
+    }
+  }
+
   if (!cardsRes.ok) {
     setError(`Liste des cartes indisponible (${cardsRes.status}).`);
     return;
   }
   const data = (await cardsRes.json()) as { files: string[] };
   const cardFiles = data.files ?? [];
-  content.innerHTML = renderDetailedLanding(spec, cardFiles);
+
+  const genImages = imgListRes.ok
+    ? ((await imgListRes.json()) as { files: string[] }).files ?? []
+    : [];
+
+  injectLandingFontLink(spec.htmlShell);
+  content.innerHTML = renderDetailedLanding(
+    spec,
+    cardFiles,
+    genImages,
+    cardAspectCss,
+  );
 
   if (spec.meta?.description) {
     let meta = document.querySelector('meta[name="description"]');

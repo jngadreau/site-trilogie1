@@ -1,4 +1,8 @@
-import { renderDetailedLanding, type LandingSpec } from './landing-detailed';
+import {
+  injectLandingFontLink,
+  renderDetailedLanding,
+  type LandingSpec,
+} from './landing-detailed';
 
 const root = document.getElementById('root')!;
 
@@ -54,7 +58,13 @@ async function boot() {
 
   root.innerHTML = '<p class="ld-page-loading">Chargement de la landing…</p>';
 
-  const specRes = await fetch('/site/landing-spec');
+  const [specRes, metaRes, cardsRes, imgListRes] = await Promise.all([
+    fetch('/site/landing-spec'),
+    fetch('/cards/arbre-de-vie/metadata'),
+    fetch('/cards/arbre-de-vie'),
+    fetch('/ai/generated-images'),
+  ]);
+
   if (!specRes.ok) {
     if (specRes.status === 404) {
       root.innerHTML = `<p class="ld-page-error">Aucune spec (<code>landing-spec.json</code>). Ouvre avec <code>?generate=1</code> (pipeline contexte + landing) ou <code>npm run generate:site</code> (API 3040).</p>`;
@@ -64,8 +74,18 @@ async function boot() {
     return;
   }
 
-  const spec = (await specRes.json()) as LandingSpec;
-  const cardsRes = await fetch('/cards/arbre-de-vie');
+  let spec = (await specRes.json()) as LandingSpec;
+  let cardAspectCss = spec.cardFormat?.cssAspectRatio ?? '51 / 153';
+  if (metaRes.ok) {
+    const meta = (await metaRes.json()) as {
+      cardAspectRatio?: LandingSpec['cardFormat'];
+    };
+    if (meta.cardAspectRatio) {
+      spec = { ...spec, cardFormat: meta.cardAspectRatio };
+      cardAspectCss = meta.cardAspectRatio.cssAspectRatio;
+    }
+  }
+
   if (!cardsRes.ok) {
     root.innerHTML = `<p class="ld-page-error">Liste des cartes indisponible (${cardsRes.status}).</p>`;
     return;
@@ -73,7 +93,17 @@ async function boot() {
   const data = (await cardsRes.json()) as { files: string[] };
   const cardFiles = data.files ?? [];
 
-  root.innerHTML = renderDetailedLanding(spec, cardFiles);
+  const genImages = imgListRes.ok
+    ? ((await imgListRes.json()) as { files: string[] }).files ?? []
+    : [];
+
+  injectLandingFontLink(spec.htmlShell);
+  root.innerHTML = renderDetailedLanding(
+    spec,
+    cardFiles,
+    genImages,
+    cardAspectCss,
+  );
 
   if (spec.meta?.description) {
     let meta = document.querySelector('meta[name="description"]');

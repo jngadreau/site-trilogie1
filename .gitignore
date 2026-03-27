@@ -30,3 +30,6 @@ content/generated/**/*.png
 content/generated/arbre-de-vie/landing-spec.json
 content/generated/arbre-de-vie/landing-shell.html
 content/generated/arbre-de-vie/landing-base.css
+
+# Snapshots locaux de content/generated/arbre-de-vie (cp -a)
+content/generated/arbre-de-vie.backup-*/

@@ -24,7 +24,19 @@ body.mode-landing {
 }
 
 body.mode-detailed {
-  max-width: 72rem;
+  max-width: 90rem;
+}
+
+body.mode-detailed main {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+body.mode-detailed main :is(h1, h2, h3) {
+  /* La spec Grok pilote les marges (.hero-title, .section-title, …) */
+  margin-top: 0;
 }
 
 /* Fallbacks si le CSS Grok est minimal */

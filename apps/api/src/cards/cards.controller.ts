@@ -3,6 +3,7 @@ import {
   Get,
   NotFoundException,
   Param,
+  Post,
   StreamableFile,
 } from '@nestjs/common';
 import { CardsService } from './cards.service';
@@ -14,6 +15,18 @@ export class CardsController {
   @Get('arbre-de-vie')
   async list() {
     return this.cards.listArbreDeVie();
+  }
+
+  /** `metadata.json` enrichi (taille mm, ratio mesuré sur un fichier image). */
+  @Get('arbre-de-vie/metadata')
+  async metadata() {
+    return this.cards.getMetadataDocument();
+  }
+
+  /** Recalcule les ratios depuis les pixels et persiste dans `metadata.json`. */
+  @Post('arbre-de-vie/refresh-metadata')
+  async refreshMetadata() {
+    return this.cards.refreshCardMetadataFile();
   }
 
   @Get('arbre-de-vie/:filename')

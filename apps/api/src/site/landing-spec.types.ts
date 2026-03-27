@@ -1,5 +1,7 @@
 /** Spec produite par Grok et stockée dans landing-spec.json */
 
+import type { CardAspectRatioBlock } from '../cards/card-metadata.types';
+
 export interface LandingSpecV1 {
   version: 1;
   meta: {
@@ -26,6 +28,8 @@ export interface LandingSpecV1 {
     heroBanner?: string;
     cardFan?: string;
   };
+  /** Ajouté côté API après Grok (mm + ratio pixels). */
+  cardFormat?: CardAspectRatioBlock;
 }
 
 export type SectionKind = 'hero' | 'text' | 'cards' | 'cta';

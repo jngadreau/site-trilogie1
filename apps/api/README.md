@@ -38,7 +38,10 @@ npm run start:dev
 | `POST` | `/site/generate-game-context` | Étape 1 : agrège cartes `.md`, livret, `metadata.json`, trilogie → `game-context.md` |
 | `GET` | `/site/landing-spec` | JSON `landing-spec.json` (landing détaillée Grok) — 404 si non généré |
 | `POST` | `/site/generate-landing` | Étape 2 : génère `landing-spec.json` + CSS/HTML depuis `prompts/landing/` (utilise `game-context.md` si présent) |
+| `POST` | `/site/generate-landing-assets` | Bannière PNG (Grok Imagine, `imagePrompts.heroBanner`) + éventail (Sharp, cartes locales). Corps optionnel `{"hero":true,"fan":true}` |
 | `GET` | `/cards/arbre-de-vie` | Liste des fichiers image dans `images-jeux/arbre_de_vie/` |
+| `GET` | `/cards/arbre-de-vie/metadata` | `metadata.json` enrichi : `physicalSizeMm` (ex. 51×153), ratio mesuré (Sharp) |
+| `POST` | `/cards/arbre-de-vie/refresh-metadata` | Recalcule les ratios depuis les pixels et réécrit `metadata.json` |
 | `GET` | `/cards/arbre-de-vie/:filename` | Image carte (PNG / JPEG / WebP) |
 | `POST` | `/site/compose-fan` | Corps `{ "files": ["a.png", …], "outputSlug?" }` — composite PNG (Sharp) |
 | `POST` | `/ai/generate-markdown` | Génère un `.md` **synchrone** |

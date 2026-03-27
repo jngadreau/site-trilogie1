@@ -14,6 +14,7 @@ Document de suivi des tâches (mis à jour au fil des itérations). Les cases `[
 | [x] | **GET `/site/manifest`** pour le preview / futur front |
 | [x] | **Vue Accueil** dans le preview (landing = hero + bloc texte depuis le manifeste) |
 | [x] | **Landing détaillée** : Grok → `landing-spec.json`, preview onglet + proxy `/cards` ; **Sharp** éventail `POST /site/compose-fan` |
+| [x] | **Visuels depuis la spec** : `POST /site/generate-landing-assets` (bannière Imagine + éventail cartes réelles) |
 | [x] | **Prompts / recettes** — amorce : `content/arbre-de-vie/prompts/` (README + `hero-instruction.example.txt`) ; affiner au fil des générations |
 | [x] | **Import livret** (prototype) : `LandingGenerationService` lit un extrait du livret via `getBookletDebutArbreDeViePath()` / `BOOKLET_DEBUT_PATH` |
 | [ ] | Affiner la landing (typo, second bloc, footer minimal) |
@@ -48,4 +49,4 @@ Document de suivi des tâches (mis à jour au fil des itérations). Les cases `[
 
 ---
 
-*Dernière mise à jour : mars 2026.*
+*Dernière mise à jour : mars 2026 (assets landing).*

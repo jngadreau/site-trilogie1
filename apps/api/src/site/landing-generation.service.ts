@@ -17,6 +17,7 @@ import {
   getLandingSpecPath,
   getTrilogyContextPath,
 } from '../paths';
+import { CardsService } from '../cards/cards.service';
 import type { LandingSpecV1 } from './landing-spec.types';
 import { extractFirstJsonObject } from './json-extract.util';
 
@@ -24,7 +25,10 @@ import { extractFirstJsonObject } from './json-extract.util';
 export class LandingGenerationService {
   private readonly logger = new Logger(LandingGenerationService.name);
 
-  constructor(private readonly config: ConfigService) {}
+  constructor(
+    private readonly config: ConfigService,
+    private readonly cards: CardsService,
+  ) {}
 
   async loadLandingSpec(): Promise<LandingSpecV1> {
     const p = getLandingSpecPath();
@@ -136,6 +140,12 @@ export class LandingGenerationService {
 
     if (spec.version !== 1) {
       throw new InternalServerErrorException('version !== 1 dans landing-spec');
+    }
+
+    try {
+      spec.cardFormat = await this.cards.getCardFormatSummary();
+    } catch (e) {
+      this.logger.warn(`cardFormat: ${(e as Error).message}`);
     }
 
     const outDir = getContentGeneratedArbreDeVieDir();

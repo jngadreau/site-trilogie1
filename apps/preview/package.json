@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "generate:game-context": "curl -sS -X POST http://127.0.0.1:3040/site/generate-game-context -H 'Content-Type: application/json' -d '{}'",
     "generate:landing": "curl -sS -X POST http://127.0.0.1:3040/site/generate-landing -H 'Content-Type: application/json' -d '{}'",
-    "generate:site": "npm run generate:game-context && npm run generate:landing"
+    "generate:site": "npm run generate:game-context && npm run generate:landing",
+    "generate:landing-assets": "curl -sS -X POST http://127.0.0.1:3040/site/generate-landing-assets -H 'Content-Type: application/json' -d '{\"hero\":true,\"fan\":true}'",
+    "refresh:card-metadata": "curl -sS -X POST http://127.0.0.1:3040/cards/arbre-de-vie/refresh-metadata"
   },
   "devDependencies": {
     "typescript": "^5.6.3",

@@ -25,6 +25,8 @@ Fichiers sous `content/generated/arbre-de-vie/` :
 
 Le preview **Landing détaillée** consomme `landing-spec.json` via `GET /site/landing-spec`.
 
+Après génération de la spec, **`POST /site/generate-landing-assets`** produit une bannière (`images/landing-hero-from-spec.png`) à partir de `imagePrompts.heroBanner` et un éventail (`landing-fan-from-cards.png`) avec les cartes du dossier jeu.
+
 ## Images cartes
 
 Les fichiers PNG/JPG doivent être présents dans `images-jeux/arbre_de_vie/` (à la racine du workspace `card-sites-examples`). Ils sont servis par l’API sous `/cards/arbre-de-vie/:filename`.

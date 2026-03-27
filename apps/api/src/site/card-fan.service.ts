@@ -53,9 +53,10 @@ export class CardFanService {
       const rotate = -28 + 56 * t;
       const top = 40 + Math.round(Math.sin(t * Math.PI) * 28);
 
-      const buf = await sharp(resolved[i])
-        .rotate(rotate, { background: { r: 0, g: 0, b: 0, alpha: 0 } })
+      // Réduire d’abord (fichiers carte souvent très lourds) puis rotation — évite les OOM / échecs Sharp.
+      const buf = await sharp(resolved[i], { limitInputPixels: false })
         .resize({ width: thumbW, withoutEnlargement: true })
+        .rotate(rotate, { background: { r: 0, g: 0, b: 0, alpha: 0 } })
         .png()
         .toBuffer();
 
@@ -76,8 +77,9 @@ export class CardFanService {
         .png()
         .toBuffer();
     } catch (e) {
-      this.logger.error((e as Error).message);
-      throw new InternalServerErrorException('Sharp composite failed');
+      const msg = (e as Error).message;
+      this.logger.error(`Sharp composite: ${msg}`);
+      throw new InternalServerErrorException(`Sharp composite failed: ${msg}`);
     }
 
     const outDir = getGeneratedImagesDir();

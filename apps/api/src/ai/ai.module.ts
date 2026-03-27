@@ -20,5 +20,6 @@ import { getBullConnectionOptions } from '../config/bullmq.config';
   ],
   controllers: [AiController],
   providers: [AiService, MarkdownGenerationProcessor],
+  exports: [AiService],
 })
 export class AiModule {}

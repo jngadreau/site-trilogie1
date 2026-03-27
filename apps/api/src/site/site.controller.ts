@@ -2,8 +2,10 @@ import { Body, Controller, Get, Post } from '@nestjs/common';
 import { SiteService } from './site.service';
 import { LandingGenerationService } from './landing-generation.service';
 import { GameContextGenerationService } from './game-context-generation.service';
+import { LandingAssetsService } from './landing-assets.service';
 import { CardFanService } from './card-fan.service';
 import { ComposeFanDto } from './dto/compose-fan.dto';
+import { GenerateLandingAssetsDto } from './dto/generate-landing-assets.dto';
 
 @Controller('site')
 export class SiteController {
@@ -11,6 +13,7 @@ export class SiteController {
     private readonly site: SiteService,
     private readonly gameContextGen: GameContextGenerationService,
     private readonly landingGen: LandingGenerationService,
+    private readonly landingAssets: LandingAssetsService,
     private readonly cardFan: CardFanService,
   ) {}
 
@@ -41,6 +44,18 @@ export class SiteController {
   @Post('generate-landing')
   async generateLanding() {
     return this.landingGen.generateAndSave();
+  }
+
+  /**
+   * Visuels à partir de `landing-spec.json` : bannière (Grok Imagine, `imagePrompts.heroBanner`)
+   * + éventail PNG (Sharp, premières cartes du dossier jeu). Corps optionnel `{ "hero": true, "fan": true }`.
+   */
+  @Post('generate-landing-assets')
+  async generateLandingAssets(@Body() dto?: GenerateLandingAssetsDto) {
+    return this.landingAssets.generateFromSpec({
+      hero: dto?.hero !== false,
+      fan: dto?.fan !== false,
+    });
   }
 
   /** Compose un PNG d’éventail (Sharp) à partir de fichiers du dossier cartes. */
