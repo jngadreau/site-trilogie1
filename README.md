@@ -19,5 +19,6 @@ Les dépôts / dossiers **sources** (livrets, exports cartes haute définition) 
 
 ## État actuel
 
-- Arborescence mono-repo initialisée ; documentation dans `docs/`, dont le [**processus prototype Arbre de Vie**](./docs/processus-prototype-arbre-de-vie.md) (court terme : IA + preview sans React).
+- **`apps/api`** : NestJS, `POST /ai/generate-markdown` (Grok → `content/generated/arbre-de-vie/`). Voir [apps/api/README.md](./apps/api/README.md).
+- Documentation : [processus prototype Arbre de Vie](./docs/processus-prototype-arbre-de-vie.md).
 
