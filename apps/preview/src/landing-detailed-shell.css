@@ -1,0 +1,45 @@
+/**
+ * Coquille minimale pour la page standalone /landing-detailed/
+ * (le rendu visuel principal vient du CSS injecté par la spec Grok.)
+ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+  color: #1a2e1a;
+  background: #f4f7f2;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.ld-page-loading,
+.ld-page-error {
+  margin: 0;
+  padding: 2rem;
+  max-width: 40rem;
+}
+
+.ld-page-error {
+  color: #8b2c2c;
+  white-space: pre-wrap;
+}
+
+.ld-page-error code {
+  font-size: 0.9em;
+  background: #f0e8e8;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}

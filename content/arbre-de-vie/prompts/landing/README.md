@@ -1,21 +1,27 @@
 # Génération landing détaillée (reproductible)
 
-Ce dossier contient les **prompts figés** utilisés par `POST /site/generate-landing` dans l’API. Toute évolution de copy ou de structure JSON attendue doit passer par ces fichiers (et un commit).
+## Flux en deux étapes (recommandé)
 
-| Fichier | Rôle |
-|---------|------|
-| [01-system.md](./01-system.md) | Message **système** Grok (rôle, contraintes, format de sortie). |
-| [02-user-template.md](./02-user-template.md) | Gabarit **utilisateur** : placeholders `{{BOOKLET_EXCERPT}}`, `{{GAME_META_JSON}}`, `{{TRILOGY_CONTEXT}}`, etc. |
+1. **`POST /site/generate-game-context`** — agrège les `.md` des cartes, tout le livret (dossier `booklet/`), `metadata.json`, [trilogy-context.md](../../../shared/trilogy-context.md) ; produit **`game-context.md`** (synthèse réutilisable).
+2. **`POST /site/generate-landing`** — consomme `game-context.md` en priorité dans le gabarit, plus extraits livret / JSON / trilogie pour cohérence.
 
-L’API injecte le contenu du livret (`oseunpasverstoi-jeux1/Arbre de vie/booklet/debut.md` par défaut), les métadonnées `images-jeux/arbre_de_vie/metadata.json`, et le fichier [trilogy-context.md](../../../shared/trilogy-context.md).
+Les prompts sont **génériques** (pas de nom de jeu figé) : l’univers vient des sources et du manifeste `site.manifest.json` (titre / sous-titre pour le libellé jeu).
+
+| Dossier / fichier | Rôle |
+|-------------------|------|
+| [01-system.md](./01-system.md) | Message **système** pour la **landing JSON** (rôle, contraintes, sortie unique JSON). |
+| [02-user-template.md](./02-user-template.md) | Gabarit **utilisateur** : `{{GAME_CONTEXT}}`, `{{BOOKLET_EXCERPT}}`, `{{GAME_META_JSON}}`, `{{TRILOGY_CONTEXT}}`. |
+| [game-context/](./game-context/) | Prompts de l’**étape 1** (sortie Markdown synthèse uniquement). |
+
+Chemins sources par défaut (surcharge via `.env` : `GAME_CARDS_CONTEXT_DIR`, `GAME_BOOKLET_DIR`) : dossier `contexts/cards/` et `booklet/` sous le dépôt source du jeu Arbre de Vie. Livret landing : extrait de `debut.md` comme complément dans `02-user-template`.
 
 ## Sortie produite
 
-Fichiers écrits sous `content/generated/arbre-de-vie/` :
+Fichiers sous `content/generated/arbre-de-vie/` :
 
-- `landing-spec.json` — spec structurée (sections, thème, CSS de base, HTML coquille).
-- `landing-shell.html` — copie du gabarit HTML proposé par le modèle (audit / reprise manuelle).
-- `landing-base.css` — feuille de base associée.
+- `game-context.md` — synthèse jeu (étape 1).
+- `landing-spec.json` — spec structurée (sections, thème, CSS de base, HTML coquille) (étape 2).
+- `landing-shell.html`, `landing-base.css` — copie des propositions modèle (étape 2).
 
 Le preview **Landing détaillée** consomme `landing-spec.json` via `GET /site/landing-spec`.
 

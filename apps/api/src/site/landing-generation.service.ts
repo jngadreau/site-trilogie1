@@ -12,6 +12,7 @@ import {
   getBookletDebutArbreDeViePath,
   getCardMetadataArbreDeViePath,
   getContentGeneratedArbreDeVieDir,
+  getGameContextPath,
   getLandingPromptsDir,
   getLandingSpecPath,
   getTrilogyContextPath,
@@ -67,6 +68,14 @@ export class LandingGenerationService {
       'utf8',
     );
 
+    let gameContext = '';
+    try {
+      gameContext = await readFile(getGameContextPath(), 'utf8');
+    } catch {
+      gameContext =
+        '_(Aucune synthèse `game-context.md` — lance `POST /site/generate-game-context` pour produire un contexte détaillé réutilisable à partir des cartes, du livret et des métadonnées.)_';
+    }
+
     let booklet = '';
     try {
       booklet = await readFile(getBookletDebutArbreDeViePath(), 'utf8');
@@ -91,6 +100,7 @@ export class LandingGenerationService {
     }
 
     userTpl = userTpl
+      .replace('{{GAME_CONTEXT}}', gameContext)
       .replace('{{BOOKLET_EXCERPT}}', excerpt)
       .replace('{{GAME_META_JSON}}', metaJson)
       .replace('{{TRILOGY_CONTEXT}}', trilogy);

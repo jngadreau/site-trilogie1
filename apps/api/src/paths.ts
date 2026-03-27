@@ -44,6 +44,49 @@ export function getLandingPromptsDir(): string {
   return path.join(getSiteArbreDeVieContentDir(), 'prompts', 'landing');
 }
 
+/** Prompts Grok pour la synthèse `game-context.md` (étape 1). */
+export function getGameContextPromptsDir(): string {
+  return path.join(getLandingPromptsDir(), 'game-context');
+}
+
+/** Sortie : synthèse éditoriale réutilisable pour les appels landing sans repasser toutes les sources. */
+export function getGameContextPath(): string {
+  return path.join(getContentGeneratedArbreDeVieDir(), 'game-context.md');
+}
+
+/**
+ * Dossier des `.md` par carte (descriptions). Défaut : jeu Arbre de Vie dans le workspace source.
+ */
+export function getGameCardsContextDir(): string {
+  const override = process.env.GAME_CARDS_CONTEXT_DIR?.trim();
+  if (override) {
+    return path.isAbsolute(override) ? override : path.resolve(process.cwd(), override);
+  }
+  return path.join(
+    getWorkspaceRoot(),
+    'oseunpasverstoi-jeux1',
+    'Arbre de vie',
+    'contexts',
+    'cards',
+  );
+}
+
+/**
+ * Dossier du livret (plusieurs `.md`). Défaut : `booklet/` du jeu Arbre de Vie.
+ */
+export function getGameBookletDir(): string {
+  const override = process.env.GAME_BOOKLET_DIR?.trim();
+  if (override) {
+    return path.isAbsolute(override) ? override : path.resolve(process.cwd(), override);
+  }
+  return path.join(
+    getWorkspaceRoot(),
+    'oseunpasverstoi-jeux1',
+    'Arbre de vie',
+    'booklet',
+  );
+}
+
 /** Livret : extrait par défaut pour la génération landing. */
 export function getBookletDebutArbreDeViePath(): string {
   const override = process.env.BOOKLET_DEBUT_PATH?.trim();

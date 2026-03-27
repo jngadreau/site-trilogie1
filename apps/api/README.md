@@ -35,8 +35,9 @@ npm run start:dev
 |---------|--------|-------------|
 | `GET` | `/health` | Santé |
 | `GET` | `/site/manifest` | JSON `content/arbre-de-vie/site.manifest.json` (landing) |
+| `POST` | `/site/generate-game-context` | Étape 1 : agrège cartes `.md`, livret, `metadata.json`, trilogie → `game-context.md` |
 | `GET` | `/site/landing-spec` | JSON `landing-spec.json` (landing détaillée Grok) — 404 si non généré |
-| `POST` | `/site/generate-landing` | Génère `landing-spec.json` + fichiers associés depuis `prompts/landing/` + livret |
+| `POST` | `/site/generate-landing` | Étape 2 : génère `landing-spec.json` + CSS/HTML depuis `prompts/landing/` (utilise `game-context.md` si présent) |
 | `GET` | `/cards/arbre-de-vie` | Liste des fichiers image dans `images-jeux/arbre_de_vie/` |
 | `GET` | `/cards/arbre-de-vie/:filename` | Image carte (PNG / JPEG / WebP) |
 | `POST` | `/site/compose-fan` | Corps `{ "files": ["a.png", …], "outputSlug?" }` — composite PNG (Sharp) |

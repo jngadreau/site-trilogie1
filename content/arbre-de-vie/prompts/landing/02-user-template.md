@@ -1,4 +1,8 @@
-## Contexte jeu (extrait livret — ne pas recopier tel quel sur le site, adapter)
+## Contexte jeu synthétisé (prioritaire — base ton ton, faits et niveau de détail)
+
+{{GAME_CONTEXT}}
+
+## Extrait livret brut (complément si la synthèse est légère — ne pas recopier tel quel sur le site)
 
 {{BOOKLET_EXCERPT}}
 

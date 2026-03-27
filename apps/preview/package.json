@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate:game-context": "curl -sS -X POST http://127.0.0.1:3040/site/generate-game-context -H 'Content-Type: application/json' -d '{}'",
+    "generate:landing": "curl -sS -X POST http://127.0.0.1:3040/site/generate-landing -H 'Content-Type: application/json' -d '{}'",
+    "generate:site": "npm run generate:game-context && npm run generate:landing"
   },
   "devDependencies": {
     "typescript": "^5.6.3",
