@@ -22,7 +22,7 @@ Ces projets vivent dans **`card-sites-examples`** (à côté du clone de **`site
 
 | Projet | Emplacement (typique) | Intérêt pour site-trilogie1 |
 |--------|----------------------|------------------------------|
-| **gnova-cv-app** | `../gnova-cv-app/` — backend décrit dans le README du repo : `server/` (**NestJS**, **MongoDB**, **Grok**, jobs) | Exemple d’intégration **Grok** + **BullMQ** + structure **NestJS** pour tâches IA. *Note : un clone partiel peut ne pas contenir `server/` ; se référer au dépôt complet si besoin.* |
+| **gnova-cv-app** | `../gnova-cv-app/server/` | **NestJS**, **BullMQ**, **Grok** via client **`openai`** + `baseURL` `https://api.x.ai/v1`, **`@jngadreau/fwk-server-core`** pour Redis. Voir [reference-gnova-cv-app-server.md](./reference-gnova-cv-app-server.md). |
 | **jng-fwk** | `../jng-fwk/` — package **`packages/server-core`** | **Config**, **Mongoose**, **BullMQ** (`getBullMQConnectionOptions`), **auth** Keycloak/JWT — à réutiliser **plus tard** quand l’auth créateur et le multi-projet seront nécessaires ; pour le **tout premier prototype**, un serveur NestJS **minimal** sans tout le framework peut aller plus vite. |
 
 **Stratégie recommandée**

@@ -2,7 +2,7 @@
 
 ## 0. Court terme : prototype « L’Arbre de Vie »
 
-La première livraison itérative se concentre sur **un seul jeu** (**L’Arbre de Vie**), avec un **serveur** (NestJS + **Grok** + **BullMQ**) pour générer tôt des **contenus Markdown** et des **images**, et un **rendu du site sans exiger React** (HTML / prévisualisation statique) pour valider le processus et le copywriting. Références de code possibles dans le workspace **`card-sites-examples`** : **`gnova-cv-app`** (NestJS, Grok, BullMQ — voir le `server/` du dépôt complet), **`jng-fwk`** (`packages/server-core` pour la suite auth / infra).
+La première livraison itérative se concentre sur **un seul jeu** (**L’Arbre de Vie**), avec un **serveur** (NestJS + **Grok** + **BullMQ**) pour générer tôt des **contenus Markdown** et des **images**, et un **rendu du site sans exiger React** (HTML / prévisualisation statique) pour valider le processus et le copywriting. Références dans **`card-sites-examples`** : **`gnova-cv-app/server/`** (détail : [reference-gnova-cv-app-server.md](./reference-gnova-cv-app-server.md)), **`jng-fwk`** (`packages/server-core` / package **`@jngadreau/fwk-server-core`**).
 
 **Processus détaillé et jalons J1–J6** : [processus-prototype-arbre-de-vie.md](./processus-prototype-arbre-de-vie.md).
 
