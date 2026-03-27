@@ -5,6 +5,7 @@ Ce dossier rassemble la documentation du projet, mise à jour au fil des itérat
 | Document | Contenu |
 |----------|---------|
 | [projet-sites-jeux-cartes.md](./projet-sites-jeux-cartes.md) | Vision, groupe/trilogie, affichage carte & promo, conversion & stats, IA (historique, évolutions), stack front + **NestJS / Mongo / BullMQ / Grok / S3 / Keycloak**, RGPD & cookies |
+| [processus-prototype-arbre-de-vie.md](./processus-prototype-arbre-de-vie.md) | **Court terme** : prototype **L’Arbre de Vie**, serveur IA (MD + images), preview sans React, références **gnova-cv-app** / **jng-fwk**, jalons J1–J6 |
 
 ## Sources des jeux (hors dépôt `site-trilogie1`)
 

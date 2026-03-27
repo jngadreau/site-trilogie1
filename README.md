@@ -7,7 +7,7 @@
 | Répertoire | Rôle |
 |------------|------|
 | [`docs/`](./docs/README.md) | Vision produit, stack, IA, RGPD, jalons. |
-| [`apps/`](./apps/README.md) | Applications (ex. site vitrine React + TS). |
+| [`apps/`](./apps/README.md) | **api** (NestJS + Grok + BullMQ), **preview** (HTML d’abord), **web** / React ensuite. |
 | [`packages/`](./packages/README.md) | Libs partagées (manifestes, UI, etc.). |
 | [`content/`](./content/README.md) | Données et textes destinés au site (hors masters jeu). |
 
@@ -19,4 +19,5 @@ Les dépôts / dossiers **sources** (livrets, exports cartes haute définition) 
 
 ## État actuel
 
-- Arborescence mono-repo initialisée ; documentation de planification dans `docs/`.
+- Arborescence mono-repo initialisée ; documentation dans `docs/`, dont le [**processus prototype Arbre de Vie**](./docs/processus-prototype-arbre-de-vie.md) (court terme : IA + preview sans React).
+

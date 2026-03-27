@@ -1,5 +1,13 @@
 # Sites web de présentation — jeux de cartes Oracles
 
+## 0. Court terme : prototype « L’Arbre de Vie »
+
+La première livraison itérative se concentre sur **un seul jeu** (**L’Arbre de Vie**), avec un **serveur** (NestJS + **Grok** + **BullMQ**) pour générer tôt des **contenus Markdown** et des **images**, et un **rendu du site sans exiger React** (HTML / prévisualisation statique) pour valider le processus et le copywriting. Références de code possibles dans le workspace **`card-sites-examples`** : **`gnova-cv-app`** (NestJS, Grok, BullMQ — voir le `server/` du dépôt complet), **`jng-fwk`** (`packages/server-core` pour la suite auth / infra).
+
+**Processus détaillé et jalons J1–J6** : [processus-prototype-arbre-de-vie.md](./processus-prototype-arbre-de-vie.md).
+
+---
+
 ## 1. Contexte
 
 ### 1.1 Jeux concernés (trilogie actuelle)
@@ -239,11 +247,12 @@ Piste **ultérieure** : génération de **fichiers 3D + textures** (cartes, boî
 
 | Phase | Livrable |
 |-------|----------|
-| P0 | `GameManifest` / `GameGroupManifest` TypeScript + import des 3 jeux |
-| P1 | Site statique : hub **groupe** + pages jeu ; galerie **échantillon** ; CTA boutique + base de tracking **conforme consentement** |
-| P2 | Médias promo (composite éventail + fond) intégrés au hero ; premières vidéos courtes si disponibles |
-| P3 | Backend Creaticards : jobs **BullMQ**, Grok, historique versionné (limite), prompts Midjourney exportables |
-| P4 | Scènes 3D / pipeline textures (recherche & PoC), intégration Three ou rendu vidéo selon choix |
+| **P0** | **Prototype Arbre de Vie** : `apps/api` (Grok texte + image, BullMQ) + `content/generated` + `apps/preview` HTML — voir [processus-prototype-arbre-de-vie.md](./processus-prototype-arbre-de-vie.md) |
+| P1 | `GameManifest` / `GameGroupManifest` TypeScript ; généralisation contenu sur les 3 jeux + hub trilogie |
+| P2 | Site **React** (ou migration de `preview`) : galerie **échantillon**, CTA boutique, base de tracking **conforme consentement** |
+| P3 | Médias promo (composite éventail + fond) ; vidéos courtes si pertinent |
+| P4 | Backend « produit » : persistance riche, historique versionné (limite), **jng-fwk** / Keycloak si besoin, S3, prompts Midjourney exportables |
+| P5 | Scènes 3D / pipeline textures (PoC), Three ou rendu vidéo selon choix |
 
 ---
 
