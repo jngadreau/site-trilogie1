@@ -25,14 +25,16 @@ S’appuie sur ces descriptions pour rédiger des **props** et des **globals** a
 
 ## Schéma JSON exact à produire
 
-Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck) :
+Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck).
+
+**Ordre des sections (obligatoire)** : `hero` → `deck_identity` → `for_who` → `outcomes` → `how_to_use` → `cta_band`.
 
 ```json
 {
   "version": 1,
   "slug": "{{LANDING_SLUG}}",
   "imagePrompts": {
-    "hero": "string optionnel — UN prompt en anglais, une phrase ou court paragraphe, pour Grok Imagine (bannière hero 16:9). Décrire scène, lumière, style ; pas de texte dans l’image. Si omis, l’API le synthétisera avant génération PNG."
+    "hero": "string optionnel — UN prompt en anglais pour Grok Imagine (bannière). Si omis, l’API le synthétisera."
   },
   "globals": {
     "accent": "#hex",
@@ -49,7 +51,7 @@ Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck) 
   "sections": [
     {
       "id": "hero",
-      "variant": "HeroSplitImageRight OU HeroFullBleed selon carte",
+      "variant": "selon carte — HeroSplitImageRight | HeroFullBleed | HeroGlowVault | HeroParallaxLayers",
       "props": {},
       "media": [
         {
@@ -77,8 +79,20 @@ Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck) 
       "media": []
     },
     {
+      "id": "outcomes",
+      "variant": "OutcomesBentoGrid OU OutcomesSignalStrip",
+      "props": {},
+      "media": []
+    },
+    {
       "id": "how_to_use",
       "variant": "HowToNumbered OU HowToTimeline",
+      "props": {},
+      "media": []
+    },
+    {
+      "id": "cta_band",
+      "variant": "CtaMarqueeRibbon OU CtaSplitAction",
       "props": {},
       "media": []
     }
@@ -86,7 +100,7 @@ Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck) 
 }
 ```
 
-Chaque section doit inclure **`media`** : tableau d’objets slots (voir specs `.spec.md` « Slots médias ») ou `[]` si aucune image. Ces champs alimentent le **point d’entrée unique** Imagine (`buildImaginePrompt` côté API).
+Chaque section doit inclure **`media`** : tableau d’objets slots (voir specs `.spec.md` « Slots médias ») ou `[]` si aucune image.
 
 ### Props par variant (obligatoires)
 
@@ -94,17 +108,29 @@ Chaque section doit inclure **`media`** : tableau d’objets slots (voir specs `
 
 **HeroFullBleed** : `title`, `tagline`, `bodyMarkdown`, `ctaLabel`, `ctaHref`, `imageUrl`, `imageAlt`, `overlayOpacity` (nombre 0.35–0.65)
 
-**IdentityPanel** : `deckName`, `tagline`, `bodyMarkdown`, `badge` (court texte optionnel)
+**HeroGlowVault** : `kicker`, `title`, `bodyMarkdown`, `ctaLabel`, `ctaHref`, `imageUrl`, `imageAlt`, `glowIntensity` (0.35–0.95)
+
+**HeroParallaxLayers** : `eyebrow`, `title`, `strapline`, `bodyMarkdown`, `ctaLabel`, `ctaHref`, `imageUrl`, `imageAlt`, `spineLabel` (optionnel)
+
+**IdentityPanel** : `deckName`, `tagline`, `bodyMarkdown`, `badge` (optionnel)
 
 **IdentityMinimal** : `eyebrow`, `title`, `oneLiner`
 
 **ForWhoTwoColumns** : `title`, `leftMarkdown`, `rightMarkdown`
 
-**ForWhoPillars** : `title`, `introMarkdown`, `pillars` (tableau de `{ "title", "bodyMarkdown" }`, au moins 3)
+**ForWhoPillars** : `title`, `introMarkdown`, `pillars` (tableau `{ "title", "bodyMarkdown" }`, au moins 3)
 
-**HowToNumbered** : `title`, `introMarkdown` (optionnel string), `steps` (tableau `{ "title", "bodyMarkdown" }`, au moins 3)
+**OutcomesBentoGrid** : `sectionTitle`, `introMarkdown`, `cells` (≥ 4 `{ "title", "bodyMarkdown", "span"? }` avec `span` ∈ `wide` | `tall` | `featured`, au moins une `featured`)
 
-**HowToTimeline** : `title`, `introMarkdown`, `steps` (tableau `{ "label", "detailMarkdown" }`, au moins 3)
+**OutcomesSignalStrip** : `sectionTitle`, `introMarkdown`, `signals` (≥ 3 `{ "label", "detailMarkdown" }`)
+
+**HowToNumbered** : `title`, `introMarkdown` (optionnel), `steps` (≥ 3 `{ "title", "bodyMarkdown" }`)
+
+**HowToTimeline** : `title`, `introMarkdown`, `steps` (≥ 3 `{ "label", "detailMarkdown" }`)
+
+**CtaMarqueeRibbon** : `eyebrow`, `headline`, `subline`, `ctaLabel`, `ctaHref`, `marqueeText`
+
+**CtaSplitAction** : `title`, `bodyMarkdown`, `primaryLabel`, `primaryHref`, `secondaryLabel` (optionnel), `secondaryHref` (optionnel)
 
 ---
 

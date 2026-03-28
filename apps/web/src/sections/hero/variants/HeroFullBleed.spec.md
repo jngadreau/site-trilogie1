@@ -37,7 +37,7 @@ Un slot **`hero`** (image de fond pleine largeur).
 | Champ JSON `media[]` | Rôle |
 | --- | --- |
 | `slotId` | `hero` |
-| `aspectRatio` | `16:9` ou plus large (ex. `21:9`) si tu veux souligner le cinémascope |
+| `aspectRatio` | `16:9` ou panoramique **`20:9`** / `19.5:9` (Grok Imagine n’accepte pas `21:9`) |
 | `sceneDescription` | Scène **immersive** : profondeur, brume, contre-jour, espace pour texte en overlay (bas ou centre-vide) |
 | `mood` | Cinématographique, intime, nocturne, etc. |
 | `styleVisual` | Ex. photographie stylisée, matte painting léger |

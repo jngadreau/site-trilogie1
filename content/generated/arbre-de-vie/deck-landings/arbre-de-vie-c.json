@@ -3,82 +3,104 @@
   "slug": "arbre-de-vie-c",
   "globals": {
     "accent": "#8B7355",
-    "background": "#F8F4F0",
-    "surface": "#FDFAF7",
+    "background": "#F8F6F2",
+    "surface": "#FFFFFF",
     "text": "#3D2B1F",
-    "textMuted": "#8A7A6D",
-    "fontHeading": "'Playfair Display', Georgia, serif",
-    "fontBody": "system-ui, -apple-system, sans-serif",
+    "textMuted": "#6B5A4A",
+    "fontHeading": "\"Playfair Display\", Georgia, serif",
+    "fontBody": "\"Merriweather\", Georgia, serif",
     "radius": "16px",
-    "fontImportNote": "Google Fonts: Playfair Display",
-    "fontImportHref": "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap"
+    "fontImportNote": "Google Fonts: Playfair Display & Merriweather",
+    "fontImportHref": "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Merriweather:wght@300;400;600&display=swap"
   },
   "sections": [
     {
       "id": "hero",
       "variant": "HeroSplitImageRight",
       "props": {
-        "title": "L’Oracle de l’Arbre de Vie",
+        "title": "L'Oracle de l'Arbre de Vie",
         "subtitle": "Racines, élévation et sagesse du vivant",
-        "bodyMarkdown": "Un oracle canalisé de 64 cartes pour accompagner ta croissance intérieure, comme un arbre qui puise dans la terre nourricière et s’élève vers le ciel.\n\n**Guidance intuitive** au fil des cycles naturels : ancrage dans l’ombre comme expansion dans la lumière, à travers rituels simples et messages poétiques.\n\nGlisse une carte dans ton quotidien pour cultiver patience et résilience.",
-        "ctaLabel": "Découvrir l’identité",
+        "bodyMarkdown": "Un oracle canalisé de 64 cartes, inspiré de la symbolique de l’Arbre de Vie. Il accompagne votre croissance personnelle, harmonisant terre et ciel dans les cycles naturels de transformation.\n\nCompagnon intuitif ancré dans la sagesse de la nature, il invite à l’introspection douce et à l’équilibre émotionnel, comme un murmure forestier enveloppant de sérénité.",
+        "ctaLabel": "Découvrir l'identité",
         "ctaHref": "#deck_identity",
-        "imageUrl": "/ai/generated-images/landing-hero-arbre-de-vie.png",
-        "imageAlt": "Arbre de vie majestueux aux racines profondes dans la terre humide et branches s’élevant vers un ciel lumineux, feuilles dansantes et fruits abondants, symbolisant croissance et harmonie naturelle."
-      }
+        "imageUrl": "/ai/generated-images/deck-arbre-de-vie-c-hero-hero.png",
+        "imageAlt": "Arbre de vie aux racines ancrées et branches élevées, symbolisant harmonie et croissance dans une lumière naturelle sereine"
+      },
+      "media": [
+        {
+          "slotId": "hero",
+          "aspectRatio": "4:3",
+          "sceneDescription": "Un arbre de vie symbolique et majestueux, racines puissantes s'enfonçant dans une terre humide et fertile, tronc résilient texturé d'écorce, branches élégantes s'élevant vers un ciel doux et lumineux, feuilles dansantes et fruits abondants, cadrage centré paysage avec lumière naturelle filtrant à travers le feuillage",
+          "mood": "sérénité apaisante, croissance organique, harmonie entre ancrage et élévation",
+          "styleVisual": "illustration éditoriale poétique, peinture numérique aérée avec grain léger, textures naturelles sensorielles",
+          "colorContext": "tons terreux chaleureux avec accents cuivrés, fond clair crème-beige, harmonies naturelles douces et lumineuses",
+          "constraints": "pas de texte lisible, pas de logos, pas d'éléments médicaux ou humains, focus symbolique et abstrait, marges sécurisées pour crop centré",
+          "altHintFr": "Arbre de vie aux racines ancrées et branches élevées, symbolisant harmonie et croissance dans une lumière naturelle sereine"
+        }
+      ]
     },
     {
       "id": "deck_identity",
       "variant": "IdentityMinimal",
       "props": {
-        "eyebrow": "Oracle · 64 cartes canalisées",
+        "eyebrow": "Oracle · Arbre de Vie",
         "title": "Racines, élévation et sagesse du vivant",
-        "oneLiner": "Créé par **Hélène Durand**, compagnon portable pour l’épanouissement spirituel, inspiré des cycles de l’Arbre de Vie."
-      }
+        "oneLiner": "Un compagnon ancré dans les **cycles naturels** pour guidance intuitive et épanouissement."
+      },
+      "media": []
     },
     {
       "id": "for_who",
       "variant": "ForWhoPillars",
       "props": {
         "title": "Pour qui cet oracle ?",
-        "introMarkdown": "Que tu sois en quête d’équilibre ou en pleine transition, cet oracle t’invite à écouter la sagesse organique de la nature pour nourrir ton chemin.",
+        "introMarkdown": "L’Oracle de l’Arbre de Vie accompagne celles et ceux qui cherchent à cultiver leur croissance intérieure. Ses murmures forestiers résonnent particulièrement pour trois profils en quête d’équilibre et de sagesse intuitive.",
         "pillars": [
           {
-            "title": "En quête d’introspection",
-            "bodyMarkdown": "Pour celles et ceux qui cherchent un **fil conducteur** dans leurs émotions, un espace pour respirer et se recentrer au quotidien."
+            "title": "Les chercheuses d’introspection",
+            "bodyMarkdown": "Vous ressentez l’appel d’une connexion plus profonde à votre intuition et à la nature. Cet oracle vous guide dans vos méditations quotidiennes, comme un souffle apaisant qui révèle vos racines intérieures et vos aspirations élevées."
           },
           {
-            "title": "Traversant des transitions",
-            "bodyMarkdown": "**Défis ou renouveaux** : laisse les cycles de l’arbre t’accompagner dans l’ancrage face aux vents du changement."
+            "title": "Les passeuses d’âme",
+            "bodyMarkdown": "Accompagnants spirituels, thérapeutes ou coachs, vous accompagnez autrui vers l’épanouissement. Utilisez ses tirages pour des analyses de cycles ou des méditations guidées, enrichissant vos séances d’une sagesse organique et ancrée."
           },
           {
-            "title": "Connecté·e à la nature",
-            "bodyMarkdown": "**Méditant·e·s et accompagnant·e·s** spirituel·le·s : amplifie ton intuition avec des messages sensoriels et poétiques."
+            "title": "Les traverseuses de transitions",
+            "bodyMarkdown": "En phase de renouveau, de défis ou de transformation, vous cherchez un appui résilient. Ses cartes marque-pages portables deviennent vos compagnons mobiles, pour un ancrage intuitif au cœur des mouvements de la vie."
           }
         ]
-      }
+      },
+      "media": []
     },
     {
       "id": "how_to_use",
-      "variant": "HowToNumbered",
+      "variant": "HowToTimeline",
       "props": {
-        "title": "Comment l’utiliser",
-        "introMarkdown": "Rituel simple et flexible, seul·e ou en groupe. Le livret guide les détails, commence par ces étapes essentielles.",
+        "title": "Votre parcours avec l'Oracle de l'Arbre de Vie",
+        "introMarkdown": "Découvrez un rituel fluide, inspiré des cycles naturels. Ce compagnon portable s'intègre à votre quotidien comme une sève nourricière, du silence intérieur à l'action éclairée.",
         "steps": [
           {
-            "title": "Prépare ton espace",
-            "bodyMarkdown": "Respire profondément, pose l’étui transparent sur ton autel, livre ou près de toi. Nettoie par le souffle ou une intention bienveillante."
+            "label": "1 — Préparation",
+            "detailMarkdown": "Trouvez un espace calme, respirez profondément. Purifiez le jeu d'un souffle intentionnel ou d'une fumigation légère à la sauge. Posez votre question dans le silence, comme une graine confiée à la terre."
           },
           {
-            "title": "Choisis ton tirage",
-            "bodyMarkdown": "**Sève du Jour** (1 carte), **Racines et Cime** (2 cartes) ou **Équilibre des Branches** (3-4 cartes). Mélange en écoutant ton ressenti."
+            "label": "2 — Tirage",
+            "detailMarkdown": "Mélangez les cartes en visualisant votre requête. Choisissez un tirage adapté : une carte pour la **Sève du Jour**, deux pour **Racines et Cime**, ou quatre pour explorer les **Cycles de Croissance**. Laissez l'intuition guider votre main."
           },
           {
-            "title": "Reçois et intègre",
-            "bodyMarkdown": "Lis l’**Image** pour l’élan immédiat, le **Message Long** pour approfondir. Visualise, affirme, porte la carte avec toi dans la journée."
+            "label": "3 — Lecture",
+            "detailMarkdown": "Commencez par la carte Image pour l'élan immédiat, puis approfondissez avec le Message Long. Notez les sensations évoquées — mousse humide, brise légère — et les affirmations qui résonnent en vous."
+          },
+          {
+            "label": "4 — Intégration",
+            "detailMarkdown": "Glissez la carte dans son étui transparent pour l'emporter comme un talisman. Méditez-y dans la journée, visualisez sa guidance se déployer comme une branche vers le ciel. Revenez-y au soir pour ancrer les insights."
           }
         ]
-      }
+      },
+      "media": []
     }
-  ]
+  ],
+  "imagePrompts": {
+    "hero": "Majestic Tree of Life with deep roots in rich earth reaching toward luminous sky, organic growth cycles from seed to abundant fruits, warm earthy tones, mystical forest atmosphere, soft golden light filtering through leaves, serene and grounded spiritual energy"
+  }
 }

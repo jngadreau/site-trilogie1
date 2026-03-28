@@ -2,10 +2,16 @@
 export const VARIANT_TO_SPEC_REL: Record<string, string> = {
   HeroSplitImageRight: 'hero/variants/HeroSplitImageRight.spec.md',
   HeroFullBleed: 'hero/variants/HeroFullBleed.spec.md',
+  HeroGlowVault: 'hero/variants/HeroGlowVault.spec.md',
+  HeroParallaxLayers: 'hero/variants/HeroParallaxLayers.spec.md',
   IdentityPanel: 'deck_identity/variants/IdentityPanel.spec.md',
   IdentityMinimal: 'deck_identity/variants/IdentityMinimal.spec.md',
   ForWhoTwoColumns: 'for_who/variants/ForWhoTwoColumns.spec.md',
   ForWhoPillars: 'for_who/variants/ForWhoPillars.spec.md',
+  OutcomesBentoGrid: 'outcomes/variants/OutcomesBentoGrid.spec.md',
+  OutcomesSignalStrip: 'outcomes/variants/OutcomesSignalStrip.spec.md',
   HowToNumbered: 'how_to_use/variants/HowToNumbered.spec.md',
   HowToTimeline: 'how_to_use/variants/HowToTimeline.spec.md',
+  CtaMarqueeRibbon: 'cta_band/variants/CtaMarqueeRibbon.spec.md',
+  CtaSplitAction: 'cta_band/variants/CtaSplitAction.spec.md',
 };

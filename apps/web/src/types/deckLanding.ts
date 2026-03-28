@@ -15,7 +15,9 @@ export type SectionId =
   | 'hero'
   | 'deck_identity'
   | 'for_who'
+  | 'outcomes'
   | 'how_to_use'
+  | 'cta_band'
 
 export interface DeckSectionMediaSlotV1 {
   slotId: string

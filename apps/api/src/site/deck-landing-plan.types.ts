@@ -5,7 +5,9 @@ export interface DeckLandingVariantPlanV1 {
     hero: string;
     deck_identity: string;
     for_who: string;
+    outcomes: string;
     how_to_use: string;
+    cta_band: string;
   };
   /** Justification éditoriale et visuelle (Markdown). */
   rationaleMarkdown: string;

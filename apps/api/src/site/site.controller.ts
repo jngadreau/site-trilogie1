@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto';
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { RegisterDeckLandingVariantDto } from './dto/register-deck-landing-variant.dto';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Job, Queue } from 'bullmq';
 import { SiteService } from './site.service';
@@ -62,7 +63,7 @@ export class SiteController {
     return this.landingGen.generateAndSave();
   }
 
-  /** JSON landing modulaire (4 sections, variantes React) — slugs `arbre-de-vie-a` \| `b` \| `c`. */
+  /** JSON landing modulaire (6 sections, variantes React) — slug présent dans `deck-landing-variants.json`. */
   @Get('deck-landing/:slug')
   async deckLanding(@Param('slug') slug: string) {
     return this.deckModular.loadDeckLanding(slug);
@@ -72,6 +73,19 @@ export class SiteController {
   @Get('deck-landing-variants')
   async deckLandingVariants() {
     return this.deckModular.loadVariantsMap();
+  }
+
+  /** Enregistre une nouvelle combinaison de variantes React pour un slug `arbre-de-vie-…`. */
+  @Post('deck-landing-variants/register')
+  async registerDeckLandingVariant(@Body() dto: RegisterDeckLandingVariantDto) {
+    return this.deckModular.registerVariant(dto.slug, {
+      hero: dto.hero,
+      deck_identity: dto.deck_identity,
+      for_who: dto.for_who,
+      outcomes: dto.outcomes,
+      how_to_use: dto.how_to_use,
+      cta_band: dto.cta_band,
+    });
   }
 
   /** Plan Grok pour une landing (ex. `arbre-de-vie-c`) : choix des variantes + rationale. */
@@ -107,7 +121,7 @@ export class SiteController {
    */
   @Post('generate-deck-landing-pipeline/:slug')
   async generateDeckLandingPipeline(@Param('slug') slug: string) {
-    this.deckModular.ensureDeckLandingSlug(slug);
+    await this.deckModular.ensureDeckLandingSlug(slug);
     const traceId = randomUUID();
     const job = await this.deckPipelineQueue.add(
       JOB_DECK_COMPOSITION,

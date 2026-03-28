@@ -1,3 +1,5 @@
+import type { DeckLandingSectionId } from './deck-landing-section-order';
+
 /** JSON servi à `apps/web` pour composer la landing deck modulaire. */
 
 export interface DeckLandingGlobals {
@@ -37,7 +39,7 @@ export interface DeckSectionMediaSlotV1 {
 }
 
 export interface DeckLandingSection {
-  id: 'hero' | 'deck_identity' | 'for_who' | 'how_to_use';
+  id: DeckLandingSectionId;
   variant: string;
   props: Record<string, unknown>;
   /** Slots image décrits par l’IA ; tableau vide si aucun visuel. */

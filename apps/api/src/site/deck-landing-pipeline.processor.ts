@@ -8,6 +8,7 @@ import {
   JOB_DECK_FINALIZE,
   JOB_DECK_SECTION_ELEMENTS,
 } from './deck-landing-queue.constants';
+import type { DeckLandingSectionId } from './deck-landing-section-order';
 
 @Processor(DECK_LANDING_PIPELINE_QUEUE, {
   concurrency: 2,
@@ -42,7 +43,7 @@ export class DeckLandingPipelineProcessor extends WorkerHost {
       return this.orchestration.runSectionElements(
         slug,
         traceId,
-        sectionId as 'hero' | 'deck_identity' | 'for_who' | 'how_to_use',
+        sectionId as DeckLandingSectionId,
       );
     }
 

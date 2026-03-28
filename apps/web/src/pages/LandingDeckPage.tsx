@@ -1,5 +1,5 @@
 import { useEffect, useState, type CSSProperties } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { renderDeckSection } from '../sections/sectionRegistry'
 import type { DeckModularLandingV1 } from '../types/deckLanding'
 import '../styles/deck-landing.css'
@@ -70,11 +70,9 @@ export function LandingDeckPage() {
     <div className="deck-landing" style={style}>
       <header className="dl-topbar">
         <span className="dl-topbar__slug">{data.slug}</span>
-        <nav className="dl-topbar__nav" aria-label="Autres landings">
-          <a href="/deck/arbre-de-vie-a">A</a>
-          <a href="/deck/arbre-de-vie-b">B</a>
-          <a href="/deck/arbre-de-vie-c">C</a>
-          <a href="/admin">Admin</a>
+        <nav className="dl-topbar__nav" aria-label="Navigation">
+          <Link to="/">Accueil</Link>
+          <Link to="/admin">Admin</Link>
         </nav>
       </header>
       <main className="dl-main">{data.sections.map((s) => renderDeckSection(s))}</main>

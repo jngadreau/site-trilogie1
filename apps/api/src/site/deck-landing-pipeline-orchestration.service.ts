@@ -28,8 +28,12 @@ import {
   JOB_DECK_GENERATE_IMAGE,
   JOB_DECK_SECTION_ELEMENTS,
 } from './deck-landing-queue.constants';
+import {
+  DECK_LANDING_SECTION_ORDER,
+  type DeckLandingSectionId,
+} from './deck-landing-section-order';
 
-const SECTION_ORDER = ['hero', 'deck_identity', 'for_who', 'how_to_use'] as const;
+const SECTION_ORDER = DECK_LANDING_SECTION_ORDER;
 
 @Injectable()
 export class DeckLandingPipelineOrchestrationService {
@@ -49,7 +53,7 @@ export class DeckLandingPipelineOrchestrationService {
     model: string;
     sectionsEnqueued: number;
   }> {
-    this.deckModular.ensureDeckLandingSlug(slug);
+    await this.deckModular.ensureDeckLandingSlug(slug);
 
     const apiKey = this.config.get<string>('GROK_API_KEY') ?? '';
     const baseUrl = this.config.get<string>('GROK_API_URL') ?? 'https://api.x.ai/v1';
@@ -142,7 +146,7 @@ export class DeckLandingPipelineOrchestrationService {
   async runSectionElements(
     slug: string,
     traceId: string,
-    sectionId: (typeof SECTION_ORDER)[number],
+    sectionId: DeckLandingSectionId,
   ): Promise<{ model: string; finalized: boolean }> {
     const apiKey = this.config.get<string>('GROK_API_KEY') ?? '';
     const baseUrl = this.config.get<string>('GROK_API_URL') ?? 'https://api.x.ai/v1';

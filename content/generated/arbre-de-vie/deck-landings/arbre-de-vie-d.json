@@ -1,0 +1,108 @@
+{
+  "version": 1,
+  "slug": "arbre-de-vie-d",
+  "globals": {
+    "accent": "#8B7355",
+    "background": "#F8F4F0",
+    "surface": "#FDFDFB",
+    "text": "#3D2B1F",
+    "textMuted": "#6B5A4A",
+    "fontHeading": "'Playfair Display', Georgia, serif",
+    "fontBody": "'Merriweather', 'Times New Roman', serif",
+    "radius": "16px",
+    "fontImportNote": "Google Fonts: Playfair Display (headings) + Merriweather (body)",
+    "fontImportHref": "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap"
+  },
+  "sections": [
+    {
+      "id": "hero",
+      "variant": "HeroFullBleed",
+      "props": {
+        "title": "L'Oracle de l'Arbre de Vie",
+        "tagline": "Racines ancrées, branches vers l'infini",
+        "bodyMarkdown": "Un oracle canalisé de 64 cartes pour accompagner votre croissance intérieure. Inspiré de la sagesse organique de l’Arbre de Vie, il murmure des guidances intuitives au rythme de vos cycles personnels, comme un souffle forestier enveloppant.\n\n**Compagnon portable** au format marque-page avec étui transparent, pour emporter la nature dans votre quotidien.",
+        "ctaLabel": "Découvrir le deck",
+        "ctaHref": "#deck-identity",
+        "imageUrl": "/ai/generated-images/deck-arbre-de-vie-d-hero-hero.png",
+        "imageAlt": "Arbre de Vie symbolique dans forêt brumeuse, racines-terre et branches-ciel en harmonie lumineuse",
+        "overlayOpacity": 0.45
+      },
+      "media": [
+        {
+          "slotId": "hero",
+          "aspectRatio": "20:9",
+          "sceneDescription": "Un arbre de vie ancestral au cœur d'une forêt ancienne, racines puissantes s'enfonçant dans une terre riche et humide, tronc texturé couvert de mousse, branches élégantes s'élevant vers un ciel crépusculaire filtrant une lumière dorée à travers les feuillages. Brume légère au sol, composition avec espace dégagé dans le bas tiers pour overlay texte, perspective légèrement en contre-plongée pour grandeur majestueuse",
+          "mood": "cinématographique, serein, mystique, enveloppant",
+          "styleVisual": "photographie réaliste stylisée avec touches picturales douces, profondeur de champ, lumière naturelle douce",
+          "colorContext": "tons terreux chauds (#8B7355 accents), verts moussus, bruns riches (#3D2B1F), lumière dorée chaleureuse sur fond sombre pour contraste texte blanc, harmonies avec palette bois/nature",
+          "constraints": "pas de texte dans l'image, pas de personnes visibles, pas de bordures ou cadres artificiels, focus organique naturel, éviter saturation excessive",
+          "altHintFr": "Arbre de Vie symbolique dans forêt brumeuse, racines-terre et branches-ciel en harmonie lumineuse"
+        }
+      ]
+    },
+    {
+      "id": "deck_identity",
+      "variant": "IdentityPanel",
+      "props": {
+        "deckName": "L'Oracle de l'Arbre de Vie",
+        "tagline": "Racines, élévation et sagesse du vivant",
+        "bodyMarkdown": "**Un oracle canalisé de 64 cartes** inspiré de la symbolique de l’Arbre de Vie, créé par Hélène Durand (Ose Un Pas Vers Toi). Il accompagne la croissance personnelle et l’harmonie entre terre et ciel, à travers les cycles naturels de transformation.\n\n**32 cartes Images** pour une guidance intuitive immédiate, associées à **32 cartes Messages Longs** pour des conseils approfondis. Un format marque-page compact avec étui transparent, idéal pour emporter la sagesse de la nature partout.\n\n**Un compagnon ancré** dans l’intuition et la nature, pour célébrer la patience de la graine qui devient arbre, l’équilibre des dualités et la résilience des cycles vivants.",
+        "badge": "Oracle canalisé"
+      },
+      "media": []
+    },
+    {
+      "id": "for_who",
+      "variant": "ForWhoPillars",
+      "props": {
+        "title": "Pour qui cet oracle ?",
+        "introMarkdown": "L’Oracle de l’Arbre de Vie accompagne celles et ceux qui cherchent à cultiver leur croissance intérieure. Que vous soyez novice ou initié·e, il s’adapte à votre rythme, comme un arbre qui ploie sans rompre.",
+        "pillars": [
+          {
+            "title": "Quête d’équilibre émotionnel",
+            "bodyMarkdown": "Si vous traversez des transitions ou des doutes, ses cartes duo (image intuitive + message profond) vous aident à ancrer vos émotions dans la sagesse des cycles naturels. Une guidance douce pour retrouver clarté et sérénité."
+          },
+          {
+            "title": "Connexion à la nature intuitive",
+            "bodyMarkdown": "Pour les âmes attirées par les murmures du vivant — méditants, rêveurs, amoureux·ses des forêts. Laissez la sève des racines et la danse des branches réveiller votre intuition au quotidien."
+          },
+          {
+            "title": "Accompagnement en croissance",
+            "bodyMarkdown": "Idéal pour les praticien·ne·s spirituel·le·s ou en développement personnel. Intégrez-le à vos rituels : tirages mobiles en étui, méditations guidées, ou croisements avec d’autres oracles pour des lectures enrichies."
+          }
+        ]
+      },
+      "media": []
+    },
+    {
+      "id": "how_to_use",
+      "variant": "HowToNumbered",
+      "props": {
+        "title": "Comment utiliser l'Oracle de l'Arbre de Vie",
+        "introMarkdown": "En quelques instants ou dans un rituel plus long, laisse la sagesse de l'Arbre de Vie t'accompagner au quotidien.",
+        "steps": [
+          {
+            "title": "Préparer le moment",
+            "bodyMarkdown": "Trouve un espace calme, avec ton deck dans son étui transparent. Respire profondément, pose une intention simple comme « Quelle sève aujourd’hui ? ». Purifie si tu le sens : un souffle doux, une intention bienveillante ou un peu de sauge."
+          },
+          {
+            "title": "Tirer les cartes",
+            "bodyMarkdown": "Mélange les 64 cartes comme un arbre secoue ses feuilles. Choisis un tirage intuitif :\n- **Sève du Jour** : 1 carte (Image ou Message Long).\n- **Racines et Cime** : 2 cartes.\n- **Équilibre des Branches** : 3-4 cartes pour explorer un cycle.\nGlisse ta carte préférée dans l’étui pour l’emporter."
+          },
+          {
+            "title": "Accueillir le message",
+            "bodyMarkdown": "Lis le mot-clé ou le message poétique. Laisse les images sensorielles (écorce, brise, sève) résonner en toi. Note une affirmation ou visualise la guidance : émotionnelle, pratique ou spirituelle."
+          },
+          {
+            "title": "Intégrer et refermer",
+            "bodyMarkdown": "Reviens à ton souffle pour ancrer le message. Range les cartes en les remerciant. Pour approfondir, consulte le livret ou médite sur les cycles de croissance proposés."
+          }
+        ]
+      },
+      "media": []
+    }
+  ],
+  "imagePrompts": {
+    "hero": "Majestic Tree of Life in soft golden hour light, deep roots anchoring into rich earth, resilient trunk rising gracefully, branches reaching toward luminous sky, delicate leaves dancing in breeze, warm earthy tones, serene mystical atmosphere, organic growth symbolism, no text"
+  }
+}

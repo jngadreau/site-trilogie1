@@ -1,0 +1,11 @@
+/** Ordre fixe des sections pour pipeline BullMQ, Grok et validation JSON. */
+export const DECK_LANDING_SECTION_ORDER = [
+  'hero',
+  'deck_identity',
+  'for_who',
+  'outcomes',
+  'how_to_use',
+  'cta_band',
+] as const;
+
+export type DeckLandingSectionId = (typeof DECK_LANDING_SECTION_ORDER)[number];

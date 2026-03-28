@@ -6,7 +6,7 @@
 
 ## Landings existantes (à différencier)
 
-Ne reproduis **pas** la même combinaison de quatre variantes que l’une ou l’autre :
+Ne reproduis **pas** la même combinaison de **six** variantes (toutes sections) que l’une ou l’autre :
 
 ```json
 {{EXISTING_VARIANTS_A_B_JSON}}
@@ -26,10 +26,12 @@ Chaque bloc décrit **rôle visuel, données attendues, consignes pour l’IA**.
 
 | Section | Variantes possibles |
 |---------|---------------------|
-| `hero` | `HeroSplitImageRight`, `HeroFullBleed` |
+| `hero` | `HeroSplitImageRight`, `HeroFullBleed`, `HeroGlowVault`, `HeroParallaxLayers` |
 | `deck_identity` | `IdentityPanel`, `IdentityMinimal` |
 | `for_who` | `ForWhoTwoColumns`, `ForWhoPillars` |
+| `outcomes` | `OutcomesBentoGrid`, `OutcomesSignalStrip` |
 | `how_to_use` | `HowToNumbered`, `HowToTimeline` |
+| `cta_band` | `CtaMarqueeRibbon`, `CtaSplitAction` |
 
 ---
 
@@ -43,7 +45,9 @@ Chaque bloc décrit **rôle visuel, données attendues, consignes pour l’IA**.
     "hero": "…",
     "deck_identity": "…",
     "for_who": "…",
-    "how_to_use": "…"
+    "outcomes": "…",
+    "how_to_use": "…",
+    "cta_band": "…"
   },
   "rationaleMarkdown": "…"
 }

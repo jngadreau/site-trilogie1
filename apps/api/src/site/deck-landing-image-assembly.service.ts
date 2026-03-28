@@ -2,6 +2,30 @@ import { Injectable } from '@nestjs/common';
 import type { DeckLandingGlobals } from './deck-modular-landing.types';
 import type { DeckSectionMediaSlotV1 } from './deck-modular-landing.types';
 
+/** Valeurs acceptées par l’API Grok Imagine (`aspect_ratio`). */
+const GROK_IMAGINE_ASPECT_RATIOS = new Set([
+  '1:1',
+  '3:4',
+  '4:3',
+  '9:16',
+  '16:9',
+  '2:3',
+  '3:2',
+  '9:19.5',
+  '19.5:9',
+  '9:20',
+  '20:9',
+  '1:2',
+  '2:1',
+  'auto',
+]);
+
+/** Ratios parfois produits par Grok / specs mais non supportés par l’API. */
+const ASPECT_RATIO_ALIASES: Record<string, string> = {
+  '21:9': '20:9',
+  '18:9': '2:1',
+};
+
 /**
  * Point d’entrée unique : à partir des champs structurés (spec + sortie Grok section),
  * produit le prompt texte pour Grok Imagine et les paramètres d’appel (aspect ratio côté DTO).
@@ -42,8 +66,20 @@ export class DeckLandingImageAssemblyService {
   }
 
   resolveAspectRatio(slot: DeckSectionMediaSlotV1): string {
-    const ar = slot.aspectRatio?.trim() || '16:9';
-    return /^\d+:\d+$/.test(ar) ? ar : '16:9';
+    const trimmed = slot.aspectRatio?.trim() || '16:9';
+    const lower = trimmed.toLowerCase();
+
+    const canonical = [...GROK_IMAGINE_ASPECT_RATIOS].find((x) => x.toLowerCase() === lower);
+    if (canonical) {
+      return canonical;
+    }
+
+    const mapped = ASPECT_RATIO_ALIASES[lower];
+    if (mapped) {
+      return mapped;
+    }
+
+    return '16:9';
   }
 
   resolveOutputSlug(slug: string, sectionId: string, slotId: string): string {

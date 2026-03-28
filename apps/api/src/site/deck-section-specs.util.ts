@@ -4,14 +4,20 @@ import { VARIANT_TO_SPEC_REL } from './deck-variant-spec-paths';
 
 /** Ordre stable : par type de section puis par nom de variante. */
 const SPEC_REL_PATHS = [
-  'hero/variants/HeroSplitImageRight.spec.md',
-  'hero/variants/HeroFullBleed.spec.md',
-  'deck_identity/variants/IdentityPanel.spec.md',
+  'cta_band/variants/CtaMarqueeRibbon.spec.md',
+  'cta_band/variants/CtaSplitAction.spec.md',
   'deck_identity/variants/IdentityMinimal.spec.md',
-  'for_who/variants/ForWhoTwoColumns.spec.md',
+  'deck_identity/variants/IdentityPanel.spec.md',
   'for_who/variants/ForWhoPillars.spec.md',
+  'for_who/variants/ForWhoTwoColumns.spec.md',
+  'hero/variants/HeroFullBleed.spec.md',
+  'hero/variants/HeroGlowVault.spec.md',
+  'hero/variants/HeroParallaxLayers.spec.md',
+  'hero/variants/HeroSplitImageRight.spec.md',
   'how_to_use/variants/HowToNumbered.spec.md',
   'how_to_use/variants/HowToTimeline.spec.md',
+  'outcomes/variants/OutcomesBentoGrid.spec.md',
+  'outcomes/variants/OutcomesSignalStrip.spec.md',
 ] as const;
 
 export async function readDeckSectionSpecsBundle(sectionsRoot: string): Promise<string> {

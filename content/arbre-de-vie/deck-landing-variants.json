@@ -1,20 +1,42 @@
 {
   "arbre-de-vie-a": {
-    "hero": "HeroSplitImageRight",
+    "hero": "HeroGlowVault",
     "deck_identity": "IdentityPanel",
     "for_who": "ForWhoTwoColumns",
-    "how_to_use": "HowToNumbered"
+    "outcomes": "OutcomesBentoGrid",
+    "how_to_use": "HowToNumbered",
+    "cta_band": "CtaMarqueeRibbon"
   },
   "arbre-de-vie-b": {
-    "hero": "HeroFullBleed",
+    "hero": "HeroParallaxLayers",
     "deck_identity": "IdentityMinimal",
     "for_who": "ForWhoPillars",
-    "how_to_use": "HowToTimeline"
+    "outcomes": "OutcomesSignalStrip",
+    "how_to_use": "HowToTimeline",
+    "cta_band": "CtaSplitAction"
   },
   "arbre-de-vie-c": {
     "hero": "HeroSplitImageRight",
     "deck_identity": "IdentityMinimal",
     "for_who": "ForWhoPillars",
-    "how_to_use": "HowToNumbered"
+    "outcomes": "OutcomesBentoGrid",
+    "how_to_use": "HowToTimeline",
+    "cta_band": "CtaSplitAction"
+  },
+  "arbre-de-vie-d": {
+    "hero": "HeroGlowVault",
+    "deck_identity": "IdentityPanel",
+    "for_who": "ForWhoPillars",
+    "outcomes": "OutcomesSignalStrip",
+    "how_to_use": "HowToNumbered",
+    "cta_band": "CtaMarqueeRibbon"
+  },
+  "arbre-de-vie-e": {
+    "hero": "HeroGlowVault",
+    "deck_identity": "IdentityPanel",
+    "for_who": "ForWhoTwoColumns",
+    "outcomes": "OutcomesBentoGrid",
+    "how_to_use": "HowToNumbered",
+    "cta_band": "CtaMarqueeRibbon"
   }
 }

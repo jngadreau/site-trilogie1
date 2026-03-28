@@ -170,3 +170,34 @@
 .admin-dl__state--waiting {
   color: #b45309;
 }
+
+.admin-dl__register {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 32rem;
+}
+
+.admin-dl__register-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.admin-dl__register-row label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.admin-dl__register-row input,
+.admin-dl__register-row select {
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.admin-dl__register-actions {
+  margin-top: 0.25rem;
+}

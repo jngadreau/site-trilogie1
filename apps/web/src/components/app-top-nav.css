@@ -1,0 +1,35 @@
+.app-top-nav {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid color-mix(in srgb, #1a1a1a 10%, transparent);
+  background: color-mix(in srgb, #fff 88%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+.app-top-nav__links {
+  display: flex;
+  gap: 1.1rem;
+}
+
+.app-top-nav__links a {
+  color: #1d4ed8;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.app-top-nav__links a:hover {
+  text-decoration: underline;
+}
+
+.app-top-nav--deck {
+  border-bottom-color: color-mix(in srgb, var(--dl-text) 12%, transparent);
+  background: color-mix(in srgb, var(--dl-surface) 75%, transparent);
+}
+
+.app-top-nav--deck .app-top-nav__links a {
+  color: var(--dl-accent);
+}

@@ -1,4 +1,6 @@
 import {
+  BadRequestException,
+  ConflictException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -21,19 +23,27 @@ import type { DeckLandingVariantPlanV1 } from './deck-landing-plan.types';
 import type { DeckModularLandingV1 } from './deck-modular-landing.types';
 import { readDeckSectionSpecsBundle } from './deck-section-specs.util';
 import { extractFirstJsonObject } from './json-extract.util';
+import { DECK_LANDING_SECTION_ORDER } from './deck-landing-section-order';
 
-const ALLOWED_SLUGS = new Set(['arbre-de-vie-a', 'arbre-de-vie-b', 'arbre-de-vie-c']);
+/** Slugs deck « Arbre de vie » : préfixe + segment(s) alphanumériques tiretés. */
+const ARBRE_DE_VIE_SLUG_RE = /^arbre-de-vie-[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-/** Slugs pour lesquels on peut générer un *plan* de variantes (nouvelle combinaison). */
-const PLAN_GENERATION_SLUGS = new Set(['arbre-de-vie-c']);
+const SECTION_KEYS = DECK_LANDING_SECTION_ORDER;
 
-const SECTION_KEYS = ['hero', 'deck_identity', 'for_who', 'how_to_use'] as const;
+type SectionKey = (typeof DECK_LANDING_SECTION_ORDER)[number];
 
-const VARIANT_CHOICES: Record<(typeof SECTION_KEYS)[number], readonly string[]> = {
-  hero: ['HeroSplitImageRight', 'HeroFullBleed'],
+const VARIANT_CHOICES: Record<SectionKey, readonly string[]> = {
+  hero: [
+    'HeroSplitImageRight',
+    'HeroFullBleed',
+    'HeroGlowVault',
+    'HeroParallaxLayers',
+  ],
   deck_identity: ['IdentityPanel', 'IdentityMinimal'],
   for_who: ['ForWhoTwoColumns', 'ForWhoPillars'],
+  outcomes: ['OutcomesBentoGrid', 'OutcomesSignalStrip'],
   how_to_use: ['HowToNumbered', 'HowToTimeline'],
+  cta_band: ['CtaMarqueeRibbon', 'CtaSplitAction'],
 };
 
 @Injectable()
@@ -42,19 +52,35 @@ export class DeckModularLandingService {
 
   constructor(private readonly config: ConfigService) {}
 
-  private assertSlug(slug: string): void {
-    if (!ALLOWED_SLUGS.has(slug)) {
-      throw new NotFoundException(`Slug landing inconnu: ${slug}`);
+  private isArbreDeVieSlug(slug: string): boolean {
+    return ARBRE_DE_VIE_SLUG_RE.test(slug);
+  }
+
+  /**
+   * Slug autorisé = motif `arbre-de-vie-…` et clé présente dans `deck-landing-variants.json`.
+   */
+  private async assertSlugAllowed(
+    slug: string,
+    variantsMap?: Record<string, Record<string, string>>,
+  ): Promise<void> {
+    if (!this.isArbreDeVieSlug(slug)) {
+      throw new NotFoundException(`Slug landing invalide: ${slug}`);
+    }
+    const map = variantsMap ?? (await this.loadVariantsMap());
+    if (!map[slug]) {
+      throw new NotFoundException(
+        `Slug landing inconnu: ${slug} — absent de deck-landing-variants.json`,
+      );
     }
   }
 
   /** File d’attente BullMQ / pipeline. */
-  ensureDeckLandingSlug(slug: string): void {
-    this.assertSlug(slug);
+  async ensureDeckLandingSlug(slug: string): Promise<void> {
+    await this.assertSlugAllowed(slug);
   }
 
   async loadDeckLanding(slug: string): Promise<DeckModularLandingV1> {
-    this.assertSlug(slug);
+    await this.assertSlugAllowed(slug);
     const p = path.join(getDeckLandingsDir(), `${slug}.json`);
     let raw: string;
     try {
@@ -78,6 +104,7 @@ export class DeckModularLandingService {
   }
 
   async loadVariantPlan(slug: string): Promise<DeckLandingVariantPlanV1> {
+    await this.assertSlugAllowed(slug);
     const p = getDeckLandingPlanPath(slug);
     try {
       const raw = await readFile(p, 'utf8');
@@ -101,7 +128,10 @@ export class DeckModularLandingService {
     const landings: Record<string, { exists: boolean; bytes?: number }> = {};
     const plans: Record<string, { exists: boolean }> = {};
 
-    for (const slug of ALLOWED_SLUGS) {
+    const slugs = Object.keys(variants)
+      .filter((s) => this.isArbreDeVieSlug(s))
+      .sort();
+    for (const slug of slugs) {
       const lp = path.join(landingsDir, `${slug}.json`);
       try {
         const st = await stat(lp);
@@ -130,11 +160,8 @@ export class DeckModularLandingService {
     variantsPath: string;
     model: string;
   }> {
-    if (!PLAN_GENERATION_SLUGS.has(slug)) {
-      throw new NotFoundException(
-        `Génération de plan non prévue pour ${slug} (slugs: ${[...PLAN_GENERATION_SLUGS].join(', ')})`,
-      );
-    }
+    const variantsMap = await this.loadVariantsMap();
+    await this.assertSlugAllowed(slug, variantsMap);
 
     const apiKey = this.config.get<string>('GROK_API_KEY') ?? '';
     const baseUrl = this.config.get<string>('GROK_API_URL') ?? 'https://api.x.ai/v1';
@@ -157,7 +184,6 @@ export class DeckModularLandingService {
     const ctxSlice = deckContext.slice(0, 55_000);
 
     const specsBundle = await readDeckSectionSpecsBundle(getWebAppSectionsDir());
-    const variantsMap = await this.loadVariantsMap();
     const existingAB = {
       'arbre-de-vie-a': variantsMap['arbre-de-vie-a'],
       'arbre-de-vie-b': variantsMap['arbre-de-vie-b'],
@@ -221,6 +247,40 @@ export class DeckModularLandingService {
     return { planPath, variantsPath, model };
   }
 
+  /**
+   * Ajoute une entrée dans `deck-landing-variants.json` (slug Arbre de vie + 4 composants React).
+   */
+  async registerVariant(
+    slug: string,
+    variants: Record<string, string>,
+  ): Promise<{ variantsPath: string }> {
+    if (!this.isArbreDeVieSlug(slug)) {
+      throw new BadRequestException(`Slug invalide: ${slug}`);
+    }
+    const map = await this.loadVariantsMap();
+    if (map[slug]) {
+      throw new ConflictException(`La variante ${slug} existe déjà`);
+    }
+    for (const key of SECTION_KEYS) {
+      const v = variants[key];
+      const allowed = VARIANT_CHOICES[key];
+      if (!v || !allowed.includes(v)) {
+        throw new BadRequestException(
+          `Variante invalide pour ${key}: ${v} (attendu: ${allowed.join(' | ')})`,
+        );
+      }
+    }
+    const entry: Record<string, string> = {};
+    for (const key of SECTION_KEYS) {
+      entry[key] = variants[key]!;
+    }
+    map[slug] = entry;
+    const variantsPath = getDeckLandingVariantsPath();
+    await writeFile(variantsPath, JSON.stringify(map, null, 2) + '\n', 'utf8');
+    this.logger.log(`Registered deck variant ${slug} in ${variantsPath}`);
+    return { variantsPath };
+  }
+
   private validateVariantPlan(
     plan: DeckLandingVariantPlanV1,
     variantsMap: Record<string, Record<string, string>>,
@@ -258,7 +318,7 @@ export class DeckModularLandingService {
     model: string;
     sections: number;
   }> {
-    this.assertSlug(slug);
+    await this.assertSlugAllowed(slug);
     const apiKey = this.config.get<string>('GROK_API_KEY') ?? '';
     const baseUrl = this.config.get<string>('GROK_API_URL') ?? 'https://api.x.ai/v1';
     const model =
@@ -315,7 +375,7 @@ export class DeckModularLandingService {
     const completion = await client.chat.completions.create({
       model,
       temperature: 0.45,
-      max_tokens: 12_000,
+      max_tokens: 16_000,
       messages: [
         { role: 'system', content: system },
         { role: 'user', content: userTpl },
@@ -344,8 +404,8 @@ export class DeckModularLandingService {
       doc.slug = slug;
     }
     const ids = doc.sections?.map((s) => s.id) ?? [];
-    const expected = ['hero', 'deck_identity', 'for_who', 'how_to_use'];
-    if (ids.length !== 4 || expected.some((id, i) => ids[i] !== id)) {
+    const expected = [...DECK_LANDING_SECTION_ORDER];
+    if (ids.length !== expected.length || expected.some((id, i) => ids[i] !== id)) {
       throw new InternalServerErrorException(
         `Sections invalides (attendu ordre ${expected.join(',')}, reçu ${ids.join(',')})`,
       );

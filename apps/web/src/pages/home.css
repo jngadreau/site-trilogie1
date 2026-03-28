@@ -1,0 +1,84 @@
+.home-page {
+  min-height: 100vh;
+  font-family: system-ui, sans-serif;
+  color: #141414;
+  background: linear-gradient(165deg, #f8f6f3 0%, #eef2f7 45%, #e8eef6 100%);
+}
+
+.home-page__main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 1.25rem 3rem;
+}
+
+.home-page__intro {
+  margin: 0 0 1.75rem;
+}
+
+.home-page__intro h1 {
+  font-size: 1.35rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.35rem;
+}
+
+.home-page__intro p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #4a4a4a;
+}
+
+.home-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.home-card {
+  display: block;
+  padding: 1.1rem 1.15rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid color-mix(in srgb, #1a3a5c 12%, transparent);
+  box-shadow: 0 1px 2px color-mix(in srgb, #000 6%, transparent);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
+}
+
+.home-card:hover {
+  border-color: color-mix(in srgb, #2563eb 35%, transparent);
+  box-shadow: 0 6px 20px color-mix(in srgb, #2563eb 12%, transparent);
+  transform: translateY(-1px);
+}
+
+.home-card__slug {
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: ui-monospace, monospace;
+  color: #1e3a5f;
+  margin: 0 0 0.5rem;
+}
+
+.home-card__variants {
+  margin: 0;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: #555;
+  word-break: break-word;
+}
+
+.home-page__empty {
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px dashed #ccc;
+}
+
+.home-page__err {
+  color: #b91c1c;
+  font-size: 0.9rem;
+  margin: 0 0 1rem;
+}
