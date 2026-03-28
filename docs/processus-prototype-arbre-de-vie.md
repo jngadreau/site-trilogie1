@@ -2,6 +2,8 @@
 
 Ce document **affine** la vision globale ([projet-sites-jeux-cartes.md](./projet-sites-jeux-cartes.md)) pour la **première itération** : un seul jeu pilote (**L’Arbre de Vie**), avec **serveur IA tôt** et un **rendu du site sans imposer React** — le but est d’**itérer sur le contenu** et sur le **processus de création** (génération, validation, assemblage) avant de généraliser à la trilogie et au front définitif.
 
+Pour la **vision landing multi-étapes** (contexte deck, catalogue de sections, layouts, édition), voir [processus-landing-deck-multi-etapes.md](./processus-landing-deck-multi-etapes.md).
+
 ---
 
 ## 1. Objectifs du prototype

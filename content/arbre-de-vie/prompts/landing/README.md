@@ -7,6 +7,8 @@
 
 Les prompts sont **génériques** (pas de nom de jeu figé) : l’univers vient des sources et du manifeste `site.manifest.json` (titre / sous-titre pour le libellé jeu).
 
+**Vision processus** (sélection de sections, layouts, génération par section, UI d’édition) : [processus-landing-deck-multi-etapes.md](../../../../docs/processus-landing-deck-multi-etapes.md).
+
 | Dossier / fichier | Rôle |
 |-------------------|------|
 | [01-system.md](./01-system.md) | Message **système** pour la **landing JSON** (rôle, contraintes, sortie unique JSON). |

@@ -168,7 +168,8 @@ export class GameContextGenerationService {
     const completion = await client.chat.completions.create({
       model,
       temperature: 0.35,
-      max_tokens: 8_000,
+      /** Contexte deck détaillé (plusieurs milliers de mots) ; ajuster si plafond modèle. */
+      max_tokens: 24_000,
       messages: [
         { role: 'system', content: system },
         { role: 'user', content: userTpl },

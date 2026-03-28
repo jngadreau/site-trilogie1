@@ -45,6 +45,7 @@ Document de suivi des tâches (mis à jour au fil des itérations). Les cases `[
 
 - Vision produit : [projet-sites-jeux-cartes.md](./projet-sites-jeux-cartes.md)
 - Processus prototype : [processus-prototype-arbre-de-vie.md](./processus-prototype-arbre-de-vie.md)
+- **Landing multi-étapes (deck, sections, layouts, UI édition)** : [processus-landing-deck-multi-etapes.md](./processus-landing-deck-multi-etapes.md)
 - Référence serveur G Nova : [reference-gnova-cv-app-server.md](./reference-gnova-cv-app-server.md)
 
 ---
