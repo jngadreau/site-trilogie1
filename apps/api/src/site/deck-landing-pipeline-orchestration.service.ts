@@ -1,4 +1,10 @@
-import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
+import { randomUUID } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
@@ -330,5 +336,52 @@ export class DeckLandingPipelineOrchestrationService {
     await this.trace.deleteTrace(traceId, [...SECTION_ORDER]);
 
     return { path: outPath, imageJobs: imageCount };
+  }
+
+  /**
+   * Reprend le **JSON landing actuel** (globals + variantes par section) et enfile uniquement
+   * les jobs « section elements » → finalize → images (pas de nouvelle composition Grok).
+   */
+  async enqueueSectionElementsFromExistingLanding(slug: string): Promise<{
+    traceId: string;
+    sectionsEnqueued: number;
+    jobIds: string[];
+  }> {
+    await this.deckModular.ensureDeckLandingSlug(slug);
+    const doc = await this.deckModular.loadDeckLanding(slug);
+    const ids = doc.sections.map((s) => s.id);
+    if (ids.length !== SECTION_ORDER.length || SECTION_ORDER.some((id, i) => ids[i] !== id)) {
+      throw new BadRequestException(
+        `Ordre des sections invalide (attendu ${SECTION_ORDER.join(',')}, reçu ${ids.join(',')}).`,
+      );
+    }
+    const variants: Record<string, string> = {};
+    for (const s of doc.sections) {
+      variants[s.id] = s.variant;
+    }
+    const traceId = randomUUID();
+    const imagePromptsJson = JSON.stringify(doc.imagePrompts ?? {});
+    await this.trace.initTrace(traceId, {
+      slug,
+      globalsJson: JSON.stringify(doc.globals),
+      variantsJson: JSON.stringify(variants),
+      imagePromptsJson,
+      expectedSections: SECTION_ORDER.length,
+    });
+    const bulk = await this.pipelineQueue.addBulk(
+      SECTION_ORDER.map((sectionId) => ({
+        name: JOB_DECK_SECTION_ELEMENTS,
+        data: { slug, traceId, sectionId },
+        opts: {
+          removeOnComplete: 50,
+          removeOnFail: 30,
+        },
+      })),
+    );
+    return {
+      traceId,
+      sectionsEnqueued: SECTION_ORDER.length,
+      jobIds: bulk.map((j) => String(j.id)),
+    };
   }
 }

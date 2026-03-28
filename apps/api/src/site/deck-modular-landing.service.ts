@@ -23,7 +23,8 @@ import type { DeckLandingVariantPlanV1 } from './deck-landing-plan.types';
 import type { DeckModularLandingV1 } from './deck-modular-landing.types';
 import { readDeckSectionSpecsBundle } from './deck-section-specs.util';
 import { extractFirstJsonObject } from './json-extract.util';
-import { DECK_LANDING_SECTION_ORDER } from './deck-landing-section-order';
+import { DECK_LANDING_SECTION_ORDER, type DeckLandingSectionId } from './deck-landing-section-order';
+import { DECK_SECTION_CATALOG_FR } from './deck-section-catalog-fr';
 
 /** Slugs deck « Arbre de vie » : préfixe + segment(s) alphanumériques tiretés. */
 const ARBRE_DE_VIE_SLUG_RE = /^arbre-de-vie-[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -51,6 +52,8 @@ const VARIANT_CHOICES: Record<SectionKey, readonly string[]> = {
   photo_gallery: ['PhotoSpotlightGrid', 'PhotoFilmstripRow'],
   faq: ['FaqAccordion', 'FaqTwoColumn'],
   creator: ['CreatorSpotlight', 'CreatorQuoteBand'],
+  testimonials: ['TestimonialStrip', 'TestimonialSpotlight'],
+  newsletter_cta: ['NewsletterInline', 'NewsletterSplit'],
   related_decks: ['RelatedDecksGrid', 'RelatedDecksInline'],
   cta_band: ['CtaMarqueeRibbon', 'CtaSplitAction'],
 };
@@ -491,6 +494,114 @@ export class DeckModularLandingService {
       path: outPath,
       model,
       sections: doc.sections.length,
+    };
+  }
+
+  /**
+   * Grok : propose une combinaison de variantes React à partir du **catalogue** (rôle de chaque section)
+   * + contexte deck. **Ne persiste rien** — appliquer via l’admin (`update`) ou copie manuelle.
+   */
+  async suggestVariantsFromCatalog(
+    slug: string,
+    brief?: string,
+  ): Promise<{
+    variants: Record<DeckLandingSectionId, string>;
+    rationaleMarkdown: string;
+    model: string;
+  }> {
+    await this.assertSlugAllowed(slug);
+
+    const apiKey = this.config.get<string>('GROK_API_KEY') ?? '';
+    const baseUrl = this.config.get<string>('GROK_API_URL') ?? 'https://api.x.ai/v1';
+    const model =
+      this.config.get<string>('GROK_DECK_LANDING_MODEL')?.trim() ||
+      this.config.get<string>('GROK_TEXT_MODEL')?.trim() ||
+      'grok-3-mini';
+
+    if (!apiKey) {
+      throw new InternalServerErrorException('GROK_API_KEY is not configured');
+    }
+
+    let deckContext = '';
+    try {
+      deckContext = await readFile(getGameContextPath(), 'utf8');
+    } catch {
+      deckContext = '(game-context.md absent)';
+    }
+    const ctxSlice = deckContext.slice(0, 50_000);
+
+    const table = SECTION_KEYS.map((key) => {
+      const allowed = VARIANT_CHOICES[key].join(', ');
+      const role = DECK_SECTION_CATALOG_FR[key];
+      return `| \`${key}\` | ${allowed} | ${role} |`;
+    }).join('\n');
+
+    const system = `Tu es expert en landing page pour un oracle / jeu de cartes.
+Réponds avec **un seul objet JSON** (aucun texte hors JSON).
+L'objet doit avoir exactement deux clés :
+- "rationaleMarkdown" : string en **français** (plusieurs phrases) expliquant les choix de variantes, le rythme de page et le public.
+- "variants" : objet avec **exactement** une entrée par identifiant de section listé par l'utilisateur. Chaque valeur doit être **exactement** l'un des noms de composant React autorisés pour cette section (chaîne identique caractère pour caractère).`;
+
+    const user = `**Slug landing** : \`${slug}\`
+
+**Contexte deck (extrait)** :
+${ctxSlice}
+
+**Brief éditeur (optionnel)** :
+${brief?.trim() ? brief.trim() : '(aucun)'}
+
+**Tableau des sections** — pour chaque \`sectionId\`, choisis **une** variante dans la colonne « Variantes autorisées ».
+
+| sectionId | Variantes autorisées | Rôle |
+| --- | --- | --- |
+${table}
+
+Rappel : toutes les clés de \`variants\` sont obligatoires : ${SECTION_KEYS.map((k) => `\`${k}\``).join(', ')}.`;
+
+    const client = new OpenAI({ apiKey, baseURL: baseUrl });
+    this.logger.log(`Grok suggest-catalog slug=${slug}`);
+
+    const completion = await client.chat.completions.create({
+      model,
+      temperature: 0.45,
+      max_tokens: 6_000,
+      messages: [
+        { role: 'system', content: system },
+        { role: 'user', content: user },
+      ],
+    });
+
+    const raw = completion.choices[0]?.message?.content;
+    if (!raw?.trim()) {
+      throw new InternalServerErrorException('Réponse Grok vide');
+    }
+
+    let parsed: { rationaleMarkdown?: string; variants?: Record<string, string> };
+    try {
+      parsed = JSON.parse(extractFirstJsonObject(raw)) as typeof parsed;
+    } catch (e) {
+      this.logger.error(`suggest-catalog JSON: ${(e as Error).message}`);
+      throw new InternalServerErrorException('Réponse Grok non JSON valide');
+    }
+
+    if (!parsed.variants || typeof parsed.rationaleMarkdown !== 'string') {
+      throw new InternalServerErrorException('JSON incomplet (variants + rationaleMarkdown requis)');
+    }
+
+    for (const key of SECTION_KEYS) {
+      const v = parsed.variants[key];
+      const allowed = VARIANT_CHOICES[key];
+      if (!v || !allowed.includes(v)) {
+        throw new BadRequestException(
+          `Grok a proposé une variante invalide pour ${key}: ${v} (attendu: ${allowed.join(' | ')})`,
+        );
+      }
+    }
+
+    return {
+      variants: parsed.variants as Record<DeckLandingSectionId, string>,
+      rationaleMarkdown: parsed.rationaleMarkdown,
+      model,
     };
   }
 }

@@ -243,6 +243,32 @@
       "media": []
     },
     {
+      "id": "testimonials",
+      "variant": "TestimonialSpotlight",
+      "props": {
+        "sectionTitle": "Témoignage",
+        "introMarkdown": "Une voix qui résume l’expérience du jeu.",
+        "quoteMarkdown": "*« Je reviens à ce jeu quand le monde va trop vite — c’est une pause respirable. »*",
+        "name": "Marie",
+        "roleLine": "Joueur·se depuis 2024",
+        "imageUrl": "/ai/generated-images/banner-1.png",
+        "imageAlt": "Portrait placeholder"
+      },
+      "media": []
+    },
+    {
+      "id": "newsletter_cta",
+      "variant": "NewsletterInline",
+      "props": {
+        "sectionTitle": "Reste informé·e",
+        "bodyMarkdown": "**Un e-mail de temps en temps** : nouveaux tirages, éditions limitées, sans spam.",
+        "fieldLabel": "Ton e-mail",
+        "buttonLabel": "S’inscrire",
+        "footnoteMarkdown": "Tu peux te désinscrire en un clic. Politique de confidentialité sur le site Créaticards."
+      },
+      "media": []
+    },
+    {
       "id": "related_decks",
       "variant": "RelatedDecksGrid",
       "props": {

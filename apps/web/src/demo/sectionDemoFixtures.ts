@@ -592,6 +592,69 @@ export const SECTION_DEMO_FIXTURES: Record<DeckSectionKey, SectionDemoBlock[]> =
       },
     },
   ],
+  testimonials: [
+    {
+      variant: 'TestimonialStrip',
+      label: 'TestimonialStrip',
+      props: {
+        sectionTitle: 'Ce qu’en disent les joueurs',
+        introMarkdown: 'Quelques voix après des semaines d’usage — **sans mise en scène**.',
+        quotes: [
+          {
+            quoteMarkdown:
+              '« Une **douceur** rare : les cartes m’aident à poser des mots sur l’indicible. »',
+            name: 'Claire',
+            role: 'Paris',
+          },
+          {
+            quoteMarkdown: '« Le format marque-page change tout pour mon rituel du matin. »',
+            name: 'Sam',
+            role: 'Bruxelles',
+          },
+        ],
+      },
+    },
+    {
+      variant: 'TestimonialSpotlight',
+      label: 'TestimonialSpotlight',
+      props: {
+        sectionTitle: 'Un témoignage',
+        introMarkdown: 'Une expérience qui résume l’esprit du jeu.',
+        quoteMarkdown:
+          '*« Je reviens à cet oracle quand le monde va trop vite — c’est une pause **respirable**. »*',
+        name: 'Marie',
+        roleLine: 'Depuis 2024',
+        imageUrl: DEMO_HERO_IMAGE,
+        imageAlt: 'Portrait placeholder démo',
+      },
+    },
+  ],
+  newsletter_cta: [
+    {
+      variant: 'NewsletterInline',
+      label: 'NewsletterInline',
+      props: {
+        sectionTitle: 'Reste informé·e',
+        bodyMarkdown:
+          '**Un e-mail de temps en temps** : nouveaux tirages, éditions, sans spam.',
+        fieldLabel: 'Ton e-mail',
+        buttonLabel: 'S’inscrire',
+        footnoteMarkdown: 'Désinscription en un clic. Politique de confidentialité sur le site éditeur.',
+      },
+    },
+    {
+      variant: 'NewsletterSplit',
+      label: 'NewsletterSplit',
+      props: {
+        sectionTitle: 'La lettre de l’oracle',
+        leadMarkdown:
+          'Recevoir des **invitations douces** aux ateliers et aux nouveautés de la trilogie.',
+        fieldLabel: 'E-mail',
+        buttonLabel: 'Je m’inscris',
+        asideMarkdown: 'En moyenne **un message par mois** — pas de déluge.',
+      },
+    },
+  ],
   related_decks: [
     {
       variant: 'RelatedDecksGrid',

@@ -246,6 +246,39 @@
       "media": []
     },
     {
+      "id": "testimonials",
+      "variant": "TestimonialStrip",
+      "props": {
+        "sectionTitle": "Ce qu’en disent les joueurs",
+        "introMarkdown": "Retours authentiques après usage du jeu.",
+        "quotes": [
+          {
+            "quoteMarkdown": "« Une **douceur** rare — les cartes m’aident à poser des mots sur l’indicible. »",
+            "name": "Claire",
+            "role": "Paris"
+          },
+          {
+            "quoteMarkdown": "« Le format marque-page change tout pour mon rituel du matin. »",
+            "name": "Sam",
+            "role": "Bruxelles"
+          }
+        ]
+      },
+      "media": []
+    },
+    {
+      "id": "newsletter_cta",
+      "variant": "NewsletterInline",
+      "props": {
+        "sectionTitle": "Reste informé·e",
+        "bodyMarkdown": "**Un e-mail de temps en temps** : nouveaux tirages, éditions limitées, sans spam.",
+        "fieldLabel": "Ton e-mail",
+        "buttonLabel": "S’inscrire",
+        "footnoteMarkdown": "Tu peux te désinscrire en un clic. Politique de confidentialité sur le site Créaticards."
+      },
+      "media": []
+    },
+    {
       "id": "related_decks",
       "variant": "RelatedDecksGrid",
       "props": {

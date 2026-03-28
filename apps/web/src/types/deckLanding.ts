@@ -22,6 +22,8 @@ export type SectionId =
   | 'photo_gallery'
   | 'faq'
   | 'creator'
+  | 'testimonials'
+  | 'newsletter_cta'
   | 'related_decks'
   | 'cta_band'
 
@@ -44,6 +46,14 @@ export interface DeckLandingSection {
   media?: DeckSectionMediaSlotV1[]
 }
 
+export interface LandingImageHistoryEntryV1 {
+  id: string
+  imageUrl: string
+  prompt: string
+  model?: string
+  createdAt: string
+}
+
 export interface DeckModularLandingV1 {
   version: 1
   slug: string
@@ -53,4 +63,5 @@ export interface DeckModularLandingV1 {
   imagePrompts?: {
     hero?: string
   }
+  imageHistory?: Record<string, LandingImageHistoryEntryV1[]>
 }

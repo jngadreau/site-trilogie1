@@ -278,6 +278,39 @@
       "media": []
     },
     {
+      "id": "testimonials",
+      "variant": "TestimonialStrip",
+      "props": {
+        "sectionTitle": "Ce qu’en disent les joueurs",
+        "introMarkdown": "Retours authentiques après usage du jeu.",
+        "quotes": [
+          {
+            "quoteMarkdown": "« Une **douceur** rare — les cartes m’aident à poser des mots sur l’indicible. »",
+            "name": "Claire",
+            "role": "Paris"
+          },
+          {
+            "quoteMarkdown": "« Le format marque-page change tout pour mon rituel du matin. »",
+            "name": "Sam",
+            "role": "Bruxelles"
+          }
+        ]
+      },
+      "media": []
+    },
+    {
+      "id": "newsletter_cta",
+      "variant": "NewsletterSplit",
+      "props": {
+        "sectionTitle": "La lettre de l’oracle",
+        "leadMarkdown": "Recevoir des **invitations douces** aux ateliers et aux nouveautés de la trilogie.",
+        "fieldLabel": "E-mail",
+        "buttonLabel": "Je m’inscris",
+        "asideMarkdown": "Pas plus d’**un message par mois** en moyenne."
+      },
+      "media": []
+    },
+    {
       "id": "related_decks",
       "variant": "RelatedDecksInline",
       "props": {

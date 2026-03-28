@@ -10,6 +10,8 @@
     "photo_gallery": "PhotoSpotlightGrid",
     "faq": "FaqAccordion",
     "creator": "CreatorSpotlight",
+    "testimonials": "TestimonialStrip",
+    "newsletter_cta": "NewsletterInline",
     "related_decks": "RelatedDecksGrid",
     "cta_band": "CtaMarqueeRibbon"
   },
@@ -24,6 +26,8 @@
     "photo_gallery": "PhotoFilmstripRow",
     "faq": "FaqTwoColumn",
     "creator": "CreatorQuoteBand",
+    "testimonials": "TestimonialSpotlight",
+    "newsletter_cta": "NewsletterSplit",
     "related_decks": "RelatedDecksInline",
     "cta_band": "CtaSplitAction"
   },
@@ -38,6 +42,8 @@
     "photo_gallery": "PhotoFilmstripRow",
     "faq": "FaqTwoColumn",
     "creator": "CreatorSpotlight",
+    "testimonials": "TestimonialStrip",
+    "newsletter_cta": "NewsletterSplit",
     "related_decks": "RelatedDecksInline",
     "cta_band": "CtaSplitAction"
   },
@@ -52,6 +58,8 @@
     "photo_gallery": "PhotoSpotlightGrid",
     "faq": "FaqAccordion",
     "creator": "CreatorQuoteBand",
+    "testimonials": "TestimonialSpotlight",
+    "newsletter_cta": "NewsletterInline",
     "related_decks": "RelatedDecksGrid",
     "cta_band": "CtaMarqueeRibbon"
   },
@@ -66,6 +74,8 @@
     "photo_gallery": "PhotoSpotlightGrid",
     "faq": "FaqAccordion",
     "creator": "CreatorSpotlight",
+    "testimonials": "TestimonialStrip",
+    "newsletter_cta": "NewsletterInline",
     "related_decks": "RelatedDecksGrid",
     "cta_band": "CtaMarqueeRibbon"
   },
@@ -80,6 +90,8 @@
     "photo_gallery": "PhotoFilmstripRow",
     "faq": "FaqAccordion",
     "creator": "CreatorQuoteBand",
+    "testimonials": "TestimonialSpotlight",
+    "newsletter_cta": "NewsletterSplit",
     "related_decks": "RelatedDecksInline",
     "cta_band": "CtaMarqueeRibbon"
   }

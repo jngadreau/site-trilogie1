@@ -27,7 +27,7 @@ S’appuie sur ces descriptions pour rédiger des **props** et des **globals** a
 
 Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck).
 
-**Ordre des sections (obligatoire)** : `hero` → `deck_identity` → `for_who` → `outcomes` → `how_to_use` → `in_the_box` → `card_gallery` → `photo_gallery` → `faq` → `creator` → `related_decks` → `cta_band`.
+**Ordre des sections (obligatoire)** : `hero` → `deck_identity` → `for_who` → `outcomes` → `how_to_use` → `in_the_box` → `card_gallery` → `photo_gallery` → `faq` → `creator` → `testimonials` → `newsletter_cta` → `related_decks` → `cta_band`.
 
 ```json
 {
@@ -121,6 +121,18 @@ Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck).
       "media": []
     },
     {
+      "id": "testimonials",
+      "variant": "TestimonialStrip OU TestimonialSpotlight",
+      "props": {},
+      "media": []
+    },
+    {
+      "id": "newsletter_cta",
+      "variant": "NewsletterInline OU NewsletterSplit",
+      "props": {},
+      "media": []
+    },
+    {
       "id": "related_decks",
       "variant": "RelatedDecksGrid OU RelatedDecksInline",
       "props": {},
@@ -136,7 +148,7 @@ Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck).
 }
 ```
 
-Chaque section doit inclure **`media`** : tableau d’objets slots (voir specs `.spec.md` « Slots médias ») ou `[]` si aucune image. Pour **`HeroCardsFan`**, **`HeroCardsStrip`**, **`HeroCardsMosaic`**, **`CardGalleryGrid`**, **`CardGalleryScroll`**, **`PhotoSpotlightGrid`**, **`PhotoFilmstripRow`** : `media` = **`[]`** (images dans `cards[]`, `photos[]` ou `items[]` selon la variante).
+Chaque section doit inclure **`media`** : tableau d’objets slots (voir specs `.spec.md` « Slots médias ») ou `[]` si aucune image. Pour **`HeroCardsFan`**, **`HeroCardsStrip`**, **`HeroCardsMosaic`**, **`CardGalleryGrid`**, **`CardGalleryScroll`**, **`PhotoSpotlightGrid`**, **`PhotoFilmstripRow`**, **`TestimonialStrip`**, **`NewsletterInline`**, **`NewsletterSplit`** : `media` = **`[]`** (images dans `cards[]`, `photos[]`, `items[]`, `quotes[]` ou portrait optionnel `TestimonialSpotlight` selon la variante).
 
 ### Props par variant (obligatoires)
 
@@ -189,6 +201,14 @@ Chaque section doit inclure **`media`** : tableau d’objets slots (voir specs `
 **CreatorSpotlight** : `sectionTitle`, `name`, `roleLabel`, `bodyMarkdown`, `imageUrl` / `imageAlt` (optionnels), `ctaLabel` / `ctaHref` (optionnels)
 
 **CreatorQuoteBand** : `quoteMarkdown`, `name`, `roleLine`
+
+**TestimonialStrip** : `sectionTitle`, `introMarkdown` (optionnel), `quotes` (2 à 5 `{ "quoteMarkdown", "name?", "role?" }`)
+
+**TestimonialSpotlight** : `sectionTitle`, `introMarkdown` (optionnel), `quoteMarkdown`, `name`, `roleLine` (optionnel), `imageUrl` / `imageAlt` (optionnels)
+
+**NewsletterInline** : `sectionTitle`, `bodyMarkdown`, `fieldLabel` (optionnel), `buttonLabel`, `footnoteMarkdown` (optionnel)
+
+**NewsletterSplit** : `sectionTitle`, `leadMarkdown`, `fieldLabel` (optionnel), `buttonLabel`, `asideMarkdown` (optionnel)
 
 **RelatedDecksGrid** : `sectionTitle`, `introMarkdown` (optionnel), `decks` (2 à 4 `{ "deckName", "tagline", "bodyMarkdown", "href", "ctaLabel?" }`)
 

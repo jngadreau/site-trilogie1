@@ -27,6 +27,10 @@ export const VARIANT_TO_SPEC_REL: Record<string, string> = {
   FaqTwoColumn: 'faq/variants/FaqTwoColumn.spec.md',
   CreatorSpotlight: 'creator/variants/CreatorSpotlight.spec.md',
   CreatorQuoteBand: 'creator/variants/CreatorQuoteBand.spec.md',
+  TestimonialStrip: 'testimonials/variants/TestimonialStrip.spec.md',
+  TestimonialSpotlight: 'testimonials/variants/TestimonialSpotlight.spec.md',
+  NewsletterInline: 'newsletter_cta/variants/NewsletterInline.spec.md',
+  NewsletterSplit: 'newsletter_cta/variants/NewsletterSplit.spec.md',
   RelatedDecksGrid: 'related_decks/variants/RelatedDecksGrid.spec.md',
   RelatedDecksInline: 'related_decks/variants/RelatedDecksInline.spec.md',
 };

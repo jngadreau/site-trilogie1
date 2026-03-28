@@ -7,7 +7,7 @@
 ## Landing
 
 **Slug** : `{{LANDING_SLUG}}`  
-**Sections** (ordre fixe) : `hero` → `deck_identity` → `for_who` → `outcomes` → `how_to_use` → `in_the_box` → `card_gallery` → `photo_gallery` → `faq` → `creator` → `related_decks` → `cta_band`  
+**Sections** (ordre fixe) : `hero` → `deck_identity` → `for_who` → `outcomes` → `how_to_use` → `in_the_box` → `card_gallery` → `photo_gallery` → `faq` → `creator` → `testimonials` → `newsletter_cta` → `related_decks` → `cta_band`  
 **Variantes React imposées** (ne pas les modifier) :
 
 ```json

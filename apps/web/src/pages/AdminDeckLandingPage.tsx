@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import {
   DECK_SECTION_ORDER,
   SECTION_LABELS_FR,
+  SECTION_ROLE_HINTS_FR,
   VARIANTS_BY_SECTION,
   type DeckSectionKey,
 } from '../lib/deckSectionCatalog'
@@ -41,6 +42,31 @@ type QueueJobRow = {
   finishedOn?: number
 }
 
+type SuggestCatalogResult = {
+  variants: Record<string, string>
+  rationaleMarkdown: string
+  model: string
+}
+
+type ImageStudioVersion = {
+  id: string
+  imageUrl: string
+  prompt: string
+  model?: string
+  createdAt: string
+}
+
+type ImageStudioState = {
+  slug: string
+  positions: Array<{
+    positionKey: string
+    label: string
+    currentImageUrl: string | null
+    promptInJson: string | null
+    versions: ImageStudioVersion[]
+  }>
+}
+
 export function AdminDeckLandingPage() {
   const [dashboard, setDashboard] = useState<Dashboard | null>(null)
   const [err, setErr] = useState<string | null>(null)
@@ -50,6 +76,14 @@ export function AdminDeckLandingPage() {
   const [planDoc, setPlanDoc] = useState<PlanDoc | null>(null)
   const [planErr, setPlanErr] = useState<string | null>(null)
   const [queueJobs, setQueueJobs] = useState<QueueJobRow[]>([])
+
+  const [suggestSlug, setSuggestSlug] = useState('')
+  const [suggestBrief, setSuggestBrief] = useState('')
+  const [suggestResult, setSuggestResult] = useState<SuggestCatalogResult | null>(null)
+
+  const [workSlug, setWorkSlug] = useState('')
+  const [imageStudio, setImageStudio] = useState<ImageStudioState | null>(null)
+  const [heroPromptDraft, setHeroPromptDraft] = useState('')
 
   const [newSlug, setNewSlug] = useState('arbre-de-vie-')
   const [nv, setNv] = useState<Record<DeckSectionKey, string>>(defaultNv)
@@ -92,7 +126,32 @@ export function AdminDeckLandingPage() {
     if (!dashboard) return
     const slugs = Object.keys(dashboard.variants).sort()
     setPlanViewSlug((prev) => (prev && slugs.includes(prev) ? prev : slugs[0] ?? ''))
+    setWorkSlug((prev) => (prev && slugs.includes(prev) ? prev : slugs[0] ?? ''))
+    setSuggestSlug((prev) => (prev && slugs.includes(prev) ? prev : slugs[0] ?? ''))
   }, [dashboard])
+
+  const refreshImageStudio = useCallback(() => {
+    if (!workSlug.trim()) {
+      setImageStudio(null)
+      return
+    }
+    fetch(`/site/deck-landing/${encodeURIComponent(workSlug.trim())}/image-studio`)
+      .then((r) => {
+        if (!r.ok) throw new Error(`${r.status}`)
+        return r.json()
+      })
+      .then((d: ImageStudioState) => {
+        setImageStudio(d)
+        const heroPos = d.positions?.find((p: ImageStudioState['positions'][number]) => p.positionKey === 'hero:hero')
+        const p = heroPos?.promptInJson
+        if (typeof p === 'string') setHeroPromptDraft(p)
+      })
+      .catch(() => setImageStudio(null))
+  }, [workSlug])
+
+  useEffect(() => {
+    refreshImageStudio()
+  }, [refreshImageStudio])
 
   useEffect(() => {
     if (!dashboard?.variants || !editSlug) return
@@ -212,6 +271,154 @@ export function AdminDeckLandingPage() {
     }
   }
 
+  async function runSuggestCatalog() {
+    if (!suggestSlug.trim()) {
+      setErr('Choisis un slug pour la suggestion.')
+      return
+    }
+    setBusy('suggest-catalog')
+    setMessage(null)
+    setErr(null)
+    setSuggestResult(null)
+    try {
+      const r = await fetch(
+        `/site/suggest-deck-landing-variants/${encodeURIComponent(suggestSlug.trim())}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ brief: suggestBrief.trim() || undefined }),
+        },
+      )
+      const body = (await r.json().catch(() => ({}))) as Record<string, unknown>
+      if (!r.ok) {
+        const msg = body?.message
+        throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
+      }
+      setSuggestResult({
+        variants: (body.variants as Record<string, string>) ?? {},
+        rationaleMarkdown: String(body.rationaleMarkdown ?? ''),
+        model: String(body.model ?? ''),
+      })
+      setMessage(`Suggestion Grok OK — modèle ${String(body.model ?? '')}`)
+    } catch (e) {
+      setErr((e as Error).message)
+    } finally {
+      setBusy(null)
+    }
+  }
+
+  async function applySuggestCatalog() {
+    if (!suggestResult?.variants || !suggestSlug.trim()) return
+    const payload: Record<string, string> = { slug: suggestSlug.trim() }
+    for (const k of DECK_SECTION_ORDER) {
+      const v = suggestResult.variants[k]
+      if (v) payload[k] = v
+    }
+    await postJson(
+      '/site/deck-landing-variants/update',
+      payload,
+      'apply-suggest',
+      () => `Variantes catalogue appliquées — ${suggestSlug}`,
+    )
+    setSuggestResult(null)
+  }
+
+  async function runElementsPipeline() {
+    if (!workSlug.trim()) return
+    await post(
+      `/site/generate-deck-landing-section-elements-pipeline/${encodeURIComponent(workSlug.trim())}`,
+      `elements-${workSlug}`,
+      (b) =>
+        typeof b.traceId === 'string'
+          ? `Pipeline éléments — trace ${b.traceId} (${String(b.sectionsEnqueued ?? '')} sections)`
+          : 'Pipeline éléments démarré',
+    )
+  }
+
+  async function runHeroImagine(useDraftPrompt: boolean) {
+    if (!workSlug.trim()) return
+    setBusy('hero-studio')
+    setMessage(null)
+    setErr(null)
+    try {
+      const r = await fetch(
+        `/site/generate-deck-landing-hero-image/${encodeURIComponent(workSlug.trim())}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(
+            useDraftPrompt && heroPromptDraft.trim() ? { prompt: heroPromptDraft.trim() } : {},
+          ),
+        },
+      )
+      const body = (await r.json().catch(() => ({}))) as Record<string, unknown>
+      if (!r.ok) {
+        const msg = body?.message
+        throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
+      }
+      setMessage(`Imagine hero OK — ${String(body.imageUrl ?? '')}`)
+      refresh()
+      refreshImageStudio()
+    } catch (e) {
+      setErr((e as Error).message)
+    } finally {
+      setBusy(null)
+      refreshJobs()
+    }
+  }
+
+  async function runAlternateHeroPrompt() {
+    if (!workSlug.trim()) return
+    setBusy('hero-alt-prompt')
+    setErr(null)
+    try {
+      const r = await fetch(
+        `/site/deck-landing/${encodeURIComponent(workSlug.trim())}/hero-image/alternate-prompt`,
+        { method: 'POST' },
+      )
+      const body = (await r.json().catch(() => ({}))) as Record<string, unknown>
+      if (!r.ok) {
+        const msg = body?.message
+        throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
+      }
+      const alt = body.suggestedPrompt
+      if (typeof alt === 'string') setHeroPromptDraft(alt)
+      setMessage('Prompt alternatif proposé par Grok (modifiable avant Imagine).')
+    } catch (e) {
+      setErr((e as Error).message)
+    } finally {
+      setBusy(null)
+    }
+  }
+
+  async function selectHistoryVersion(positionKey: string, versionId: string) {
+    if (!workSlug.trim()) return
+    setBusy('select-history')
+    setErr(null)
+    try {
+      const r = await fetch(
+        `/site/deck-landing/${encodeURIComponent(workSlug.trim())}/image-history/select`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ positionKey, versionId }),
+        },
+      )
+      const body = (await r.json().catch(() => ({}))) as Record<string, unknown>
+      if (!r.ok) {
+        const msg = body?.message
+        throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
+      }
+      setMessage('Version réactivée dans le JSON.')
+      refresh()
+      refreshImageStudio()
+    } catch (e) {
+      setErr((e as Error).message)
+    } finally {
+      setBusy(null)
+    }
+  }
+
   async function submitNewVariant(e: FormEvent) {
     e.preventDefault()
     await postJson(
@@ -289,9 +496,209 @@ export function AdminDeckLandingPage() {
       </section>
 
       <section className="admin-dl__section">
+        <h2>Suggestion Grok (catalogue des sections)</h2>
+        <p className="admin-dl__muted">
+          Grok lit le **rôle** de chaque type de section (voir le catalogue ci-dessous) + le contexte deck, puis propose une combinaison de
+          variantes React. Tu peux ensuite enregistrer avec « Appliquer » et enchaîner avec **Plan Grok**, **Pipeline** ou **Grok → JSON** comme
+          d’habitude.
+        </p>
+        <details className="admin-dl__details">
+          <summary>Catalogue — description courte par type de section</summary>
+          <ul className="admin-dl__catalog">
+            {DECK_SECTION_ORDER.map((key) => (
+              <li key={key}>
+                <strong>{SECTION_LABELS_FR[key]}</strong> (<code>{key}</code>) — {SECTION_ROLE_HINTS_FR[key]}
+              </li>
+            ))}
+          </ul>
+        </details>
+        {!dashboard || slugsSorted.length === 0 ? (
+          <p className="admin-dl__muted">Aucun slug.</p>
+        ) : (
+          <div className="admin-dl__suggest">
+            <div className="admin-dl__register-row">
+              <label htmlFor="suggest-slug">Slug</label>
+              <select
+                id="suggest-slug"
+                value={suggestSlug}
+                onChange={(e) => setSuggestSlug(e.target.value)}
+              >
+                {slugsSorted.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="admin-dl__register-row admin-dl__register-row--stack">
+              <label htmlFor="suggest-brief">Brief éditeur (optionnel)</label>
+              <textarea
+                id="suggest-brief"
+                rows={3}
+                value={suggestBrief}
+                onChange={(e) => setSuggestBrief(e.target.value)}
+                placeholder="Ex. ton plus méditatif, public débutant, mettre l’accent sur la trilogie…"
+              />
+            </div>
+            <div className="admin-dl__register-actions">
+              <button type="button" disabled={!!busy} onClick={() => runSuggestCatalog()}>
+                {busy === 'suggest-catalog' ? '…' : 'Demander les variantes à Grok'}
+              </button>
+              <button
+                type="button"
+                disabled={!!busy || !suggestResult}
+                onClick={() => applySuggestCatalog()}
+              >
+                {busy === 'apply-suggest' ? '…' : 'Appliquer à deck-landing-variants.json'}
+              </button>
+            </div>
+            {suggestResult ? (
+              <div className="admin-dl__suggest-out">
+                <h3 className="admin-dl__h3">Rationale</h3>
+                <Markdown text={suggestResult.rationaleMarkdown} />
+                <h3 className="admin-dl__h3">Variantes proposées</h3>
+                <pre className="admin-dl__pre admin-dl__pre--small">
+                  {JSON.stringify(suggestResult.variants, null, 2)}
+                </pre>
+              </div>
+            ) : null}
+          </div>
+        )}
+      </section>
+
+      <section className="admin-dl__section">
+        <h2>Landing de travail — pipeline éléments & studio image hero</h2>
+        <p className="admin-dl__muted">
+          Choisis une landing : régénère **uniquement** le contenu des sections (sans nouvelle composition Grok des globals) puis gère la bannière
+          hero (prompt visible, historique des PNG, sélection d’une version).
+        </p>
+        {!dashboard || slugsSorted.length === 0 ? (
+          <p className="admin-dl__muted">Aucun slug.</p>
+        ) : (
+          <div className="admin-dl__work">
+            <div className="admin-dl__register-row">
+              <label htmlFor="work-slug">Slug focal</label>
+              <select id="work-slug" value={workSlug} onChange={(e) => setWorkSlug(e.target.value)}>
+                {slugsSorted.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="admin-dl__register-actions">
+              <button
+                type="button"
+                disabled={!!busy || !workSlug}
+                title="Section elements → finalize → Imagine (sans job composition)"
+                onClick={() => runElementsPipeline()}
+              >
+                {busy === `elements-${workSlug}` ? '…' : 'Pipeline : éléments seulement'}
+              </button>
+            </div>
+            <div className="admin-dl__studio">
+              <h3 className="admin-dl__h3">Studio bannière hero</h3>
+              <p className="admin-dl__muted">
+                Prompt envoyé à Imagine (anglais). Laisse vide pour le comportement API par défaut (slot média, JSON ou synthèse Grok).
+              </p>
+              <textarea
+                className="admin-dl__prompt"
+                rows={5}
+                value={heroPromptDraft}
+                onChange={(e) => setHeroPromptDraft(e.target.value)}
+                spellCheck={false}
+              />
+              <div className="admin-dl__register-actions admin-dl__register-actions--wrap">
+                <button
+                  type="button"
+                  disabled={!!busy || !workSlug}
+                  onClick={() => runHeroImagine(false)}
+                >
+                  {busy === 'hero-studio' ? '…' : 'Imagine (prompt auto / JSON)'}
+                </button>
+                <button
+                  type="button"
+                  disabled={!!busy || !workSlug}
+                  onClick={() => runHeroImagine(true)}
+                >
+                  Imagine avec le texte ci-dessus
+                </button>
+                <button
+                  type="button"
+                  disabled={!!busy || !workSlug}
+                  onClick={() => runAlternateHeroPrompt()}
+                >
+                  {busy === 'hero-alt-prompt' ? '…' : 'Grok : prompt alternatif'}
+                </button>
+              </div>
+              {imageStudio?.positions?.length ? (
+                <div className="admin-dl__history">
+                  {imageStudio.positions.map((pos: ImageStudioState['positions'][number]) => (
+                    <div key={pos.positionKey}>
+                      <p className="admin-dl__muted">
+                        <strong>{pos.label}</strong> — <code>{pos.positionKey}</code>
+                        {pos.currentImageUrl ? (
+                          <>
+                            {' '}
+                            · actuel :{' '}
+                            <a href={pos.currentImageUrl} target="_blank" rel="noreferrer">
+                              voir
+                            </a>
+                          </>
+                        ) : null}
+                      </p>
+                      {pos.versions.length === 0 ? (
+                        <p className="admin-dl__muted">Aucune version en historique encore.</p>
+                      ) : (
+                        <ul className="admin-dl__history-grid">
+                          {pos.versions.map((v: ImageStudioVersion) => {
+                            const isCurrent = v.imageUrl === pos.currentImageUrl
+                            return (
+                              <li key={v.id} className="admin-dl__history-card">
+                                <a href={v.imageUrl} target="_blank" rel="noreferrer" className="admin-dl__history-thumb-wrap">
+                                  <img src={v.imageUrl} alt="" className="admin-dl__history-thumb" />
+                                </a>
+                                <p className="admin-dl__history-meta">
+                                  {new Date(v.createdAt).toLocaleString()}
+                                  {v.model ? ` · ${v.model}` : ''}
+                                  {isCurrent ? (
+                                    <>
+                                      {' '}
+                                      · <span className="admin-dl__pill">affiché</span>
+                                    </>
+                                  ) : null}
+                                </p>
+                                {v.prompt ? (
+                                  <pre className="admin-dl__pre admin-dl__pre--tiny">{v.prompt}</pre>
+                                ) : null}
+                                <button
+                                  type="button"
+                                  className="admin-dl__history-select"
+                                  disabled={!!busy || isCurrent}
+                                  onClick={() => selectHistoryVersion(pos.positionKey, v.id)}
+                                >
+                                  {busy === 'select-history' ? '…' : 'Utiliser cette version'}
+                                </button>
+                              </li>
+                            )
+                          })}
+                        </ul>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : workSlug ? (
+                <p className="admin-dl__muted">Chargement du studio…</p>
+              ) : null}
+            </div>
+          </div>
+        )}
+      </section>
+
+      <section className="admin-dl__section">
         <h2>Nouvelle variante (slug Arbre de vie)</h2>
         <p className="admin-dl__muted">
-          Slug du type <code>arbre-de-vie-e</code>, puis les douze sections (hero → galeries visuelles → FAQ → CTA). Ensuite : Grok → JSON
+          Slug du type <code>arbre-de-vie-e</code>, puis les quatorze sections (hero → … → témoignages → newsletter → CTA). Ensuite : Grok → JSON
           ou pipeline depuis le tableau ci-dessous.
         </p>
         <form className="admin-dl__register" onSubmit={submitNewVariant}>

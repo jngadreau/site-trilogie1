@@ -40,7 +40,7 @@ export class DeckLandingImageProcessor extends WorkerHost {
     const { slug, sectionId, slot, globals } = job.data;
     const prompt = this.assembly.buildImaginePrompt(slot, globals);
     const aspectRatio = this.assembly.resolveAspectRatio(slot);
-    const outputSlug = this.assembly.resolveOutputSlug(slug, sectionId, slot.slotId);
+    const outputSlug = `${this.assembly.resolveOutputSlug(slug, sectionId, slot.slotId)}-t${Date.now()}`;
 
     this.logger.log(`Imagine ${slug} ${sectionId}/${slot.slotId} ar=${aspectRatio}`);
 
@@ -53,7 +53,7 @@ export class DeckLandingImageProcessor extends WorkerHost {
     const fileName = path.basename(imagePath);
     const imageUrl = `/ai/generated-images/${fileName}`;
 
-    await this.jsonPatch.applySlotImage(slug, sectionId, slot, imageUrl);
+    await this.jsonPatch.applySlotImage(slug, sectionId, slot, imageUrl, { prompt, model });
 
     return { imageUrl, model, promptPreview: prompt.slice(0, 200) };
   }

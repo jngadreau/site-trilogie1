@@ -31,8 +31,12 @@ const SPEC_REL_PATHS = [
   'outcomes/variants/OutcomesSignalStrip.spec.md',
   'photo_gallery/variants/PhotoFilmstripRow.spec.md',
   'photo_gallery/variants/PhotoSpotlightGrid.spec.md',
+  'newsletter_cta/variants/NewsletterInline.spec.md',
+  'newsletter_cta/variants/NewsletterSplit.spec.md',
   'related_decks/variants/RelatedDecksGrid.spec.md',
   'related_decks/variants/RelatedDecksInline.spec.md',
+  'testimonials/variants/TestimonialStrip.spec.md',
+  'testimonials/variants/TestimonialSpotlight.spec.md',
 ] as const;
 
 export async function readDeckSectionSpecsBundle(sectionsRoot: string): Promise<string> {

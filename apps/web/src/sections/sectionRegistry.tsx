@@ -50,6 +50,14 @@ import { PhotoSpotlightGrid } from './photo_gallery/PhotoSpotlightGrid'
 import type { PhotoSpotlightGridProps } from './photo_gallery/PhotoSpotlightGrid'
 import { PhotoFilmstripRow } from './photo_gallery/PhotoFilmstripRow'
 import type { PhotoFilmstripRowProps } from './photo_gallery/PhotoFilmstripRow'
+import { TestimonialStrip } from './testimonials/TestimonialStrip'
+import type { TestimonialStripProps } from './testimonials/TestimonialStrip'
+import { TestimonialSpotlight } from './testimonials/TestimonialSpotlight'
+import type { TestimonialSpotlightProps } from './testimonials/TestimonialSpotlight'
+import { NewsletterInline } from './newsletter_cta/NewsletterInline'
+import type { NewsletterInlineProps } from './newsletter_cta/NewsletterInline'
+import { NewsletterSplit } from './newsletter_cta/NewsletterSplit'
+import type { NewsletterSplitProps } from './newsletter_cta/NewsletterSplit'
 
 type AnyProps =
   | HeroSplitImageRightProps
@@ -73,6 +81,10 @@ type AnyProps =
   | CardGalleryScrollProps
   | PhotoSpotlightGridProps
   | PhotoFilmstripRowProps
+  | TestimonialStripProps
+  | TestimonialSpotlightProps
+  | NewsletterInlineProps
+  | NewsletterSplitProps
 
 const registry: Record<string, ComponentType<AnyProps>> = {
   HeroSplitImageRight: HeroSplitImageRight as ComponentType<AnyProps>,
@@ -104,6 +116,10 @@ const registry: Record<string, ComponentType<AnyProps>> = {
   CardGalleryScroll: CardGalleryScroll as ComponentType<AnyProps>,
   PhotoSpotlightGrid: PhotoSpotlightGrid as ComponentType<AnyProps>,
   PhotoFilmstripRow: PhotoFilmstripRow as ComponentType<AnyProps>,
+  TestimonialStrip: TestimonialStrip as ComponentType<AnyProps>,
+  TestimonialSpotlight: TestimonialSpotlight as ComponentType<AnyProps>,
+  NewsletterInline: NewsletterInline as ComponentType<AnyProps>,
+  NewsletterSplit: NewsletterSplit as ComponentType<AnyProps>,
 }
 
 export function renderDeckSection(section: DeckLandingSection) {

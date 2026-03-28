@@ -6,7 +6,7 @@
 
 ## Landings existantes (à différencier)
 
-Ne reproduis **pas** la même combinaison de **douze** variantes (toutes sections) que l’une ou l’autre :
+Ne reproduis **pas** la même combinaison de **quatorze** variantes (toutes sections) que l’une ou l’autre :
 
 ```json
 {{EXISTING_VARIANTS_A_B_JSON}}
@@ -36,6 +36,8 @@ Chaque bloc décrit **rôle visuel, données attendues, consignes pour l’IA**.
 | `photo_gallery` | `PhotoSpotlightGrid`, `PhotoFilmstripRow` |
 | `faq` | `FaqAccordion`, `FaqTwoColumn` |
 | `creator` | `CreatorSpotlight`, `CreatorQuoteBand` |
+| `testimonials` | `TestimonialStrip`, `TestimonialSpotlight` |
+| `newsletter_cta` | `NewsletterInline`, `NewsletterSplit` |
 | `related_decks` | `RelatedDecksGrid`, `RelatedDecksInline` |
 | `cta_band` | `CtaMarqueeRibbon`, `CtaSplitAction` |
 
@@ -58,6 +60,8 @@ Chaque bloc décrit **rôle visuel, données attendues, consignes pour l’IA**.
     "photo_gallery": "…",
     "faq": "…",
     "creator": "…",
+    "testimonials": "…",
+    "newsletter_cta": "…",
     "related_decks": "…",
     "cta_band": "…"
   },

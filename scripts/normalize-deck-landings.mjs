@@ -22,6 +22,8 @@ const ORDER = [
   'photo_gallery',
   'faq',
   'creator',
+  'testimonials',
+  'newsletter_cta',
   'related_decks',
   'cta_band',
 ]
@@ -373,6 +375,50 @@ const DEFAULTS = {
       '*« Les cartes ne décident pas à ta place : elles t’aident à entendre ce que tu sais déjà un peu. »*',
     name: 'Hélène Durand',
     roleLine: 'Créatrice — Créaticards',
+  }),
+  TestimonialStrip: () => ({
+    sectionTitle: 'Ce qu’en disent les joueurs',
+    introMarkdown: 'Retours authentiques après usage du jeu.',
+    quotes: [
+      {
+        quoteMarkdown:
+          '« Une **douceur** rare — les cartes m’aident à poser des mots sur l’indicible. »',
+        name: 'Claire',
+        role: 'Paris',
+      },
+      {
+        quoteMarkdown: '« Le format marque-page change tout pour mon rituel du matin. »',
+        name: 'Sam',
+        role: 'Bruxelles',
+      },
+    ],
+  }),
+  TestimonialSpotlight: () => ({
+    sectionTitle: 'Témoignage',
+    introMarkdown: 'Une voix qui résume l’expérience du jeu.',
+    quoteMarkdown:
+      '*« Je reviens à ce jeu quand le monde va trop vite — c’est une pause respirable. »*',
+    name: 'Marie',
+    roleLine: 'Joueur·se depuis 2024',
+    imageUrl: '/ai/generated-images/banner-1.png',
+    imageAlt: 'Portrait placeholder',
+  }),
+  NewsletterInline: () => ({
+    sectionTitle: 'Reste informé·e',
+    bodyMarkdown:
+      '**Un e-mail de temps en temps** : nouveaux tirages, éditions limitées, sans spam.',
+    fieldLabel: 'Ton e-mail',
+    buttonLabel: 'S’inscrire',
+    footnoteMarkdown:
+      'Tu peux te désinscrire en un clic. Politique de confidentialité sur le site Créaticards.',
+  }),
+  NewsletterSplit: () => ({
+    sectionTitle: 'La lettre de l’oracle',
+    leadMarkdown:
+      'Recevoir des **invitations douces** aux ateliers et aux nouveautés de la trilogie.',
+    fieldLabel: 'E-mail',
+    buttonLabel: 'Je m’inscris',
+    asideMarkdown: 'Pas plus d’**un message par mois** en moyenne.',
   }),
   RelatedDecksGrid: () => ({
     sectionTitle: 'La trilogie Créaticards',

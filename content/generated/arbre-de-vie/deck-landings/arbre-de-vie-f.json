@@ -263,6 +263,32 @@
       "media": []
     },
     {
+      "id": "testimonials",
+      "variant": "TestimonialSpotlight",
+      "props": {
+        "sectionTitle": "Témoignage",
+        "introMarkdown": "Une voix qui résume l’expérience du jeu.",
+        "quoteMarkdown": "*« Je reviens à ce jeu quand le monde va trop vite — c’est une pause respirable. »*",
+        "name": "Marie",
+        "roleLine": "Joueur·se depuis 2024",
+        "imageUrl": "/ai/generated-images/banner-1.png",
+        "imageAlt": "Portrait placeholder"
+      },
+      "media": []
+    },
+    {
+      "id": "newsletter_cta",
+      "variant": "NewsletterSplit",
+      "props": {
+        "sectionTitle": "La lettre de l’oracle",
+        "leadMarkdown": "Recevoir des **invitations douces** aux ateliers et aux nouveautés de la trilogie.",
+        "fieldLabel": "E-mail",
+        "buttonLabel": "Je m’inscris",
+        "asideMarkdown": "Pas plus d’**un message par mois** en moyenne."
+      },
+      "media": []
+    },
+    {
       "id": "related_decks",
       "variant": "RelatedDecksInline",
       "props": {

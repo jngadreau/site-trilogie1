@@ -46,6 +46,15 @@ export interface DeckLandingSection {
   media?: DeckSectionMediaSlotV1[];
 }
 
+/** Entrée d’historique pour une position image `sectionId:slotId` (ex. `hero:hero`). */
+export interface LandingImageHistoryEntryV1 {
+  id: string;
+  imageUrl: string;
+  prompt: string;
+  model?: string;
+  createdAt: string;
+}
+
 export interface DeckModularLandingV1 {
   version: 1;
   slug: string;
@@ -58,4 +67,6 @@ export interface DeckModularLandingV1 {
   imagePrompts?: {
     hero?: string;
   };
+  /** Versions PNG générées par position, pour comparer / réactiver une variante. */
+  imageHistory?: Record<string, LandingImageHistoryEntryV1[]>;
 }

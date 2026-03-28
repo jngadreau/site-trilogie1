@@ -18,6 +18,8 @@ const CARD_GALLERY = ['CardGalleryGrid', 'CardGalleryScroll'] as const;
 const PHOTO_GALLERY = ['PhotoSpotlightGrid', 'PhotoFilmstripRow'] as const;
 const FAQ = ['FaqAccordion', 'FaqTwoColumn'] as const;
 const CREATOR = ['CreatorSpotlight', 'CreatorQuoteBand'] as const;
+const TESTIMONIALS = ['TestimonialStrip', 'TestimonialSpotlight'] as const;
+const NEWSLETTER = ['NewsletterInline', 'NewsletterSplit'] as const;
 const RELATED = ['RelatedDecksGrid', 'RelatedDecksInline'] as const;
 const CTA = ['CtaMarqueeRibbon', 'CtaSplitAction'] as const;
 
@@ -67,6 +69,14 @@ export class RegisterDeckLandingVariantDto {
   @IsString()
   @IsIn([...CREATOR])
   creator!: string;
+
+  @IsString()
+  @IsIn([...TESTIMONIALS])
+  testimonials!: string;
+
+  @IsString()
+  @IsIn([...NEWSLETTER])
+  newsletter_cta!: string;
 
   @IsString()
   @IsIn([...RELATED])

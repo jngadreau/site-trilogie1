@@ -2,6 +2,9 @@ import { randomUUID } from 'crypto';
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { RegisterDeckLandingVariantDto } from './dto/register-deck-landing-variant.dto';
 import { UpdateDeckLandingVariantsDto } from './dto/update-deck-landing-variants.dto';
+import { SuggestDeckLandingVariantsDto } from './dto/suggest-deck-landing-variants.dto';
+import { GenerateDeckLandingHeroImageDto } from './dto/generate-deck-landing-hero-image.dto';
+import { SelectDeckLandingHistoryImageDto } from './dto/select-deck-landing-history-image.dto';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Job, Queue } from 'bullmq';
 import { SiteService } from './site.service';
@@ -19,6 +22,8 @@ import {
   DECK_LANDING_PIPELINE_QUEUE,
   JOB_DECK_COMPOSITION,
 } from './deck-landing-queue.constants';
+import { DeckLandingPipelineOrchestrationService } from './deck-landing-pipeline-orchestration.service';
+import { DeckLandingJsonPatchService } from './deck-landing-json-patch.service';
 
 @Controller('site')
 export class SiteController {
@@ -29,6 +34,8 @@ export class SiteController {
     private readonly landingAssets: LandingAssetsService,
     private readonly deckModular: DeckModularLandingService,
     private readonly deckModularAssets: DeckModularLandingAssetsService,
+    private readonly deckPipelineOrch: DeckLandingPipelineOrchestrationService,
+    private readonly deckLandingJsonPatch: DeckLandingJsonPatchService,
     private readonly cardFan: CardFanService,
     private readonly deckCardMirror: DeckCardMirrorService,
     @InjectQueue(DECK_LANDING_PIPELINE_QUEUE)
@@ -66,7 +73,13 @@ export class SiteController {
     return this.landingGen.generateAndSave();
   }
 
-  /** JSON landing modulaire (12 sections, variantes React) — slug présent dans `deck-landing-variants.json`. */
+  /** Hero + historique PNG par position (admin « studio »). */
+  @Get('deck-landing/:slug/image-studio')
+  async deckLandingImageStudio(@Param('slug') slug: string) {
+    return this.deckModularAssets.getImageStudioState(slug);
+  }
+
+  /** JSON landing modulaire (14 sections, variantes React) — slug présent dans `deck-landing-variants.json`. */
   @Get('deck-landing/:slug')
   async deckLanding(@Param('slug') slug: string) {
     return this.deckModular.loadDeckLanding(slug);
@@ -92,6 +105,8 @@ export class SiteController {
       photo_gallery: dto.photo_gallery,
       faq: dto.faq,
       creator: dto.creator,
+      testimonials: dto.testimonials,
+      newsletter_cta: dto.newsletter_cta,
       related_decks: dto.related_decks,
       cta_band: dto.cta_band,
     });
@@ -136,6 +151,27 @@ export class SiteController {
   @Post('generate-deck-landing-variant-plan/:slug')
   async generateDeckLandingVariantPlan(@Param('slug') slug: string) {
     return this.deckModular.generateVariantPlanAndSave(slug);
+  }
+
+  /**
+   * Grok : choix des variantes à partir du **catalogue** (rôle de chaque section) + contexte deck.
+   * Ne persiste rien — appliquer via `deck-landing-variants/update` ou l’admin.
+   */
+  @Post('suggest-deck-landing-variants/:slug')
+  async suggestDeckLandingVariants(
+    @Param('slug') slug: string,
+    @Body() dto?: SuggestDeckLandingVariantsDto,
+  ) {
+    return this.deckModular.suggestVariantsFromCatalog(slug, dto?.brief);
+  }
+
+  /**
+   * Pipeline sans nouvelle composition : reprend le JSON actuel et enfile uniquement
+   * les jobs « section elements » → finalize → images Imagine.
+   */
+  @Post('generate-deck-landing-section-elements-pipeline/:slug')
+  async generateDeckLandingSectionElementsPipeline(@Param('slug') slug: string) {
+    return this.deckPipelineOrch.enqueueSectionElementsFromExistingLanding(slug);
   }
 
   /** Génère / écrase `deck-landings/{slug}.json` via Grok + prompts `deck-modular-landing/`. */
@@ -220,9 +256,29 @@ export class SiteController {
    * utilise `imagePrompts.hero` si présent sinon synthétise un prompt (Grok chat),
    * écrit un PNG sous `images/` et met à jour `hero.props.imageUrl` dans le JSON.
    */
+  @Post('deck-landing/:slug/image-history/select')
+  async selectDeckLandingHistoryImage(
+    @Param('slug') slug: string,
+    @Body() dto: SelectDeckLandingHistoryImageDto,
+  ) {
+    await this.deckLandingJsonPatch.selectHistoryImage(slug, dto.positionKey, dto.versionId);
+    return { ok: true };
+  }
+
+  @Post('deck-landing/:slug/hero-image/alternate-prompt')
+  async alternateHeroImagePrompt(@Param('slug') slug: string) {
+    return this.deckModularAssets.suggestAlternateHeroPrompt(slug);
+  }
+
   @Post('generate-deck-landing-hero-image/:slug')
-  async generateDeckLandingHeroImage(@Param('slug') slug: string) {
-    return this.deckModularAssets.generateHeroImage(slug);
+  async generateDeckLandingHeroImage(
+    @Param('slug') slug: string,
+    @Body() dto?: GenerateDeckLandingHeroImageDto,
+  ) {
+    const override = dto?.prompt?.trim();
+    return this.deckModularAssets.generateHeroImage(slug, {
+      overridePrompt: override || undefined,
+    });
   }
 
   /**

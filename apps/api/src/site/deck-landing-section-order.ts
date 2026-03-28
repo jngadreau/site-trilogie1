@@ -10,6 +10,8 @@ export const DECK_LANDING_SECTION_ORDER = [
   'photo_gallery',
   'faq',
   'creator',
+  'testimonials',
+  'newsletter_cta',
   'related_decks',
   'cta_band',
 ] as const;
