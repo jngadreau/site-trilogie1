@@ -48,10 +48,37 @@ export class SiteController {
     return this.landingGen.generateAndSave();
   }
 
-  /** JSON landing modulaire (4 sections, variantes React) — `arbre-de-vie-a` | `arbre-de-vie-b`. */
+  /** JSON landing modulaire (4 sections, variantes React) — slugs `arbre-de-vie-a` \| `b` \| `c`. */
   @Get('deck-landing/:slug')
   async deckLanding(@Param('slug') slug: string) {
     return this.deckModular.loadDeckLanding(slug);
+  }
+
+  /** Carte slug → variantes React (`content/.../deck-landing-variants.json`). */
+  @Get('deck-landing-variants')
+  async deckLandingVariants() {
+    return this.deckModular.loadVariantsMap();
+  }
+
+  /** Plan Grok pour une landing (ex. `arbre-de-vie-c`) : choix des variantes + rationale. */
+  @Get('deck-landing-variant-plan/:slug')
+  async deckLandingVariantPlan(@Param('slug') slug: string) {
+    return this.deckModular.loadVariantPlan(slug);
+  }
+
+  /** État des JSON (landings, plans) + carte des variantes — pour l’UI `/admin`. */
+  @Get('deck-modular-landing-dashboard')
+  async deckModularLandingDashboard() {
+    return this.deckModular.getModularDashboard();
+  }
+
+  /**
+   * Grok : specs de toutes les sections + contexte deck → plan variante C, mise à jour de
+   * `deck-landing-variants.json` et écriture `deck-landing-plans/{slug}.json`.
+   */
+  @Post('generate-deck-landing-variant-plan/:slug')
+  async generateDeckLandingVariantPlan(@Param('slug') slug: string) {
+    return this.deckModular.generateVariantPlanAndSave(slug);
   }
 
   /** Génère / écrase `deck-landings/{slug}.json` via Grok + prompts `deck-modular-landing/`. */

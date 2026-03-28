@@ -71,8 +71,10 @@ export function LandingDeckPage() {
       <header className="dl-topbar">
         <span className="dl-topbar__slug">{data.slug}</span>
         <nav className="dl-topbar__nav" aria-label="Autres landings">
-          <a href="/deck/arbre-de-vie-a">Variante A</a>
-          <a href="/deck/arbre-de-vie-b">Variante B</a>
+          <a href="/deck/arbre-de-vie-a">A</a>
+          <a href="/deck/arbre-de-vie-b">B</a>
+          <a href="/deck/arbre-de-vie-c">C</a>
+          <a href="/admin">Admin</a>
         </nav>
       </header>
       <main className="dl-main">{data.sections.map((s) => renderDeckSection(s))}</main>

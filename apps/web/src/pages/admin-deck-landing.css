@@ -1,0 +1,122 @@
+.admin-dl {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+  font-family: system-ui, sans-serif;
+  color: #1a1a1a;
+  line-height: 1.5;
+}
+
+.admin-dl__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.admin-dl__title {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.admin-dl__nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.admin-dl__nav a {
+  color: #2563eb;
+}
+
+.admin-dl__hint {
+  font-size: 0.9rem;
+  color: #555;
+  margin: 0 0 1rem;
+}
+
+.admin-dl__err {
+  color: #b91c1c;
+  margin: 0 0 1rem;
+}
+
+.admin-dl__ok {
+  color: #15803d;
+  margin: 0 0 1rem;
+}
+
+.admin-dl__section {
+  margin-top: 2rem;
+}
+
+.admin-dl__section h2 {
+  font-size: 1.05rem;
+  margin: 0 0 0.75rem;
+}
+
+.admin-dl__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.admin-dl__table th,
+.admin-dl__table td {
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid #e5e5e5;
+  vertical-align: top;
+}
+
+.admin-dl__mono {
+  font-size: 0.75rem;
+  word-break: break-word;
+}
+
+.admin-dl__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.admin-dl__actions button {
+  font-size: 0.8rem;
+  padding: 0.35rem 0.5rem;
+  cursor: pointer;
+}
+
+.admin-dl__muted {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.admin-dl__plan {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f8f8f8;
+  border-radius: 8px;
+}
+
+.admin-dl__plan h3 {
+  font-size: 0.95rem;
+  margin: 1rem 0 0.5rem;
+}
+
+.admin-dl__plan h3:first-child {
+  margin-top: 0;
+}
+
+.admin-dl__pre {
+  font-size: 0.8rem;
+  overflow: auto;
+  margin: 0;
+}
+
+.admin-dl .md {
+  font-size: 0.9rem;
+}
+
+.admin-dl .md p {
+  margin: 0 0 0.5rem;
+}

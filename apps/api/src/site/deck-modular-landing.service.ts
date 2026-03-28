@@ -6,18 +6,35 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
-import { mkdir, readFile, writeFile } from 'fs/promises';
+import { mkdir, readFile, stat, writeFile } from 'fs/promises';
 import * as path from 'path';
 import {
+  getDeckLandingPlansDir,
+  getDeckLandingPlanPath,
   getDeckLandingsDir,
   getDeckLandingVariantsPath,
   getDeckModularLandingPromptsDir,
   getGameContextPath,
+  getWebAppSectionsDir,
 } from '../paths';
+import type { DeckLandingVariantPlanV1 } from './deck-landing-plan.types';
 import type { DeckModularLandingV1 } from './deck-modular-landing.types';
+import { readDeckSectionSpecsBundle } from './deck-section-specs.util';
 import { extractFirstJsonObject } from './json-extract.util';
 
-const ALLOWED_SLUGS = new Set(['arbre-de-vie-a', 'arbre-de-vie-b']);
+const ALLOWED_SLUGS = new Set(['arbre-de-vie-a', 'arbre-de-vie-b', 'arbre-de-vie-c']);
+
+/** Slugs pour lesquels on peut générer un *plan* de variantes (nouvelle combinaison). */
+const PLAN_GENERATION_SLUGS = new Set(['arbre-de-vie-c']);
+
+const SECTION_KEYS = ['hero', 'deck_identity', 'for_who', 'how_to_use'] as const;
+
+const VARIANT_CHOICES: Record<(typeof SECTION_KEYS)[number], readonly string[]> = {
+  hero: ['HeroSplitImageRight', 'HeroFullBleed'],
+  deck_identity: ['IdentityPanel', 'IdentityMinimal'],
+  for_who: ['ForWhoTwoColumns', 'ForWhoPillars'],
+  how_to_use: ['HowToNumbered', 'HowToTimeline'],
+};
 
 @Injectable()
 export class DeckModularLandingService {
@@ -47,6 +64,188 @@ export class DeckModularLandingService {
     } catch {
       throw new NotFoundException(`${slug}.json invalide`);
     }
+  }
+
+  /** Carte complète slug → variantes (fichier éditorial). */
+  async loadVariantsMap(): Promise<Record<string, Record<string, string>>> {
+    const raw = await readFile(getDeckLandingVariantsPath(), 'utf8');
+    return JSON.parse(raw) as Record<string, Record<string, string>>;
+  }
+
+  async loadVariantPlan(slug: string): Promise<DeckLandingVariantPlanV1> {
+    const p = getDeckLandingPlanPath(slug);
+    try {
+      const raw = await readFile(p, 'utf8');
+      return JSON.parse(raw) as DeckLandingVariantPlanV1;
+    } catch {
+      throw new NotFoundException(`Plan absent pour ${slug} — POST …/generate-deck-landing-variant-plan/${slug}`);
+    }
+  }
+
+  /**
+   * Résumé pour l’UI admin : variantes, présence des plans et des JSON landings.
+   */
+  async getModularDashboard(): Promise<{
+    variants: Record<string, Record<string, string>>;
+    plans: Record<string, { exists: boolean }>;
+    landings: Record<string, { exists: boolean; bytes?: number }>;
+  }> {
+    const variants = await this.loadVariantsMap();
+    const landingsDir = getDeckLandingsDir();
+    const plansDir = getDeckLandingPlansDir();
+    const landings: Record<string, { exists: boolean; bytes?: number }> = {};
+    const plans: Record<string, { exists: boolean }> = {};
+
+    for (const slug of ALLOWED_SLUGS) {
+      const lp = path.join(landingsDir, `${slug}.json`);
+      try {
+        const st = await stat(lp);
+        landings[slug] = { exists: true, bytes: st.size };
+      } catch {
+        landings[slug] = { exists: false };
+      }
+      const pp = getDeckLandingPlanPath(slug);
+      try {
+        await stat(pp);
+        plans[slug] = { exists: true };
+      } catch {
+        plans[slug] = { exists: false };
+      }
+    }
+
+    return { variants, plans, landings };
+  }
+
+  /**
+   * Grok : lit toutes les specs `.md` des variantes + contexte deck + landings A/B,
+   * produit un plan (choix des 4 variantes + rationale) et met à jour `deck-landing-variants.json`.
+   */
+  async generateVariantPlanAndSave(slug: string): Promise<{
+    planPath: string;
+    variantsPath: string;
+    model: string;
+  }> {
+    if (!PLAN_GENERATION_SLUGS.has(slug)) {
+      throw new NotFoundException(
+        `Génération de plan non prévue pour ${slug} (slugs: ${[...PLAN_GENERATION_SLUGS].join(', ')})`,
+      );
+    }
+
+    const apiKey = this.config.get<string>('GROK_API_KEY') ?? '';
+    const baseUrl = this.config.get<string>('GROK_API_URL') ?? 'https://api.x.ai/v1';
+    const model =
+      this.config.get<string>('GROK_DECK_LANDING_MODEL')?.trim() ||
+      this.config.get<string>('GROK_TEXT_MODEL')?.trim() ||
+      'grok-3-mini';
+
+    if (!apiKey) {
+      throw new InternalServerErrorException('GROK_API_KEY is not configured');
+    }
+
+    let deckContext = '';
+    try {
+      deckContext = await readFile(getGameContextPath(), 'utf8');
+    } catch {
+      deckContext =
+        '(game-context.md absent — lance POST /site/generate-game-context pour un meilleur résultat)';
+    }
+    const ctxSlice = deckContext.slice(0, 55_000);
+
+    const specsBundle = await readDeckSectionSpecsBundle(getWebAppSectionsDir());
+    const variantsMap = await this.loadVariantsMap();
+    const existingAB = {
+      'arbre-de-vie-a': variantsMap['arbre-de-vie-a'],
+      'arbre-de-vie-b': variantsMap['arbre-de-vie-b'],
+    };
+
+    const promptsDir = path.join(getDeckModularLandingPromptsDir(), 'variant-plan');
+    const system = await readFile(path.join(promptsDir, '01-system.md'), 'utf8');
+    let userTpl = await readFile(path.join(promptsDir, '02-user-template.md'), 'utf8');
+
+    userTpl = userTpl
+      .replace('{{DECK_CONTEXT}}', ctxSlice)
+      .replace(/\{\{LANDING_SLUG\}\}/g, slug)
+      .replace('{{SECTION_SPECS_BUNDLE}}', specsBundle)
+      .replace('{{EXISTING_VARIANTS_A_B_JSON}}', JSON.stringify(existingAB, null, 2));
+
+    const client = new OpenAI({ apiKey, baseURL: baseUrl });
+    this.logger.log(`Grok variant-plan slug=${slug} model=${model}`);
+
+    const completion = await client.chat.completions.create({
+      model,
+      temperature: 0.4,
+      max_tokens: 8_000,
+      messages: [
+        { role: 'system', content: system },
+        { role: 'user', content: userTpl },
+      ],
+    });
+
+    const rawContent = completion.choices[0]?.message?.content;
+    if (!rawContent?.trim()) {
+      throw new InternalServerErrorException('No content from Grok API');
+    }
+
+    let plan: DeckLandingVariantPlanV1;
+    try {
+      plan = JSON.parse(extractFirstJsonObject(rawContent)) as DeckLandingVariantPlanV1;
+    } catch (e) {
+      this.logger.error(`Plan JSON parse: ${(e as Error).message}`);
+      throw new InternalServerErrorException('Réponse Grok (plan) non JSON valide');
+    }
+
+    if (plan.version !== 1) {
+      throw new InternalServerErrorException('plan.version !== 1');
+    }
+    plan.slug = slug;
+    if (!plan.variants) {
+      throw new InternalServerErrorException('plan.variants manquant');
+    }
+
+    this.validateVariantPlan(plan, variantsMap);
+
+    await mkdir(getDeckLandingPlansDir(), { recursive: true });
+    const planPath = getDeckLandingPlanPath(slug);
+    await writeFile(planPath, JSON.stringify(plan, null, 2), 'utf8');
+
+    variantsMap[slug] = { ...plan.variants };
+    const variantsPath = getDeckLandingVariantsPath();
+    await writeFile(variantsPath, JSON.stringify(variantsMap, null, 2) + '\n', 'utf8');
+    this.logger.log(`Updated ${variantsPath} and wrote ${planPath}`);
+
+    return { planPath, variantsPath, model };
+  }
+
+  private validateVariantPlan(
+    plan: DeckLandingVariantPlanV1,
+    variantsMap: Record<string, Record<string, string>>,
+  ): void {
+    for (const key of SECTION_KEYS) {
+      const v = plan.variants[key];
+      const allowed = VARIANT_CHOICES[key];
+      if (!v || !allowed.includes(v)) {
+        throw new InternalServerErrorException(
+          `Variante invalide pour ${key}: ${v} (attendu: ${allowed.join(' | ')})`,
+        );
+      }
+    }
+
+    const combo = plan.variants;
+    const a = variantsMap['arbre-de-vie-a'];
+    const b = variantsMap['arbre-de-vie-b'];
+    if (a && this.sameVariantCombo(combo, a)) {
+      throw new InternalServerErrorException('La combinaison ne doit pas être identique à arbre-de-vie-a');
+    }
+    if (b && this.sameVariantCombo(combo, b)) {
+      throw new InternalServerErrorException('La combinaison ne doit pas être identique à arbre-de-vie-b');
+    }
+  }
+
+  private sameVariantCombo(
+    x: Record<string, string>,
+    y: Record<string, string>,
+  ): boolean {
+    return SECTION_KEYS.every((k) => x[k] === y[k]);
   }
 
   async generateAndSave(slug: string): Promise<{
@@ -82,6 +281,14 @@ export class DeckModularLandingService {
       throw new InternalServerErrorException(`Pas d'entrée variants pour ${slug}`);
     }
 
+    let specsBundle = '';
+    try {
+      specsBundle = await readDeckSectionSpecsBundle(getWebAppSectionsDir());
+    } catch (e) {
+      this.logger.warn(`Specs bundle: ${(e as Error).message}`);
+      specsBundle = '(impossible de lire les specs depuis apps/web/src/sections)';
+    }
+
     const system = await readFile(
       path.join(getDeckModularLandingPromptsDir(), '01-system.md'),
       'utf8',
@@ -94,7 +301,8 @@ export class DeckModularLandingService {
     userTpl = userTpl
       .replace('{{DECK_CONTEXT}}', ctxSlice)
       .replace(/\{\{LANDING_SLUG\}\}/g, slug)
-      .replace('{{VARIANT_MAP_JSON}}', JSON.stringify(variantEntry, null, 2));
+      .replace('{{VARIANT_MAP_JSON}}', JSON.stringify(variantEntry, null, 2))
+      .replace('{{SECTION_SPECS_BUNDLE}}', specsBundle);
 
     const client = new OpenAI({ apiKey, baseURL: baseUrl });
     this.logger.log(`Grok deck-modular landing slug=${slug} model=${model}`);
@@ -136,6 +344,15 @@ export class DeckModularLandingService {
       throw new InternalServerErrorException(
         `Sections invalides (attendu ordre ${expected.join(',')}, reçu ${ids.join(',')})`,
       );
+    }
+
+    for (const s of doc.sections) {
+      const want = variantEntry[s.id];
+      if (want && s.variant !== want) {
+        throw new InternalServerErrorException(
+          `Section ${s.id}: variante « ${s.variant} » ≠ carte « ${want} » pour ${slug}`,
+        );
+      }
     }
 
     const outDir = getDeckLandingsDir();

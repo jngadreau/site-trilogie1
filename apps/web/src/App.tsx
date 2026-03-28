@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
+import { AdminDeckLandingPage } from './pages/AdminDeckLandingPage'
 import { LandingDeckPage } from './pages/LandingDeckPage'
 
 function Home() {
@@ -15,7 +16,14 @@ function Home() {
           <a href="/deck/arbre-de-vie-b">arbre-de-vie-b</a> — Hero full bleed, identité minimal, piliers,
           timeline
         </li>
+        <li>
+          <a href="/deck/arbre-de-vie-c">arbre-de-vie-c</a> — variante C (voir plan Grok +{' '}
+          <code>deck-landing-plans/arbre-de-vie-c.json</code>)
+        </li>
       </ul>
+      <p>
+        <a href="/admin">Admin — suivi Grok / JSON</a>
+      </p>
     </div>
   )
 }
@@ -24,6 +32,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/admin" element={<AdminDeckLandingPage />} />
       <Route path="/deck/:slug" element={<LandingDeckPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

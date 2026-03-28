@@ -135,3 +135,17 @@ export function getDeckModularLandingPromptsDir(): string {
 export function getDeckLandingVariantsPath(): string {
   return path.join(getSiteArbreDeVieContentDir(), 'deck-landing-variants.json');
 }
+
+/** Plans de variante (Grok) : choix des layouts + rationale. */
+export function getDeckLandingPlansDir(): string {
+  return path.join(getSiteArbreDeVieContentDir(), 'deck-landing-plans');
+}
+
+export function getDeckLandingPlanPath(slug: string): string {
+  return path.join(getDeckLandingPlansDir(), `${slug}.json`);
+}
+
+/** Racine `apps/web/src/sections` (specs `.md` des variantes React). */
+export function getWebAppSectionsDir(): string {
+  return path.resolve(process.cwd(), '..', 'web', 'src', 'sections');
+}

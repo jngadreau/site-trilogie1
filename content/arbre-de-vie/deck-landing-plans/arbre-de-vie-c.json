@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "slug": "arbre-de-vie-c",
+  "variants": {
+    "hero": "HeroSplitImageRight",
+    "deck_identity": "IdentityMinimal",
+    "for_who": "ForWhoPillars",
+    "how_to_use": "HowToTimeline"
+  },
+  "rationaleMarkdown": "**Variante C : Rythme organique et progression fluide, inspiré des cycles de l’Arbre de Vie.**\n\nLe **HeroSplitImageRight** ouvre avec équilibre et clarté : image et texte côte à côte évoquent harmonieusement racines (texte ancré) et cime (visuel évocateur), parfait pour poser l’esprit du deck sans immersion trop cinématographique qui risquerait de surcharger un public en quête de sérénité. Suivi d’**IdentityMinimal**, épuré et aérien comme une branche épurée, il condense l’essence poétique (sève, cycles naturels) sans alourdir, créant un contraste subtil avec le hero pour un rythme descendant naturel.\n\n**ForWhoPillars** structure le public en 3+ piliers distincts (méditant·e, accompagnant·e, personne en transition), rappelant les branches multiples de l’Arbre — visuellement stable et organique sur grille responsive, il cible précisément les personas du contexte (équilibre émotionnel, connexion nature) sans dualité binaire. Enfin, **HowToTimeline** conclut par une ligne du temps verticale fluide, métaphore idéale des cycles de croissance (graine → fruit), guidant intuitivement vers les rituels (Sève du Jour, Racines et Cime) avec un flux narratif poétique plutôt que linéaire numéroté.\n\n**Cohérence globale** : cette combinaison évite les existantes (a et b), privilégie un scroll **progressif et respirant** (split → minimal → piliers → timeline), aligné sur la tonalité apaisante et les dualités harmonisées du deck. Visuellement, les surfaces légères et espacements aérés renforcent l’empowerment personnel sans jargon, pour un public spirituel accessible en quête d’intuition quotidienne."
+}

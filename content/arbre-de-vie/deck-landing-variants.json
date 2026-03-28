@@ -10,5 +10,11 @@
     "deck_identity": "IdentityMinimal",
     "for_who": "ForWhoPillars",
     "how_to_use": "HowToTimeline"
+  },
+  "arbre-de-vie-c": {
+    "hero": "HeroSplitImageRight",
+    "deck_identity": "IdentityMinimal",
+    "for_who": "ForWhoPillars",
+    "how_to_use": "HowToTimeline"
   }
 }

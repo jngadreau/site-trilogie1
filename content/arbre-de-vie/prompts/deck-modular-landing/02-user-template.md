@@ -15,6 +15,14 @@
 
 ---
 
+## Specs détaillées des variantes (Markdown)
+
+S’appuie sur ces descriptions pour rédiger des **props** et des **globals** alignés (ton, longueur, overlay, structure des listes / piliers / étapes).
+
+{{SECTION_SPECS_BUNDLE}}
+
+---
+
 ## Schéma JSON exact à produire
 
 Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck) :
@@ -80,4 +88,5 @@ Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck) 
 
 ---
 
-Remplis `variant` et `props` conformément à la carte des variantes pour **{{LANDING_SLUG}}**. Réponds **uniquement** avec le JSON.
+Remplis `variant` et `props` conformément à la carte des variantes pour **{{LANDING_SLUG}}**.  
+**Obligatoire :** pour chaque objet dans `sections`, le champ `variant` doit être **exactement identique** à la valeur correspondante dans le JSON « Variantes imposées » ci-dessus (même chaîne, caractère pour caractère). Réponds **uniquement** avec le JSON.

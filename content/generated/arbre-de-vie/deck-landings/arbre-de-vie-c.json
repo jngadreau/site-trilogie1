@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "slug": "arbre-de-vie-c",
+  "globals": {
+    "accent": "#4a6fa5",
+    "background": "#faf8f5",
+    "surface": "#ffffff",
+    "text": "#1c1a18",
+    "textMuted": "#6b6560",
+    "fontHeading": "'Libre Baskerville', Georgia, serif",
+    "fontBody": "'Nunito Sans', system-ui, sans-serif",
+    "radius": "12px",
+    "fontImportNote": "Libre Baskerville + Nunito Sans",
+    "fontImportHref": "https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Nunito+Sans:ital,wght@0,400;0,600;1,400&display=swap"
+  },
+  "sections": [
+    {
+      "id": "hero",
+      "variant": "HeroSplitImageRight",
+      "props": {
+        "title": "Arbre de vie — variante C",
+        "subtitle": "Clarté douce, cartes en appui",
+        "bodyMarkdown": "Une même clé : **ralentir**, tirer une carte, laisser l’image faire son chemin. Ici le visuel et le texte **côte à côte** : tu vois le jeu avant même de défiler.",
+        "ctaLabel": "Lire l’essentiel",
+        "ctaHref": "#identite",
+        "imageUrl": "/ai/generated-images/banner-1.png",
+        "imageAlt": "Composition calme, arbre et lumière tamisée sur fond crème"
+      }
+    },
+    {
+      "id": "deck_identity",
+      "variant": "IdentityMinimal",
+      "props": {
+        "eyebrow": "Oracle · 52 cartes",
+        "title": "Ni oracle figé, ni devinette",
+        "oneLiner": "Un **langage symbolique** pour nommer ce que tu traverses — avec des mots du quotidien, des images naturelles, et la liberté de t’arrêter quand ça suffit."
+      }
+    },
+    {
+      "id": "for_who",
+      "variant": "ForWhoPillars",
+      "props": {
+        "title": "Trois portes vers le jeu",
+        "introMarkdown": "Tu peux t’y retrouver sous plusieurs formes : l’important est que la carte serve de **miroir**, pas de verdict.",
+        "pillars": [
+          {
+            "title": "En quête de repères",
+            "bodyMarkdown": "Tu veux **une phrase**, une image, un angle neuf sur une situation qui tourne en boucle — sans tout analyser pendant des heures."
+          },
+          {
+            "title": "Déjà en pratique introspective",
+            "bodyMarkdown": "Journal, thérapie, méditation : le deck devient un **objet transition** entre séance et quotidien, concret et poétique."
+          },
+          {
+            "title": "Accompagnant·e",
+            "bodyMarkdown": "Tu proposes un cadre : les cartes **ouvrent la parole** et désamorcent le blocage « je ne sais pas quoi dire »."
+          }
+        ]
+      }
+    },
+    {
+      "id": "how_to_use",
+      "variant": "HowToTimeline",
+      "props": {
+        "title": "Un fil du temps, du silence à la carte",
+        "introMarkdown": "Comme une **sève** qui monte : pas besoin d’aller vite. Ce déroulé est une boussole, pas une règle.",
+        "steps": [
+          {
+            "label": "0 — Racines",
+            "detailMarkdown": "Pose le jeu, ferme les yeux un instant. **Une question** ou un mot suffit : « qu’est-ce qui me tient debout aujourd’hui ? »"
+          },
+          {
+            "label": "1 — Montée",
+            "detailMarkdown": "Mélange lentement. Quand tu t’arrêtes, **tire** une ou trois cartes selon l’espace que tu t’offres."
+          },
+          {
+            "label": "2 — Cime",
+            "detailMarkdown": "Lis à voix basse, regarde l’image. **Note** une image, une sensation au corps, une micro-action pour les prochaines heures."
+          }
+        ]
+      }
+    }
+  ]
+}

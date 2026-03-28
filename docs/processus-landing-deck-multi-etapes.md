@@ -124,9 +124,9 @@ Liste de **référence** pour l’étape 2 (sélection par l’IA). Les noms son
 
 ### 8.1 Prototype modulaire (quatre premiers types)
 
-- **App React :** `site-trilogie1/apps/web` — `npm run dev` (port **5176**, proxy vers l’API **3040**). Routes : `/deck/arbre-de-vie-a`, `/deck/arbre-de-vie-b`.
+- **App React :** `site-trilogie1/apps/web` — `npm run dev` (port **5176**, proxy vers l’API **3040**). Routes : `/deck/arbre-de-vie-a`, `/deck/arbre-de-vie-b`, `/deck/arbre-de-vie-c`, `/admin` (suivi JSON + appels Grok plan / landing).
 - **JSON servi :** `content/generated/arbre-de-vie/deck-landings/{slug}.json` — `globals` (couleurs, polices, `fontImportHref` optionnel) + **4 sections** dans l’ordre imposé.
-- **API :** `GET /site/deck-landing/:slug`, `POST /site/generate-deck-landing/:slug` (slugs `arbre-de-vie-a` \| `arbre-de-vie-b`).
+- **API :** `GET /site/deck-landing/:slug`, `POST /site/generate-deck-landing/:slug` ; `GET /site/deck-modular-landing-dashboard`, `GET /site/deck-landing-variant-plan/:slug`, `POST /site/generate-deck-landing-variant-plan/arbre-de-vie-c` (plan + mise à jour `deck-landing-variants.json`). Slugs `a` \| `b` \| `c`.
 - **Prompts Grok :** `content/arbre-de-vie/prompts/deck-modular-landing/`.
 - **Variantes par landing :** `content/arbre-de-vie/deck-landing-variants.json`. Specs des champs par layout : `apps/web/src/sections/*/variants/*.spec.md`.
 
