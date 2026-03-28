@@ -12,7 +12,11 @@ import * as path from 'path';
 import { createHash, randomBytes } from 'crypto';
 import { GenerateMarkdownDto } from './dto/generate-markdown.dto';
 import { GenerateImageDto } from './dto/generate-image.dto';
-import { getContentGeneratedArbreDeVieDir, getGeneratedImagesDir } from '../paths';
+import {
+  getContentGeneratedArbreDeVieDir,
+  getGeneratedImagesDir,
+  getMirroredDeckCardImagesDir,
+} from '../paths';
 
 const SYSTEM_ORACLE_SITE = `Tu es rédacteur·rice pour le site web public d'un jeu de cartes oracle « L'Arbre de Vie » (Ose Un Pas Vers Toi).
 Règles :
@@ -189,6 +193,47 @@ export class AiService {
       throw new BadRequestException('Invalid filename');
     }
     const dir = path.resolve(getGeneratedImagesDir());
+    const full = path.resolve(dir, safe);
+    const rel = path.relative(dir, full);
+    if (rel.startsWith('..') || path.isAbsolute(rel)) {
+      throw new BadRequestException('Invalid path');
+    }
+    let buffer: Buffer;
+    try {
+      buffer = await readFile(full);
+    } catch {
+      throw new NotFoundException(safe);
+    }
+    const lower = safe.toLowerCase();
+    const mime = lower.endsWith('.webp')
+      ? 'image/webp'
+      : lower.endsWith('.jpg') || lower.endsWith('.jpeg')
+        ? 'image/jpeg'
+        : 'image/png';
+    return { buffer, mime };
+  }
+
+  async listMirroredDeckCards(): Promise<{ files: string[] }> {
+    const dir = path.resolve(getMirroredDeckCardImagesDir());
+    let names: string[] = [];
+    try {
+      names = await readdir(dir);
+    } catch {
+      return { files: [] };
+    }
+    const ok = (n: string) =>
+      /\.(png|webp|jpe?g)$/i.test(n) && !n.startsWith('.');
+    return { files: names.filter(ok).sort() };
+  }
+
+  async readMirroredDeckCardImage(
+    filename: string,
+  ): Promise<{ buffer: Buffer; mime: string }> {
+    const safe = path.basename(filename);
+    if (!/^[\w.-]+\.(png|webp|jpe?g)$/i.test(safe)) {
+      throw new BadRequestException('Invalid filename');
+    }
+    const dir = path.resolve(getMirroredDeckCardImagesDir());
     const full = path.resolve(dir, safe);
     const rel = path.relative(dir, full);
     if (rel.startsWith('..') || path.isAbsolute(rel)) {

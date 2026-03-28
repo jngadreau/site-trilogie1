@@ -27,6 +27,14 @@ export function getGeneratedImagesDir(): string {
   return path.join(getContentGeneratedArbreDeVieDir(), 'images');
 }
 
+/**
+ * Copie miroir des PNG/JPEG/WebP cartes (depuis `images-jeux/`) à côté des images Grok,
+ * servies sous `/ai/generated-images/deck-cards/:filename`.
+ */
+export function getMirroredDeckCardImagesDir(): string {
+  return path.join(getGeneratedImagesDir(), 'deck-cards');
+}
+
 /** Contenu éditorial versionné (manifeste, prompts) — pas les seuls fichiers générés. */
 export function getSiteArbreDeVieContentDir(): string {
   return path.resolve(process.cwd(), '..', '..', 'content', 'arbre-de-vie');

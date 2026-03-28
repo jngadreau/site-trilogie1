@@ -261,6 +261,32 @@ export function AdminDeckLandingPage() {
       {message ? <p className="admin-dl__ok">{message}</p> : null}
 
       <section className="admin-dl__section">
+        <h2>Images cartes (miroir)</h2>
+        <p className="admin-dl__muted">
+          Copie les PNG/JPEG/WebP de <code>images-jeux/arbre_de_vie</code> vers le dossier{' '}
+          <code>images/deck-cards</code> à côté des fichiers Grok. Les héros{' '}
+          <code>HeroCardsFan</code> / <code>Strip</code> / <code>Mosaic</code> utilisent les URLs{' '}
+          <code>/ai/generated-images/deck-cards/&lt;fichier&gt;</code>.
+        </p>
+        <button
+          type="button"
+          disabled={!!busy}
+          onClick={() =>
+            post(
+              '/site/sync-deck-card-images',
+              'sync-deck-cards',
+              (b) =>
+                typeof b.copied === 'number'
+                  ? `Miroir OK — ${b.copied} copié(s), ${Number(b.skipped) || 0} ignoré(s)`
+                  : 'OK',
+            )
+          }
+        >
+          {busy === 'sync-deck-cards' ? '…' : 'Synchroniser les images cartes'}
+        </button>
+      </section>
+
+      <section className="admin-dl__section">
         <h2>Nouvelle variante (slug Arbre de vie)</h2>
         <p className="admin-dl__muted">
           Slug du type <code>arbre-de-vie-e</code>, puis les six sections (hero → CTA). Ensuite : Grok → JSON

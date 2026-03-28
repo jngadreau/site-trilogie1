@@ -11,7 +11,7 @@ Hero **mosaïque** : une carte **mise en avant** (grande) + les autres en **gril
 | `bodyMarkdown` | string | |
 | `ctaLabel` | string | |
 | `ctaHref` | string | |
-| `cards` | array | **4 à 6** objets `{ "imageUrl", "alt", "caption?" }` — le **premier** = carte vedette |
+| `cards` | array | **4 à 6** objets — `imageUrl` = **`/ai/generated-images/deck-cards/…`** ; le **premier** = carte vedette |
 
 ## Slots médias
 

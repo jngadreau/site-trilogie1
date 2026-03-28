@@ -112,7 +112,7 @@ Chaque section doit inclure **`media`** : tableau d’objets slots (voir specs `
 
 **HeroParallaxLayers** : `eyebrow`, `title`, `strapline`, `bodyMarkdown`, `ctaLabel`, `ctaHref`, `imageUrl`, `imageAlt`, `spineLabel` (optionnel)
 
-**HeroCardsFan** : `title`, `kicker`, `bodyMarkdown`, `ctaLabel`, `ctaHref`, `cards` (tableau **3 à 7** objets `{ "imageUrl", "alt", "caption?" }` — `imageUrl` = chemin API **`/cards/arbre-de-vie/<fichier.png>`**)
+**HeroCardsFan** : `title`, `kicker`, `bodyMarkdown`, `ctaLabel`, `ctaHref`, `cards` (tableau **3 à 7** objets `{ "imageUrl", "alt", "caption?" }` — `imageUrl` = **`/ai/generated-images/deck-cards/<fichier.png>`**)
 
 **HeroCardsStrip** : `title`, `subtitle`, `bodyMarkdown`, `ctaLabel`, `ctaHref`, `cards` (**4 à 9** mêmes objets)
 

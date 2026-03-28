@@ -1,6 +1,6 @@
 import { Markdown } from '../../lib/Markdown'
 
-/** Carte du jeu servie par l’API sous `/cards/arbre-de-vie/:fichier`. */
+/** Carte du jeu : URL type `/ai/generated-images/deck-cards/:fichier` (miroir après sync API). */
 export type HeroDeckCard = {
   imageUrl: string
   alt: string

@@ -860,7 +860,7 @@
   min-width: 200px;
 }
 
-/* Hero — cartes du jeu (fichiers /cards/arbre-de-vie/…) */
+/* Hero — cartes du jeu (`/ai/generated-images/deck-cards/…`) */
 .dl-hero--cards-fan {
   display: grid;
   grid-template-columns: 1fr 1fr;

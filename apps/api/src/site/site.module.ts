@@ -10,6 +10,7 @@ import { LandingAssetsService } from './landing-assets.service';
 import { DeckModularLandingService } from './deck-modular-landing.service';
 import { DeckModularLandingAssetsService } from './deck-modular-landing-assets.service';
 import { CardFanService } from './card-fan.service';
+import { DeckCardMirrorService } from './deck-card-mirror.service';
 import {
   DECK_LANDING_IMAGE_QUEUE,
   DECK_LANDING_PIPELINE_QUEUE,
@@ -43,6 +44,7 @@ import { DeckLandingImageProcessor } from './deck-landing-image.processor';
     DeckLandingPipelineProcessor,
     DeckLandingImageProcessor,
     CardFanService,
+    DeckCardMirrorService,
   ],
 })
 export class SiteModule {}

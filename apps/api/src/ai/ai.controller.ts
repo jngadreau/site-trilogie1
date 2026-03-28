@@ -81,6 +81,24 @@ export class AiController {
     return this.ai.listGeneratedImages();
   }
 
+  /** Fichiers copiés depuis `images-jeux/arbre_de_vie` (voir `POST /site/sync-deck-card-images`). */
+  @Get('generated-images/deck-cards')
+  async listMirroredDeckCards() {
+    return this.ai.listMirroredDeckCards();
+  }
+
+  @Get('generated-images/deck-cards/:filename')
+  async readMirroredDeckCardImage(
+    @Param('filename') filename: string,
+  ): Promise<StreamableFile> {
+    const { buffer, mime } = await this.ai.readMirroredDeckCardImage(filename);
+    const safeName = filename.split('/').pop() ?? filename;
+    return new StreamableFile(buffer, {
+      type: mime,
+      disposition: `inline; filename="${encodeURIComponent(safeName)}"`,
+    });
+  }
+
   @Get('generated-images/:filename')
   async readGeneratedImage(
     @Param('filename') filename: string,

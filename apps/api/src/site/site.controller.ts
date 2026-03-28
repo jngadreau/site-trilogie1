@@ -10,6 +10,7 @@ import { LandingAssetsService } from './landing-assets.service';
 import { DeckModularLandingService } from './deck-modular-landing.service';
 import { DeckModularLandingAssetsService } from './deck-modular-landing-assets.service';
 import { CardFanService } from './card-fan.service';
+import { DeckCardMirrorService } from './deck-card-mirror.service';
 import { ComposeFanDto } from './dto/compose-fan.dto';
 import { GenerateLandingAssetsDto } from './dto/generate-landing-assets.dto';
 import {
@@ -28,6 +29,7 @@ export class SiteController {
     private readonly deckModular: DeckModularLandingService,
     private readonly deckModularAssets: DeckModularLandingAssetsService,
     private readonly cardFan: CardFanService,
+    private readonly deckCardMirror: DeckCardMirrorService,
     @InjectQueue(DECK_LANDING_PIPELINE_QUEUE)
     private readonly deckPipelineQueue: Queue,
     @InjectQueue(DECK_LANDING_IMAGE_QUEUE)
@@ -98,6 +100,16 @@ export class SiteController {
   @Get('deck-modular-landing-dashboard')
   async deckModularLandingDashboard() {
     return this.deckModular.getModularDashboard();
+  }
+
+  /**
+   * Copie les visuels cartes depuis `images-jeux/arbre_de_vie` vers
+   * `…/generated/arbre-de-vie/images/deck-cards/` (à côté des PNG Grok).
+   * Les landings utilisent `GET /ai/generated-images/deck-cards/:filename`.
+   */
+  @Post('sync-deck-card-images')
+  async syncDeckCardImages() {
+    return this.deckCardMirror.syncFromGameFolder();
   }
 
   /**

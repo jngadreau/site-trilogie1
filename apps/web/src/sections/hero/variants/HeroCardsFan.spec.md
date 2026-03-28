@@ -13,7 +13,7 @@ Hero avec **éventail de cartes réelles** du jeu : 3 à 7 visuels en rotation a
 | `ctaHref` | string | |
 | `cards` | array | **3 à 7** objets `{ "imageUrl", "alt", "caption?" }` |
 
-Chaque `imageUrl` : **`/cards/arbre-de-vie/<fichier>`** (liste : `GET /cards/arbre-de-vie`). `alt` en français (nom ou thème de la carte).
+Chaque `imageUrl` : **`/ai/generated-images/deck-cards/<fichier>`** — lancer **`POST /site/sync-deck-card-images`** pour copier depuis `images-jeux/` ; liste : `GET /ai/generated-images/deck-cards`. `alt` en français.
 
 ## Slots médias
 

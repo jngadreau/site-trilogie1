@@ -45,6 +45,9 @@ npm run start:dev
 | `POST` | `/site/generate-deck-landing-pipeline/:slug` | **BullMQ** : composition (globals) → 4 jobs « section elements » → finalize (JSON) → jobs Imagine par entrée `media` (nécessite **Redis**) |
 | `GET` | `/site/deck-landing-pipeline-jobs?limit=` | Jobs récents des files `deck-landing-pipeline` + `deck-landing-image` |
 | `POST` | `/site/generate-deck-landing-image/:slug/:sectionId/:slotId` | Imagine depuis `sections[].media[]` (point d’entrée commun ; seul **hero/hero** met à jour le JSON pour l’instant) |
+| `POST` | `/site/sync-deck-card-images` | Copie les images cartes depuis `images-jeux/arbre_de_vie` vers `…/images/deck-cards/` (à côté des PNG Grok) |
+| `GET` | `/ai/generated-images/deck-cards` | Liste des fichiers dans le miroir `deck-cards` |
+| `GET` | `/ai/generated-images/deck-cards/:filename` | Sert une image du miroir (même origine que `/ai/generated-images/`) |
 | `GET` | `/cards/arbre-de-vie` | Liste des fichiers image dans `images-jeux/arbre_de_vie/` |
 | `GET` | `/cards/arbre-de-vie/metadata` | `metadata.json` enrichi : `physicalSizeMm` (ex. 51×153), ratio mesuré (Sharp) |
 | `POST` | `/cards/arbre-de-vie/refresh-metadata` | Recalcule les ratios depuis les pixels et réécrit `metadata.json` |
