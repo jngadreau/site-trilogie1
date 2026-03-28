@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "slug": "arbre-de-vie-b",
+  "globals": {
+    "accent": "#c45c26",
+    "background": "#141210",
+    "surface": "#1e1c1a",
+    "text": "#f2ebe3",
+    "textMuted": "#a89f94",
+    "fontHeading": "'Fraunces', Georgia, serif",
+    "fontBody": "'DM Sans', system-ui, sans-serif",
+    "radius": "10px",
+    "fontImportNote": "Fraunces + DM Sans via Google Fonts",
+    "fontImportHref": "https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,600;1,400&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&display=swap"
+  },
+  "sections": [
+    {
+      "id": "hero",
+      "variant": "HeroFullBleed",
+      "props": {
+        "title": "Arbre de vie",
+        "tagline": "Quand la forêt intérieure reprend la parole",
+        "bodyMarkdown": "Cartes **poétiques et incarnées** pour nommer ce que tu ressens et retrouver un fil. Pas de fatalité : des **mises en lumière** et des portes.",
+        "ctaLabel": "Voir l’identité du jeu",
+        "ctaHref": "#identite",
+        "imageUrl": "/ai/generated-images/banner-1.png",
+        "imageAlt": "Forêt brumeuse au lever du jour",
+        "overlayOpacity": 0.52
+      }
+    },
+    {
+      "id": "deck_identity",
+      "variant": "IdentityMinimal",
+      "props": {
+        "eyebrow": "Oracle · introspection guidée",
+        "title": "52 cartes, une même invitation",
+        "oneLiner": "Revenir au tronc : racines, branches, fruits — **mettre des mots** sur l’invisible sans l’écraser."
+      }
+    },
+    {
+      "id": "for_who",
+      "variant": "ForWhoPillars",
+      "props": {
+        "title": "Trois façons d’entrer dans le jeu",
+        "introMarkdown": "Tu n’as pas besoin d’être « médium » : il suffit d’**honnêteté** et d’un peu de temps.",
+        "pillars": [
+          {
+            "title": "Solo, au quotidien",
+            "bodyMarkdown": "Un tirage du matin, un check-in du soir. Les cartes **ancrent** une intention sans enfermer."
+          },
+          {
+            "title": "En cercle ou en duo",
+            "bodyMarkdown": "Ouvre la conversation : chacun **réagit à l’image** avant de lire le texte — ça dénoue les blocages."
+          },
+          {
+            "title": "Professionnel·le d’accompagnement",
+            "bodyMarkdown": "Support **non intrusif** pour faire émerger des ressources chez la personne accueillie."
+          }
+        ]
+      }
+    },
+    {
+      "id": "how_to_use",
+      "variant": "HowToTimeline",
+      "props": {
+        "title": "Déroulé type",
+        "introMarkdown": "Une ligne du temps légère : du silence aux premiers pas.",
+        "steps": [
+          {
+            "label": "0 — Silence",
+            "detailMarkdown": "Pose tes mains sur le paquet. **Respire** trois fois. Formule ta question à voix basse ou par écrit."
+          },
+          {
+            "label": "1 — Choix",
+            "detailMarkdown": "Coupe, mélange, ou laisse une carte **sauter**. Fais confiance au geste."
+          },
+          {
+            "label": "2 — Lecture",
+            "detailMarkdown": "Lis à voix haute, puis **reformule avec tes mots**. Une seule action concrète pour les prochaines 24 h."
+          }
+        ]
+      }
+    }
+  ]
+}

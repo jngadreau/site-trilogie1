@@ -1,0 +1,14 @@
+{
+  "arbre-de-vie-a": {
+    "hero": "HeroSplitImageRight",
+    "deck_identity": "IdentityPanel",
+    "for_who": "ForWhoTwoColumns",
+    "how_to_use": "HowToNumbered"
+  },
+  "arbre-de-vie-b": {
+    "hero": "HeroFullBleed",
+    "deck_identity": "IdentityMinimal",
+    "for_who": "ForWhoPillars",
+    "how_to_use": "HowToTimeline"
+  }
+}

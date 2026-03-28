@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "slug": "arbre-de-vie-a",
+  "globals": {
+    "accent": "#2d5a4a",
+    "background": "#f4f0e8",
+    "surface": "#ffffff",
+    "text": "#1a1f1c",
+    "textMuted": "#5c6560",
+    "fontHeading": "'Cormorant Garamond', Georgia, serif",
+    "fontBody": "'Source Sans 3', system-ui, sans-serif",
+    "radius": "14px",
+    "fontImportNote": "Cormorant Garamond + Source Sans 3 via Google Fonts",
+    "fontImportHref": "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap"
+  },
+  "sections": [
+    {
+      "id": "hero",
+      "variant": "HeroSplitImageRight",
+      "props": {
+        "title": "L’Arbre de vie",
+        "subtitle": "Oracle de présence et de ressourcement",
+        "bodyMarkdown": "Un jeu de cartes pour **poser les bonnes questions**, quand la tête tourne et que le cœur cherche une boussole. Chaque tirage devient un **petit rituel** : respirer, choisir, écouter ce qui émerge.",
+        "ctaLabel": "Découvrir les cartes",
+        "ctaHref": "#identite",
+        "imageUrl": "/ai/generated-images/banner-1.png",
+        "imageAlt": "Illustration douce, arbre stylisé et lumière dorée"
+      }
+    },
+    {
+      "id": "deck_identity",
+      "variant": "IdentityPanel",
+      "props": {
+        "deckName": "Arbre de vie",
+        "tagline": "52 chemins vers soi",
+        "badge": "Oracle introspectif",
+        "bodyMarkdown": "Ce deck mêle **symboles naturels** et invitations à l’écoute intérieure. Il ne prédit pas l’avenir : il **éclaire le présent** et ouvre des pistes concrètes pour avancer avec douceur."
+      }
+    },
+    {
+      "id": "for_who",
+      "variant": "ForWhoTwoColumns",
+      "props": {
+        "title": "Pour qui ?",
+        "leftMarkdown": "- Tu cherches un **outil simple** pour faire le point sans te noyer dans les concepts.\n- Tu aimes les **images évocatrices** qui parlent au corps autant qu’à l’esprit.\n- Tu pratiques déjà journal, méditation ou thérapie et veux **une prolongation ludique**.",
+        "rightMarkdown": "- Tu accompagnes des personnes (coaching, soin, animation) et veux **une médiation visuelle**.\n- Tu débutes : les cartes sont **lisibles sans manuel épais**.\n- Tu veux **rallumer la curiosité** plutôt que de te juger."
+      }
+    },
+    {
+      "id": "how_to_use",
+      "variant": "HowToNumbered",
+      "props": {
+        "title": "Comment l’utiliser",
+        "introMarkdown": "Trois minutes ou trente : à toi de voir. Voici une base qui fonctionne presque toujours.",
+        "steps": [
+          {
+            "title": "Installer le moment",
+            "bodyMarkdown": "Assieds-toi, pose le jeu devant toi, **une question claire** en tête (ou simplement : « Qu’est-ce qui m’aide aujourd’hui ? »)."
+          },
+          {
+            "title": "Tirer une ou trois cartes",
+            "bodyMarkdown": "Mélange à ton rythme. **Une carte** pour une réponse directe ; **trois** pour passé–présent–piste ou situation–frein–ressource."
+          },
+          {
+            "title": "Lire avec les yeux et le corps",
+            "bodyMarkdown": "Lis le texte court, puis **regarde l’image** : qu’est-ce qui résonne ? Note une phrase ou un geste concret pour la journée."
+          }
+        ]
+      }
+    }
+  ]
+}

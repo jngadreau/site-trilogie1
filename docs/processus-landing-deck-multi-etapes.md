@@ -122,6 +122,14 @@ Liste de **référence** pour l’étape 2 (sélection par l’IA). Les noms son
 
 **Remarque :** une landing réelle n’utilisera qu’**un sous-ensemble** (souvent 5–10 sections). L’IA choisit en fonction du contexte deck et des objectifs (conversion, storytelling, SEO…).
 
+### 8.1 Prototype modulaire (quatre premiers types)
+
+- **App React :** `site-trilogie1/apps/web` — `npm run dev` (port **5176**, proxy vers l’API **3040**). Routes : `/deck/arbre-de-vie-a`, `/deck/arbre-de-vie-b`.
+- **JSON servi :** `content/generated/arbre-de-vie/deck-landings/{slug}.json` — `globals` (couleurs, polices, `fontImportHref` optionnel) + **4 sections** dans l’ordre imposé.
+- **API :** `GET /site/deck-landing/:slug`, `POST /site/generate-deck-landing/:slug` (slugs `arbre-de-vie-a` \| `arbre-de-vie-b`).
+- **Prompts Grok :** `content/arbre-de-vie/prompts/deck-modular-landing/`.
+- **Variantes par landing :** `content/arbre-de-vie/deck-landing-variants.json`. Specs des champs par layout : `apps/web/src/sections/*/variants/*.spec.md`.
+
 ---
 
 ## 9. Évolutions techniques suggérées (backlog)

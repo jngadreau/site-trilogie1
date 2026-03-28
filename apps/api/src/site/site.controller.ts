@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { SiteService } from './site.service';
 import { LandingGenerationService } from './landing-generation.service';
 import { GameContextGenerationService } from './game-context-generation.service';
 import { LandingAssetsService } from './landing-assets.service';
+import { DeckModularLandingService } from './deck-modular-landing.service';
 import { CardFanService } from './card-fan.service';
 import { ComposeFanDto } from './dto/compose-fan.dto';
 import { GenerateLandingAssetsDto } from './dto/generate-landing-assets.dto';
@@ -14,6 +15,7 @@ export class SiteController {
     private readonly gameContextGen: GameContextGenerationService,
     private readonly landingGen: LandingGenerationService,
     private readonly landingAssets: LandingAssetsService,
+    private readonly deckModular: DeckModularLandingService,
     private readonly cardFan: CardFanService,
   ) {}
 
@@ -44,6 +46,18 @@ export class SiteController {
   @Post('generate-landing')
   async generateLanding() {
     return this.landingGen.generateAndSave();
+  }
+
+  /** JSON landing modulaire (4 sections, variantes React) — `arbre-de-vie-a` | `arbre-de-vie-b`. */
+  @Get('deck-landing/:slug')
+  async deckLanding(@Param('slug') slug: string) {
+    return this.deckModular.loadDeckLanding(slug);
+  }
+
+  /** Génère / écrase `deck-landings/{slug}.json` via Grok + prompts `deck-modular-landing/`. */
+  @Post('generate-deck-landing/:slug')
+  async generateDeckLanding(@Param('slug') slug: string) {
+    return this.deckModular.generateAndSave(slug);
   }
 
   /**

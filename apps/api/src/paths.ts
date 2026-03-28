@@ -121,3 +121,17 @@ export function getTrilogyContextPath(): string {
 export function getCardMetadataArbreDeViePath(): string {
   return path.join(getCardImagesArbreDeVieDir(), 'metadata.json');
 }
+
+/** Landings modulaires deck (JSON par slug, ex. arbre-de-vie-a). */
+export function getDeckLandingsDir(): string {
+  return path.join(getContentGeneratedArbreDeVieDir(), 'deck-landings');
+}
+
+export function getDeckModularLandingPromptsDir(): string {
+  return path.join(getSiteArbreDeVieContentDir(), 'prompts', 'deck-modular-landing');
+}
+
+/** Choix des variantes React par landing (arbre-de-vie-a / arbre-de-vie-b). */
+export function getDeckLandingVariantsPath(): string {
+  return path.join(getSiteArbreDeVieContentDir(), 'deck-landing-variants.json');
+}

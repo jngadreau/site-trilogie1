@@ -6,6 +6,7 @@ import { SiteService } from './site.service';
 import { LandingGenerationService } from './landing-generation.service';
 import { GameContextGenerationService } from './game-context-generation.service';
 import { LandingAssetsService } from './landing-assets.service';
+import { DeckModularLandingService } from './deck-modular-landing.service';
 import { CardFanService } from './card-fan.service';
 
 @Module({
@@ -16,6 +17,7 @@ import { CardFanService } from './card-fan.service';
     GameContextGenerationService,
     LandingGenerationService,
     LandingAssetsService,
+    DeckModularLandingService,
     CardFanService,
   ],
 })
