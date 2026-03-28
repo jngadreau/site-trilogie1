@@ -47,6 +47,8 @@ const VARIANT_CHOICES: Record<SectionKey, readonly string[]> = {
   outcomes: ['OutcomesBentoGrid', 'OutcomesSignalStrip'],
   how_to_use: ['HowToNumbered', 'HowToTimeline'],
   in_the_box: ['IncludedChecklist', 'IncludedHighlightGrid'],
+  card_gallery: ['CardGalleryGrid', 'CardGalleryScroll'],
+  photo_gallery: ['PhotoSpotlightGrid', 'PhotoFilmstripRow'],
   faq: ['FaqAccordion', 'FaqTwoColumn'],
   creator: ['CreatorSpotlight', 'CreatorQuoteBand'],
   related_decks: ['RelatedDecksGrid', 'RelatedDecksInline'],
@@ -255,7 +257,7 @@ export class DeckModularLandingService {
   }
 
   /**
-   * Ajoute une entrée dans `deck-landing-variants.json` (slug Arbre de vie + 4 composants React).
+   * Ajoute une entrée dans `deck-landing-variants.json` (slug Arbre de vie + toutes les sections).
    */
   async registerVariant(
     slug: string,

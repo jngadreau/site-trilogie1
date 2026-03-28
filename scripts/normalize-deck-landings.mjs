@@ -18,6 +18,8 @@ const ORDER = [
   'outcomes',
   'how_to_use',
   'in_the_box',
+  'card_gallery',
+  'photo_gallery',
   'faq',
   'creator',
   'related_decks',
@@ -245,6 +247,61 @@ const DEFAULTS = {
         title: 'Création',
         bodyMarkdown: 'Canalisé par **Hélène Durand** — univers Arbre de Vie, cycles et sagesse du vivant.',
       },
+    ],
+  }),
+  CardGalleryGrid: () => ({
+    sectionTitle: 'Aperçu des cartes',
+    introMarkdown:
+      'Un échantillon des **faces** du jeu — choix explicite via `cardSlots` / `cardNumbers` ; fichiers sous `/ai/generated-images/deck-cards/` après sync.',
+    cardSlots: [
+      { cardNumber: 1 },
+      { cardNumber: 5 },
+      { cardNumber: 9, captionMarkdown: 'Exemple de **légende** sous une carte.' },
+      { cardNumber: 14 },
+      { cardNumber: 22 },
+      { cardNumber: 28 },
+      { cardNumber: 36 },
+      { cardNumber: 44 },
+    ],
+  }),
+  CardGalleryScroll: () => ({
+    sectionTitle: 'Défilement des visuels',
+    introMarkdown:
+      'Fais défiler pour voir **plus de cartes** sur une seule ligne. Liste des numéros via `cardNumbers` (ordre conservé).',
+    cardNumbers: [2, 7, 11, 16, 23, 29, 35, 41, 48, 54],
+  }),
+  PhotoSpotlightGrid: () => ({
+    sectionTitle: 'En images',
+    introMarkdown: 'Ambiance et détails — **bannière** et extraits cartes en attendant des photos lifestyle dédiées.',
+    photos: [
+      {
+        imageUrl: '/ai/generated-images/banner-1.png',
+        alt: 'Ambiance forêt et lumière',
+        title: 'Univers',
+        captionMarkdown: 'Visuel **éditorial** partagé avec le hero si aucun shooting coffret.',
+      },
+      {
+        imageUrl: '/ai/generated-images/deck-cards/card_12_front.png',
+        alt: 'Carte illustrée',
+        title: 'Rendu carte',
+        captionMarkdown: 'Exemple de face après **sync** des images du deck.',
+      },
+      {
+        imageUrl: '/ai/generated-images/deck-cards/card_33_front.png',
+        alt: 'Autre carte',
+        title: 'Palette',
+        captionMarkdown: 'Variations de **couleur** et de symbolique.',
+      },
+    ],
+  }),
+  PhotoFilmstripRow: () => ({
+    sectionTitle: 'Regards sur le jeu',
+    introMarkdown: '**Bandeau** de quatre visuels : ambiance et cartes.',
+    items: [
+      { imageUrl: '/ai/generated-images/banner-1.png', alt: 'Ambiance', label: 'Forêt' },
+      { imageUrl: '/ai/generated-images/deck-cards/card_8_front.png', alt: 'Carte 8', label: 'Détail' },
+      { imageUrl: '/ai/generated-images/deck-cards/card_19_front.png', alt: 'Carte 19', label: 'Couleur' },
+      { imageUrl: '/ai/generated-images/deck-cards/card_50_front.png', alt: 'Carte 50', label: 'Série' },
     ],
   }),
   FaqAccordion: () => ({

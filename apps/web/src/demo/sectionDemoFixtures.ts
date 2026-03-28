@@ -393,6 +393,110 @@ export const SECTION_DEMO_FIXTURES: Record<DeckSectionKey, SectionDemoBlock[]> =
       },
     },
   ],
+  card_gallery: [
+    {
+      variant: 'CardGalleryGrid',
+      label: 'CardGalleryGrid',
+      props: {
+        sectionTitle: 'Les cartes en détail',
+        introMarkdown:
+          'Proportions **marque-page** (~672×1877 px). Choix des cartes via **`cardSlots`** (numéro + légende optionnelle) ou **`cardNumbers`** / liste **`cards`** complète. Sync : `POST /site/sync-deck-card-images`.',
+        cardSlots: [
+          { cardNumber: 1 },
+          { cardNumber: 4 },
+          {
+            cardNumber: 9,
+            captionMarkdown:
+              'Thème **9** — chaque numéro a sa **carte Image** et son **Message long**.',
+          },
+          { cardNumber: 14 },
+          { cardNumber: 19 },
+          { cardNumber: 26 },
+          { cardNumber: 33 },
+          { cardNumber: 42 },
+        ],
+      },
+    },
+    {
+      variant: 'CardGalleryScroll',
+      label: 'CardGalleryScroll',
+      props: {
+        sectionTitle: 'Parcourir les visuels',
+        introMarkdown:
+          '**`cardNumbers`** définit l’ordre des faces dans le défilement (largeur ~118px comme le hero strip). Scroll souris ou tactile.',
+        cardNumbers: [3, 6, 12, 15, 21, 27, 34, 39, 46, 53, 58],
+      },
+    },
+  ],
+  photo_gallery: [
+    {
+      variant: 'PhotoSpotlightGrid',
+      label: 'PhotoSpotlightGrid',
+      props: {
+        sectionTitle: 'Ambiance & matière',
+        introMarkdown:
+          'Ici : **bannière** partagée avec le hero et **gros plans cartes** comme placeholders. Remplace par photos coffret, mains, nature quand les fichiers `/ai/generated-images/…` seront enrichis.',
+        photos: [
+          {
+            imageUrl: DEMO_HERO_IMAGE,
+            alt: 'Forêt lumineuse — ambiance éditoriale',
+            title: 'Univers du jeu',
+            captionMarkdown:
+              'Même fichier **bannière** que le hero tant qu’il n’y a pas d’illustration « lifestyle » dédiée.',
+          },
+          {
+            imageUrl: demoCardUrl(8),
+            alt: 'Carte oracle illustrée en gros plan',
+            title: 'Rendu carte Image',
+            captionMarkdown: 'Exemple de **face illustrée** après synchronisation des PNG du deck.',
+          },
+          {
+            imageUrl: demoCardUrl(30),
+            alt: 'Autre carte — palette et typographie',
+            title: 'Diversité graphique',
+            captionMarkdown: 'Les **64** visuels complètent le livret : ici un extrait pour la démo.',
+          },
+          {
+            imageUrl: demoCardUrl(55),
+            alt: 'Carte message — composition',
+            title: 'Face Message',
+            captionMarkdown: 'Les cartes **Message long** prolongent le même thème avec plus de texte.',
+          },
+        ],
+      },
+    },
+    {
+      variant: 'PhotoFilmstripRow',
+      label: 'PhotoFilmstripRow',
+      props: {
+        sectionTitle: 'Bandeau visuel',
+        introMarkdown:
+          '**Quatre cadres** type film : ambiance, puis détails carte — idéal pour matière, lumière, texture.',
+        items: [
+          {
+            imageUrl: DEMO_HERO_IMAGE,
+            alt: 'Lumière à travers les feuilles',
+            label: 'Ambiance',
+          },
+          {
+            imageUrl: demoCardUrl(17),
+            alt: 'Illustration carte 17',
+            label: 'Carte',
+          },
+          {
+            imageUrl: demoCardUrl(41),
+            alt: 'Carte 41 — détail',
+            label: 'Couleur',
+          },
+          {
+            imageUrl: demoCardUrl(62),
+            alt: 'Carte 62',
+            label: 'Série',
+          },
+        ],
+      },
+    },
+  ],
   faq: [
     {
       variant: 'FaqAccordion',

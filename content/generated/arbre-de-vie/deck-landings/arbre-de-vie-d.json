@@ -156,6 +156,56 @@
       "media": []
     },
     {
+      "id": "card_gallery",
+      "variant": "CardGalleryScroll",
+      "props": {
+        "sectionTitle": "Défilement des visuels",
+        "introMarkdown": "Fais défiler pour voir **plus de cartes** sur une seule ligne. Liste des numéros via `cardNumbers` (ordre conservé).",
+        "cardNumbers": [
+          2,
+          7,
+          11,
+          16,
+          23,
+          29,
+          35,
+          41,
+          48,
+          54
+        ]
+      },
+      "media": []
+    },
+    {
+      "id": "photo_gallery",
+      "variant": "PhotoSpotlightGrid",
+      "props": {
+        "sectionTitle": "En images",
+        "introMarkdown": "Ambiance et détails — **bannière** et extraits cartes en attendant des photos lifestyle dédiées.",
+        "photos": [
+          {
+            "imageUrl": "/ai/generated-images/banner-1.png",
+            "alt": "Ambiance forêt et lumière",
+            "title": "Univers",
+            "captionMarkdown": "Visuel **éditorial** partagé avec le hero si aucun shooting coffret."
+          },
+          {
+            "imageUrl": "/ai/generated-images/deck-cards/card_12_front.png",
+            "alt": "Carte illustrée",
+            "title": "Rendu carte",
+            "captionMarkdown": "Exemple de face après **sync** des images du deck."
+          },
+          {
+            "imageUrl": "/ai/generated-images/deck-cards/card_33_front.png",
+            "alt": "Autre carte",
+            "title": "Palette",
+            "captionMarkdown": "Variations de **couleur** et de symbolique."
+          }
+        ]
+      },
+      "media": []
+    },
+    {
       "id": "faq",
       "variant": "FaqAccordion",
       "props": {

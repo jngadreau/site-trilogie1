@@ -165,6 +165,71 @@
       "media": []
     },
     {
+      "id": "card_gallery",
+      "variant": "CardGalleryGrid",
+      "props": {
+        "sectionTitle": "Aperçu des cartes",
+        "introMarkdown": "Un échantillon des **faces** du jeu — choix explicite via `cardSlots` / `cardNumbers` ; fichiers sous `/ai/generated-images/deck-cards/` après sync.",
+        "cardSlots": [
+          {
+            "cardNumber": 1
+          },
+          {
+            "cardNumber": 5
+          },
+          {
+            "cardNumber": 9,
+            "captionMarkdown": "Exemple de **légende** sous une carte."
+          },
+          {
+            "cardNumber": 14
+          },
+          {
+            "cardNumber": 22
+          },
+          {
+            "cardNumber": 28
+          },
+          {
+            "cardNumber": 36
+          },
+          {
+            "cardNumber": 44
+          }
+        ]
+      },
+      "media": []
+    },
+    {
+      "id": "photo_gallery",
+      "variant": "PhotoSpotlightGrid",
+      "props": {
+        "sectionTitle": "En images",
+        "introMarkdown": "Ambiance et détails — **bannière** et extraits cartes en attendant des photos lifestyle dédiées.",
+        "photos": [
+          {
+            "imageUrl": "/ai/generated-images/banner-1.png",
+            "alt": "Ambiance forêt et lumière",
+            "title": "Univers",
+            "captionMarkdown": "Visuel **éditorial** partagé avec le hero si aucun shooting coffret."
+          },
+          {
+            "imageUrl": "/ai/generated-images/deck-cards/card_12_front.png",
+            "alt": "Carte illustrée",
+            "title": "Rendu carte",
+            "captionMarkdown": "Exemple de face après **sync** des images du deck."
+          },
+          {
+            "imageUrl": "/ai/generated-images/deck-cards/card_33_front.png",
+            "alt": "Autre carte",
+            "title": "Palette",
+            "captionMarkdown": "Variations de **couleur** et de symbolique."
+          }
+        ]
+      },
+      "media": []
+    },
+    {
       "id": "faq",
       "variant": "FaqAccordion",
       "props": {

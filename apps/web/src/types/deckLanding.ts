@@ -18,6 +18,8 @@ export type SectionId =
   | 'outcomes'
   | 'how_to_use'
   | 'in_the_box'
+  | 'card_gallery'
+  | 'photo_gallery'
   | 'faq'
   | 'creator'
   | 'related_decks'

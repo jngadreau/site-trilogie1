@@ -6,6 +6,8 @@ export const DECK_LANDING_SECTION_ORDER = [
   'outcomes',
   'how_to_use',
   'in_the_box',
+  'card_gallery',
+  'photo_gallery',
   'faq',
   'creator',
   'related_decks',

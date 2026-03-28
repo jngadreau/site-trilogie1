@@ -8,6 +8,8 @@ const SPEC_REL_PATHS = [
   'creator/variants/CreatorSpotlight.spec.md',
   'cta_band/variants/CtaMarqueeRibbon.spec.md',
   'cta_band/variants/CtaSplitAction.spec.md',
+  'card_gallery/variants/CardGalleryGrid.spec.md',
+  'card_gallery/variants/CardGalleryScroll.spec.md',
   'deck_identity/variants/IdentityMinimal.spec.md',
   'deck_identity/variants/IdentityPanel.spec.md',
   'faq/variants/FaqAccordion.spec.md',
@@ -27,6 +29,8 @@ const SPEC_REL_PATHS = [
   'in_the_box/variants/IncludedHighlightGrid.spec.md',
   'outcomes/variants/OutcomesBentoGrid.spec.md',
   'outcomes/variants/OutcomesSignalStrip.spec.md',
+  'photo_gallery/variants/PhotoFilmstripRow.spec.md',
+  'photo_gallery/variants/PhotoSpotlightGrid.spec.md',
   'related_decks/variants/RelatedDecksGrid.spec.md',
   'related_decks/variants/RelatedDecksInline.spec.md',
 ] as const;

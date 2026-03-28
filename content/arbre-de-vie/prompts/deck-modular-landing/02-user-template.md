@@ -27,7 +27,7 @@ S’appuie sur ces descriptions pour rédiger des **props** et des **globals** a
 
 Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck).
 
-**Ordre des sections (obligatoire)** : `hero` → `deck_identity` → `for_who` → `outcomes` → `how_to_use` → `in_the_box` → `faq` → `creator` → `related_decks` → `cta_band`.
+**Ordre des sections (obligatoire)** : `hero` → `deck_identity` → `for_who` → `outcomes` → `how_to_use` → `in_the_box` → `card_gallery` → `photo_gallery` → `faq` → `creator` → `related_decks` → `cta_band`.
 
 ```json
 {
@@ -97,6 +97,18 @@ Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck).
       "media": []
     },
     {
+      "id": "card_gallery",
+      "variant": "CardGalleryGrid OU CardGalleryScroll",
+      "props": {},
+      "media": []
+    },
+    {
+      "id": "photo_gallery",
+      "variant": "PhotoSpotlightGrid OU PhotoFilmstripRow",
+      "props": {},
+      "media": []
+    },
+    {
       "id": "faq",
       "variant": "FaqAccordion OU FaqTwoColumn",
       "props": {},
@@ -124,7 +136,7 @@ Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck).
 }
 ```
 
-Chaque section doit inclure **`media`** : tableau d’objets slots (voir specs `.spec.md` « Slots médias ») ou `[]` si aucune image. Pour **`HeroCardsFan`**, **`HeroCardsStrip`**, **`HeroCardsMosaic`** : `media` du hero = **`[]`** (images = `cards[]` uniquement).
+Chaque section doit inclure **`media`** : tableau d’objets slots (voir specs `.spec.md` « Slots médias ») ou `[]` si aucune image. Pour **`HeroCardsFan`**, **`HeroCardsStrip`**, **`HeroCardsMosaic`**, **`CardGalleryGrid`**, **`CardGalleryScroll`**, **`PhotoSpotlightGrid`**, **`PhotoFilmstripRow`** : `media` = **`[]`** (images dans `cards[]`, `photos[]` ou `items[]` selon la variante).
 
 ### Props par variant (obligatoires)
 
@@ -161,6 +173,14 @@ Chaque section doit inclure **`media`** : tableau d’objets slots (voir specs `
 **IncludedChecklist** : `sectionTitle`, `introMarkdown` (optionnel), `items` (≥ 3 `{ "title", "detailMarkdown?" }`)
 
 **IncludedHighlightGrid** : `sectionTitle`, `introMarkdown` (optionnel), `highlights` (2 à 6 `{ "title", "bodyMarkdown" }`)
+
+**CardGalleryGrid** : `sectionTitle`, `introMarkdown` (optionnel). **Cartes à afficher** (une seule source, par priorité) : **`cards`** (liste complète d’URLs) **ou** **`cardSlots`** (6 à 12 `{ "cardNumber", "captionMarkdown?", "alt?" }` → `card_{n}_front.png`) **ou** **`cardNumbers`** (tableau de numéros). Optionnel : **`deckCardsBasePath`** (défaut `/ai/generated-images/deck-cards`). Ratio d’affichage **marque-page ~672×1877**.
+
+**CardGalleryScroll** : idem, privilégier **`cardNumbers`** ou **`cardSlots`** (8 à 14 entrées) ; `cards` si besoin d’URLs custom.
+
+**PhotoSpotlightGrid** : `sectionTitle`, `introMarkdown` (optionnel), `photos` (2 à 6 `{ "imageUrl", "alt", "title?", "captionMarkdown?" }` — URLs sous `/ai/generated-images/…`)
+
+**PhotoFilmstripRow** : `sectionTitle`, `introMarkdown` (optionnel), `items` (3 à 5 `{ "imageUrl", "alt", "label?" }`)
 
 **FaqAccordion** : `sectionTitle`, `introMarkdown` (optionnel), `items` (≥ 3 `{ "question", "answerMarkdown" }`)
 

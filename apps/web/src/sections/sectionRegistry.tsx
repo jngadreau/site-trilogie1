@@ -42,6 +42,14 @@ import { CreatorSpotlight } from './creator/CreatorSpotlight'
 import { CreatorQuoteBand } from './creator/CreatorQuoteBand'
 import { RelatedDecksGrid } from './related_decks/RelatedDecksGrid'
 import { RelatedDecksInline } from './related_decks/RelatedDecksInline'
+import { CardGalleryGrid } from './card_gallery/CardGalleryGrid'
+import type { CardGalleryGridProps } from './card_gallery/CardGalleryGrid'
+import { CardGalleryScroll } from './card_gallery/CardGalleryScroll'
+import type { CardGalleryScrollProps } from './card_gallery/CardGalleryScroll'
+import { PhotoSpotlightGrid } from './photo_gallery/PhotoSpotlightGrid'
+import type { PhotoSpotlightGridProps } from './photo_gallery/PhotoSpotlightGrid'
+import { PhotoFilmstripRow } from './photo_gallery/PhotoFilmstripRow'
+import type { PhotoFilmstripRowProps } from './photo_gallery/PhotoFilmstripRow'
 
 type AnyProps =
   | HeroSplitImageRightProps
@@ -61,6 +69,10 @@ type AnyProps =
   | HowToTimelineProps
   | CtaMarqueeRibbonProps
   | CtaSplitActionProps
+  | CardGalleryGridProps
+  | CardGalleryScrollProps
+  | PhotoSpotlightGridProps
+  | PhotoFilmstripRowProps
 
 const registry: Record<string, ComponentType<AnyProps>> = {
   HeroSplitImageRight: HeroSplitImageRight as ComponentType<AnyProps>,
@@ -88,6 +100,10 @@ const registry: Record<string, ComponentType<AnyProps>> = {
   CreatorQuoteBand: CreatorQuoteBand as unknown as ComponentType<AnyProps>,
   RelatedDecksGrid: RelatedDecksGrid as unknown as ComponentType<AnyProps>,
   RelatedDecksInline: RelatedDecksInline as unknown as ComponentType<AnyProps>,
+  CardGalleryGrid: CardGalleryGrid as ComponentType<AnyProps>,
+  CardGalleryScroll: CardGalleryScroll as ComponentType<AnyProps>,
+  PhotoSpotlightGrid: PhotoSpotlightGrid as ComponentType<AnyProps>,
+  PhotoFilmstripRow: PhotoFilmstripRow as ComponentType<AnyProps>,
 }
 
 export function renderDeckSection(section: DeckLandingSection) {

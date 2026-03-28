@@ -14,6 +14,8 @@ const FOR_WHO = ['ForWhoTwoColumns', 'ForWhoPillars'] as const;
 const OUTCOMES = ['OutcomesBentoGrid', 'OutcomesSignalStrip'] as const;
 const HOW = ['HowToNumbered', 'HowToTimeline'] as const;
 const IN_BOX = ['IncludedChecklist', 'IncludedHighlightGrid'] as const;
+const CARD_GALLERY = ['CardGalleryGrid', 'CardGalleryScroll'] as const;
+const PHOTO_GALLERY = ['PhotoSpotlightGrid', 'PhotoFilmstripRow'] as const;
 const FAQ = ['FaqAccordion', 'FaqTwoColumn'] as const;
 const CREATOR = ['CreatorSpotlight', 'CreatorQuoteBand'] as const;
 const RELATED = ['RelatedDecksGrid', 'RelatedDecksInline'] as const;
@@ -59,6 +61,16 @@ export class UpdateDeckLandingVariantsDto {
   @IsString()
   @IsIn([...IN_BOX])
   in_the_box?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsIn([...CARD_GALLERY])
+  card_gallery?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsIn([...PHOTO_GALLERY])
+  photo_gallery?: string;
 
   @IsOptional()
   @IsString()

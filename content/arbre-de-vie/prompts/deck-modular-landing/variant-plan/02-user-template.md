@@ -6,7 +6,7 @@
 
 ## Landings existantes (à différencier)
 
-Ne reproduis **pas** la même combinaison de **dix** variantes (toutes sections) que l’une ou l’autre :
+Ne reproduis **pas** la même combinaison de **douze** variantes (toutes sections) que l’une ou l’autre :
 
 ```json
 {{EXISTING_VARIANTS_A_B_JSON}}
@@ -32,6 +32,8 @@ Chaque bloc décrit **rôle visuel, données attendues, consignes pour l’IA**.
 | `outcomes` | `OutcomesBentoGrid`, `OutcomesSignalStrip` |
 | `how_to_use` | `HowToNumbered`, `HowToTimeline` |
 | `in_the_box` | `IncludedChecklist`, `IncludedHighlightGrid` |
+| `card_gallery` | `CardGalleryGrid`, `CardGalleryScroll` |
+| `photo_gallery` | `PhotoSpotlightGrid`, `PhotoFilmstripRow` |
 | `faq` | `FaqAccordion`, `FaqTwoColumn` |
 | `creator` | `CreatorSpotlight`, `CreatorQuoteBand` |
 | `related_decks` | `RelatedDecksGrid`, `RelatedDecksInline` |
@@ -52,6 +54,8 @@ Chaque bloc décrit **rôle visuel, données attendues, consignes pour l’IA**.
     "outcomes": "…",
     "how_to_use": "…",
     "in_the_box": "…",
+    "card_gallery": "…",
+    "photo_gallery": "…",
     "faq": "…",
     "creator": "…",
     "related_decks": "…",

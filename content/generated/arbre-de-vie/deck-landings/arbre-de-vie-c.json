@@ -167,6 +167,73 @@
       "media": []
     },
     {
+      "id": "card_gallery",
+      "variant": "CardGalleryGrid",
+      "props": {
+        "sectionTitle": "Aperçu des cartes",
+        "introMarkdown": "Un échantillon des **faces** du jeu — choix explicite via `cardSlots` / `cardNumbers` ; fichiers sous `/ai/generated-images/deck-cards/` après sync.",
+        "cardSlots": [
+          {
+            "cardNumber": 1
+          },
+          {
+            "cardNumber": 5
+          },
+          {
+            "cardNumber": 9,
+            "captionMarkdown": "Exemple de **légende** sous une carte."
+          },
+          {
+            "cardNumber": 14
+          },
+          {
+            "cardNumber": 22
+          },
+          {
+            "cardNumber": 28
+          },
+          {
+            "cardNumber": 36
+          },
+          {
+            "cardNumber": 44
+          }
+        ]
+      },
+      "media": []
+    },
+    {
+      "id": "photo_gallery",
+      "variant": "PhotoFilmstripRow",
+      "props": {
+        "sectionTitle": "Regards sur le jeu",
+        "introMarkdown": "**Bandeau** de quatre visuels : ambiance et cartes.",
+        "items": [
+          {
+            "imageUrl": "/ai/generated-images/banner-1.png",
+            "alt": "Ambiance",
+            "label": "Forêt"
+          },
+          {
+            "imageUrl": "/ai/generated-images/deck-cards/card_8_front.png",
+            "alt": "Carte 8",
+            "label": "Détail"
+          },
+          {
+            "imageUrl": "/ai/generated-images/deck-cards/card_19_front.png",
+            "alt": "Carte 19",
+            "label": "Couleur"
+          },
+          {
+            "imageUrl": "/ai/generated-images/deck-cards/card_50_front.png",
+            "alt": "Carte 50",
+            "label": "Série"
+          }
+        ]
+      },
+      "media": []
+    },
+    {
       "id": "faq",
       "variant": "FaqTwoColumn",
       "props": {
