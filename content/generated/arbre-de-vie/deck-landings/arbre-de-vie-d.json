@@ -183,6 +183,46 @@
       "media": []
     },
     {
+      "id": "creator",
+      "variant": "CreatorQuoteBand",
+      "props": {
+        "quoteMarkdown": "*« Les cartes ne décident pas à ta place : elles t’aident à entendre ce que tu sais déjà un peu. »*",
+        "name": "Hélène Durand",
+        "roleLine": "Créatrice — Créaticards"
+      },
+      "media": []
+    },
+    {
+      "id": "related_decks",
+      "variant": "RelatedDecksGrid",
+      "props": {
+        "sectionTitle": "La trilogie Créaticards",
+        "introMarkdown": "Combine les trois univers pour des lectures plus riches.",
+        "decks": [
+          {
+            "deckName": "L'Oracle de l'Arbre de Vie",
+            "tagline": "Cycles · nature",
+            "bodyMarkdown": "Tu es sur cette fiche : guidance **Image + Message**, 64 cartes.",
+            "href": "/oracle-arbre-de-vie",
+            "ctaLabel": "Ce jeu"
+          },
+          {
+            "deckName": "L'Oracle de Ganesh",
+            "tagline": "Obstacles · sagesse",
+            "bodyMarkdown": "Débloquer avec **bienveillance** ce qui résiste.",
+            "href": "/oracle-ganesh"
+          },
+          {
+            "deckName": "Les Voix chamaniques",
+            "tagline": "Lignées · médecine",
+            "bodyMarkdown": "Rituels et **dialogue** avec les mondes subtils.",
+            "href": "/voix-chamaniques"
+          }
+        ]
+      },
+      "media": []
+    },
+    {
       "id": "cta_band",
       "variant": "CtaMarqueeRibbon",
       "props": {

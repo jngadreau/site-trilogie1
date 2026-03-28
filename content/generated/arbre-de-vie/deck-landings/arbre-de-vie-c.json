@@ -198,6 +198,40 @@
       "media": []
     },
     {
+      "id": "creator",
+      "variant": "CreatorSpotlight",
+      "props": {
+        "sectionTitle": "La créatrice",
+        "name": "Hélène Durand",
+        "roleLabel": "Canalisatrice · Ose Un Pas Vers Toi",
+        "bodyMarkdown": "Hélène conçoit des oracles ancrés dans le **vivant** et l’écoute intérieure. *L’Oracle de l’Arbre de Vie* invite à honorer les cycles sans se presser.",
+        "ctaLabel": "Ose Un Pas Vers Toi",
+        "ctaHref": "https://oseunpasverstoi.fr"
+      },
+      "media": []
+    },
+    {
+      "id": "related_decks",
+      "variant": "RelatedDecksInline",
+      "props": {
+        "sectionTitle": "Autres oracles",
+        "introMarkdown": "Liens vers les deux autres jeux de la même famille.",
+        "items": [
+          {
+            "label": "L'Oracle de Ganesh",
+            "descriptionMarkdown": "Pour les **montagnes** intérieures à gravir avec patience.",
+            "href": "/oracle-ganesh"
+          },
+          {
+            "label": "Les Voix chamaniques",
+            "descriptionMarkdown": "Pour le **souffle**, les ancêtres et la médecine symbolique.",
+            "href": "/voix-chamaniques"
+          }
+        ]
+      },
+      "media": []
+    },
+    {
       "id": "cta_band",
       "variant": "CtaSplitAction",
       "props": {

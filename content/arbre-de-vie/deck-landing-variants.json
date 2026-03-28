@@ -7,6 +7,8 @@
     "how_to_use": "HowToNumbered",
     "in_the_box": "IncludedChecklist",
     "faq": "FaqAccordion",
+    "creator": "CreatorSpotlight",
+    "related_decks": "RelatedDecksGrid",
     "cta_band": "CtaMarqueeRibbon"
   },
   "arbre-de-vie-b": {
@@ -17,6 +19,8 @@
     "how_to_use": "HowToTimeline",
     "in_the_box": "IncludedHighlightGrid",
     "faq": "FaqTwoColumn",
+    "creator": "CreatorQuoteBand",
+    "related_decks": "RelatedDecksInline",
     "cta_band": "CtaSplitAction"
   },
   "arbre-de-vie-c": {
@@ -27,6 +31,8 @@
     "how_to_use": "HowToTimeline",
     "in_the_box": "IncludedChecklist",
     "faq": "FaqTwoColumn",
+    "creator": "CreatorSpotlight",
+    "related_decks": "RelatedDecksInline",
     "cta_band": "CtaSplitAction"
   },
   "arbre-de-vie-d": {
@@ -37,6 +43,8 @@
     "how_to_use": "HowToNumbered",
     "in_the_box": "IncludedHighlightGrid",
     "faq": "FaqAccordion",
+    "creator": "CreatorQuoteBand",
+    "related_decks": "RelatedDecksGrid",
     "cta_band": "CtaMarqueeRibbon"
   },
   "arbre-de-vie-e": {
@@ -47,6 +55,8 @@
     "how_to_use": "HowToNumbered",
     "in_the_box": "IncludedChecklist",
     "faq": "FaqAccordion",
+    "creator": "CreatorSpotlight",
+    "related_decks": "RelatedDecksGrid",
     "cta_band": "CtaMarqueeRibbon"
   },
   "arbre-de-vie-f": {
@@ -57,6 +67,8 @@
     "how_to_use": "HowToNumbered",
     "in_the_box": "IncludedHighlightGrid",
     "faq": "FaqAccordion",
+    "creator": "CreatorQuoteBand",
+    "related_decks": "RelatedDecksInline",
     "cta_band": "CtaMarqueeRibbon"
   }
 }

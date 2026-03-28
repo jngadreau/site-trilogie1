@@ -7,6 +7,8 @@ export const DECK_LANDING_SECTION_ORDER = [
   'how_to_use',
   'in_the_box',
   'faq',
+  'creator',
+  'related_decks',
   'cta_band',
 ] as const;
 

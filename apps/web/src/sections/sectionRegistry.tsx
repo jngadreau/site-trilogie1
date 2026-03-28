@@ -38,6 +38,10 @@ import { IncludedChecklist } from './in_the_box/IncludedChecklist'
 import { IncludedHighlightGrid } from './in_the_box/IncludedHighlightGrid'
 import { FaqAccordion } from './faq/FaqAccordion'
 import { FaqTwoColumn } from './faq/FaqTwoColumn'
+import { CreatorSpotlight } from './creator/CreatorSpotlight'
+import { CreatorQuoteBand } from './creator/CreatorQuoteBand'
+import { RelatedDecksGrid } from './related_decks/RelatedDecksGrid'
+import { RelatedDecksInline } from './related_decks/RelatedDecksInline'
 
 type AnyProps =
   | HeroSplitImageRightProps
@@ -80,6 +84,10 @@ const registry: Record<string, ComponentType<AnyProps>> = {
   IncludedHighlightGrid: IncludedHighlightGrid as unknown as ComponentType<AnyProps>,
   FaqAccordion: FaqAccordion as unknown as ComponentType<AnyProps>,
   FaqTwoColumn: FaqTwoColumn as unknown as ComponentType<AnyProps>,
+  CreatorSpotlight: CreatorSpotlight as unknown as ComponentType<AnyProps>,
+  CreatorQuoteBand: CreatorQuoteBand as unknown as ComponentType<AnyProps>,
+  RelatedDecksGrid: RelatedDecksGrid as unknown as ComponentType<AnyProps>,
+  RelatedDecksInline: RelatedDecksInline as unknown as ComponentType<AnyProps>,
 }
 
 export function renderDeckSection(section: DeckLandingSection) {

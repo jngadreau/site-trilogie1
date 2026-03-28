@@ -291,7 +291,7 @@ export function AdminDeckLandingPage() {
       <section className="admin-dl__section">
         <h2>Nouvelle variante (slug Arbre de vie)</h2>
         <p className="admin-dl__muted">
-          Slug du type <code>arbre-de-vie-e</code>, puis les huit sections (hero → FAQ → CTA). Ensuite : Grok → JSON
+          Slug du type <code>arbre-de-vie-e</code>, puis les dix sections (hero → jeux liés → CTA). Ensuite : Grok → JSON
           ou pipeline depuis le tableau ci-dessous.
         </p>
         <form className="admin-dl__register" onSubmit={submitNewVariant}>

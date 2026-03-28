@@ -461,6 +461,88 @@ export const SECTION_DEMO_FIXTURES: Record<DeckSectionKey, SectionDemoBlock[]> =
       },
     },
   ],
+  creator: [
+    {
+      variant: 'CreatorSpotlight',
+      label: 'CreatorSpotlight',
+      props: {
+        sectionTitle: 'La créatrice',
+        name: 'Hélène Durand',
+        roleLabel: 'Canalisatrice · Ose Un Pas Vers Toi',
+        bodyMarkdown:
+          'Hélène imagine des oracles qui **honorent le vivant** : cycles, dualités, lenteur du germe qui devient arbre. *L’Oracle de l’Arbre de Vie* prolonge cette ligne — pas de fatalité, des **questions** et des images qui donnent du vocabulaire à l’intuition.\n\nElle accompagne aussi la **trilogie Créaticards** avec *Ganesh* et *Les Voix chamaniques* pour des lectures croisées.',
+        imageUrl: DEMO_HERO_IMAGE,
+        imageAlt: 'Portrait ou ambiance associée à la créatrice (placeholder démo)',
+        ctaLabel: 'Découvrir Ose Un Pas Vers Toi',
+        ctaHref: 'https://oseunpasverstoi.fr',
+      },
+    },
+    {
+      variant: 'CreatorQuoteBand',
+      label: 'CreatorQuoteBand',
+      props: {
+        quoteMarkdown:
+          '*« Je crée des jeux pour que personne ne se sente seul·e face à ce qu’il traverse — la nature et les cartes peuvent être des témoins tendres. »*',
+        name: 'Hélène Durand',
+        roleLine: 'Créatrice — Ose Un Pas Vers Toi · Créaticards',
+      },
+    },
+  ],
+  related_decks: [
+    {
+      variant: 'RelatedDecksGrid',
+      label: 'RelatedDecksGrid',
+      props: {
+        sectionTitle: 'La trilogie Créaticards',
+        introMarkdown:
+          'Trois univers complémentaires : **obstacles & sagesse**, **Arbre de Vie**, **lignées & médecine**. Les mélanger enrichit les tirages.',
+        decks: [
+          {
+            deckName: 'L’Oracle de l’Arbre de Vie',
+            tagline: 'Cycles · équilibre terre-ciel',
+            bodyMarkdown:
+              'Tu es ici : **64 cartes** duo Image/Message, livret de tirages et étui nomade.',
+            href: '/oracle-arbre-de-vie',
+            ctaLabel: 'Ce jeu',
+          },
+          {
+            deckName: 'L’Oracle de Ganesh',
+            tagline: 'Obstacles · ouverture',
+            bodyMarkdown:
+              'Pour nommer ce qui bloque et demander une **sagesse** qui déplace les montagnes, pas à pas.',
+            href: '/oracle-ganesh',
+          },
+          {
+            deckName: 'Les Voix chamaniques',
+            tagline: 'Ancêtres · médecine du souffle',
+            bodyMarkdown:
+              'Explorer les **lignées**, les soins symboliques et les messages du non-humain avec respect.',
+            href: '/voix-chamaniques',
+          },
+        ],
+      },
+    },
+    {
+      variant: 'RelatedDecksInline',
+      label: 'RelatedDecksInline',
+      props: {
+        sectionTitle: 'Poursuivre avec…',
+        introMarkdown: 'Liens rapides vers les **deux autres piliers** de la trilogie (URLs de démo).',
+        items: [
+          {
+            label: 'L’Oracle de Ganesh',
+            descriptionMarkdown: 'Quand le chemin semble **bouché** — une autre voix pour débloquer avec douceur.',
+            href: '/oracle-ganesh',
+          },
+          {
+            label: 'Les Voix chamaniques',
+            descriptionMarkdown: 'Pour le **souffle**, les rituels et le dialogue avec les mondes invisibles.',
+            href: '/voix-chamaniques',
+          },
+        ],
+      },
+    },
+  ],
   cta_band: [
     {
       variant: 'CtaMarqueeRibbon',

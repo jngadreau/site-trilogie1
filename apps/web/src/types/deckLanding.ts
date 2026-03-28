@@ -19,6 +19,8 @@ export type SectionId =
   | 'how_to_use'
   | 'in_the_box'
   | 'faq'
+  | 'creator'
+  | 'related_decks'
   | 'cta_band'
 
 export interface DeckSectionMediaSlotV1 {

@@ -15,6 +15,8 @@ const OUTCOMES = ['OutcomesBentoGrid', 'OutcomesSignalStrip'] as const;
 const HOW = ['HowToNumbered', 'HowToTimeline'] as const;
 const IN_BOX = ['IncludedChecklist', 'IncludedHighlightGrid'] as const;
 const FAQ = ['FaqAccordion', 'FaqTwoColumn'] as const;
+const CREATOR = ['CreatorSpotlight', 'CreatorQuoteBand'] as const;
+const RELATED = ['RelatedDecksGrid', 'RelatedDecksInline'] as const;
 const CTA = ['CtaMarqueeRibbon', 'CtaSplitAction'] as const;
 
 /**
@@ -62,6 +64,16 @@ export class UpdateDeckLandingVariantsDto {
   @IsString()
   @IsIn([...FAQ])
   faq?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsIn([...CREATOR])
+  creator?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsIn([...RELATED])
+  related_decks?: string;
 
   @IsOptional()
   @IsString()

@@ -21,4 +21,8 @@ export const VARIANT_TO_SPEC_REL: Record<string, string> = {
   IncludedHighlightGrid: 'in_the_box/variants/IncludedHighlightGrid.spec.md',
   FaqAccordion: 'faq/variants/FaqAccordion.spec.md',
   FaqTwoColumn: 'faq/variants/FaqTwoColumn.spec.md',
+  CreatorSpotlight: 'creator/variants/CreatorSpotlight.spec.md',
+  CreatorQuoteBand: 'creator/variants/CreatorQuoteBand.spec.md',
+  RelatedDecksGrid: 'related_decks/variants/RelatedDecksGrid.spec.md',
+  RelatedDecksInline: 'related_decks/variants/RelatedDecksInline.spec.md',
 };

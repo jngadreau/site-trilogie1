@@ -4,6 +4,8 @@ import { VARIANT_TO_SPEC_REL } from './deck-variant-spec-paths';
 
 /** Ordre stable : par type de section puis par nom de variante. */
 const SPEC_REL_PATHS = [
+  'creator/variants/CreatorQuoteBand.spec.md',
+  'creator/variants/CreatorSpotlight.spec.md',
   'cta_band/variants/CtaMarqueeRibbon.spec.md',
   'cta_band/variants/CtaSplitAction.spec.md',
   'deck_identity/variants/IdentityMinimal.spec.md',
@@ -25,6 +27,8 @@ const SPEC_REL_PATHS = [
   'in_the_box/variants/IncludedHighlightGrid.spec.md',
   'outcomes/variants/OutcomesBentoGrid.spec.md',
   'outcomes/variants/OutcomesSignalStrip.spec.md',
+  'related_decks/variants/RelatedDecksGrid.spec.md',
+  'related_decks/variants/RelatedDecksInline.spec.md',
 ] as const;
 
 export async function readDeckSectionSpecsBundle(sectionsRoot: string): Promise<string> {

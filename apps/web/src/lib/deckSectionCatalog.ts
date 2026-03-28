@@ -7,6 +7,8 @@ export const DECK_SECTION_ORDER = [
   'how_to_use',
   'in_the_box',
   'faq',
+  'creator',
+  'related_decks',
   'cta_band',
 ] as const
 
@@ -28,6 +30,8 @@ export const VARIANTS_BY_SECTION: Record<DeckSectionKey, readonly string[]> = {
   how_to_use: ['HowToNumbered', 'HowToTimeline'],
   in_the_box: ['IncludedChecklist', 'IncludedHighlightGrid'],
   faq: ['FaqAccordion', 'FaqTwoColumn'],
+  creator: ['CreatorSpotlight', 'CreatorQuoteBand'],
+  related_decks: ['RelatedDecksGrid', 'RelatedDecksInline'],
   cta_band: ['CtaMarqueeRibbon', 'CtaSplitAction'],
 }
 
@@ -39,5 +43,7 @@ export const SECTION_LABELS_FR: Record<DeckSectionKey, string> = {
   how_to_use: 'Comment utiliser',
   in_the_box: 'Contenu du jeu',
   faq: 'FAQ',
+  creator: 'Créatrice / ligne éditoriale',
+  related_decks: 'Jeux liés (trilogie)',
   cta_band: 'Bandeau CTA',
 }

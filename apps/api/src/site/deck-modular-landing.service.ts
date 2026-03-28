@@ -48,6 +48,8 @@ const VARIANT_CHOICES: Record<SectionKey, readonly string[]> = {
   how_to_use: ['HowToNumbered', 'HowToTimeline'],
   in_the_box: ['IncludedChecklist', 'IncludedHighlightGrid'],
   faq: ['FaqAccordion', 'FaqTwoColumn'],
+  creator: ['CreatorSpotlight', 'CreatorQuoteBand'],
+  related_decks: ['RelatedDecksGrid', 'RelatedDecksInline'],
   cta_band: ['CtaMarqueeRibbon', 'CtaSplitAction'],
 };
 

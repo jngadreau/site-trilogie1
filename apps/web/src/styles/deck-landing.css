@@ -1312,3 +1312,193 @@
   color: var(--dl-muted);
   font-size: 0.95rem;
 }
+
+/* Créatrice */
+.dl-creator {
+  padding: 2.5rem 0;
+  border-top: 1px solid color-mix(in srgb, var(--dl-text) 8%, transparent);
+}
+
+.dl-creator__spot-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.dl-creator__spot-inner--split {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+@media (max-width: 720px) {
+  .dl-creator__spot-inner--split {
+    flex-direction: column;
+  }
+}
+
+.dl-creator__spot-visual {
+  flex: 0 0 min(220px, 38%);
+}
+
+.dl-creator__spot-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--dl-radius);
+  border: 1px solid color-mix(in srgb, var(--dl-text) 10%, transparent);
+  box-shadow: 0 8px 28px color-mix(in srgb, var(--dl-text) 10%, transparent);
+}
+
+.dl-creator__spot-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.dl-creator__spot-name {
+  font-family: var(--dl-font-heading);
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 0 0 0.2rem;
+}
+
+.dl-creator__spot-role {
+  margin: 0 0 0.85rem;
+  font-size: 0.9rem;
+  color: var(--dl-accent);
+  font-weight: 600;
+}
+
+.dl-creator__spot-body {
+  color: var(--dl-muted);
+}
+
+.dl-creator__spot-cta {
+  margin-top: 1rem;
+}
+
+.dl-creator--quote {
+  padding: 2rem 0 2.5rem;
+}
+
+.dl-creator__quote-block {
+  margin: 0;
+  padding: 1.75rem 2rem;
+  background: color-mix(in srgb, var(--dl-accent) 8%, var(--dl-surface));
+  border-radius: var(--dl-radius);
+  border-left: 4px solid var(--dl-accent);
+}
+
+.dl-creator__quote-text {
+  font-family: var(--dl-font-heading);
+  font-size: clamp(1.15rem, 2.5vw, 1.45rem);
+  line-height: 1.45;
+  color: var(--dl-text);
+}
+
+.dl-creator__quote-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  margin-top: 1.1rem;
+  font-style: normal;
+}
+
+.dl-creator__quote-name {
+  font-weight: 700;
+  font-style: normal;
+  color: var(--dl-text);
+}
+
+.dl-creator__quote-role {
+  font-size: 0.9rem;
+  color: var(--dl-muted);
+}
+
+/* Jeux liés */
+.dl-related {
+  padding: 2.5rem 0;
+  border-top: 1px solid color-mix(in srgb, var(--dl-text) 8%, transparent);
+}
+
+.dl-related__intro {
+  color: var(--dl-muted);
+  margin-bottom: 1.25rem;
+  max-width: 42rem;
+}
+
+.dl-related__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.1rem;
+}
+
+@media (max-width: 900px) {
+  .dl-related__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dl-related__card {
+  padding: 1.2rem 1.3rem;
+  background: var(--dl-surface);
+  border-radius: var(--dl-radius);
+  border: 1px solid color-mix(in srgb, var(--dl-text) 8%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dl-related__card-name {
+  font-family: var(--dl-font-heading);
+  font-size: 1.08rem;
+  margin: 0;
+}
+
+.dl-related__card-tag {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--dl-accent);
+  font-weight: 600;
+}
+
+.dl-related__card-body {
+  flex: 1;
+  color: var(--dl-muted);
+  font-size: 0.92rem;
+}
+
+.dl-related__card-link {
+  margin-top: 0.5rem;
+  align-self: flex-start;
+}
+
+.dl-related__inline-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.dl-related__inline-link {
+  font-family: var(--dl-font-heading);
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--dl-accent);
+  text-decoration: none;
+}
+
+.dl-related__inline-link:hover {
+  text-decoration: underline;
+}
+
+.dl-related__inline-desc {
+  margin-top: 0.35rem;
+  color: var(--dl-muted);
+  font-size: 0.95rem;
+}

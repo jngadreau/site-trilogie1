@@ -201,6 +201,37 @@
       "media": []
     },
     {
+      "id": "creator",
+      "variant": "CreatorQuoteBand",
+      "props": {
+        "quoteMarkdown": "*« Les cartes ne décident pas à ta place : elles t’aident à entendre ce que tu sais déjà un peu. »*",
+        "name": "Hélène Durand",
+        "roleLine": "Créatrice — Créaticards"
+      },
+      "media": []
+    },
+    {
+      "id": "related_decks",
+      "variant": "RelatedDecksInline",
+      "props": {
+        "sectionTitle": "Autres oracles",
+        "introMarkdown": "Liens vers les deux autres jeux de la même famille.",
+        "items": [
+          {
+            "label": "L'Oracle de Ganesh",
+            "descriptionMarkdown": "Pour les **montagnes** intérieures à gravir avec patience.",
+            "href": "/oracle-ganesh"
+          },
+          {
+            "label": "Les Voix chamaniques",
+            "descriptionMarkdown": "Pour le **souffle**, les ancêtres et la médecine symbolique.",
+            "href": "/voix-chamaniques"
+          }
+        ]
+      },
+      "media": []
+    },
+    {
       "id": "cta_band",
       "variant": "CtaMarqueeRibbon",
       "props": {

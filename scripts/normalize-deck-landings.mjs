@@ -19,6 +19,8 @@ const ORDER = [
   'how_to_use',
   'in_the_box',
   'faq',
+  'creator',
+  'related_decks',
   'cta_band',
 ]
 
@@ -297,6 +299,62 @@ const DEFAULTS = {
         question: 'Faut-il purifier les cartes ?',
         answerMarkdown:
           'Le livret propose des rituels **simples** (souffle, intention, sauge) — adapte à tes croyances.',
+      },
+    ],
+  }),
+  CreatorSpotlight: () => ({
+    sectionTitle: 'La créatrice',
+    name: 'Hélène Durand',
+    roleLabel: 'Canalisatrice · Ose Un Pas Vers Toi',
+    bodyMarkdown:
+      'Hélène conçoit des oracles ancrés dans le **vivant** et l’écoute intérieure. *L’Oracle de l’Arbre de Vie* invite à honorer les cycles sans se presser.',
+    ctaLabel: 'Ose Un Pas Vers Toi',
+    ctaHref: 'https://oseunpasverstoi.fr',
+  }),
+  CreatorQuoteBand: () => ({
+    quoteMarkdown:
+      '*« Les cartes ne décident pas à ta place : elles t’aident à entendre ce que tu sais déjà un peu. »*',
+    name: 'Hélène Durand',
+    roleLine: 'Créatrice — Créaticards',
+  }),
+  RelatedDecksGrid: () => ({
+    sectionTitle: 'La trilogie Créaticards',
+    introMarkdown: 'Combine les trois univers pour des lectures plus riches.',
+    decks: [
+      {
+        deckName: "L'Oracle de l'Arbre de Vie",
+        tagline: 'Cycles · nature',
+        bodyMarkdown: 'Tu es sur cette fiche : guidance **Image + Message**, 64 cartes.',
+        href: '/oracle-arbre-de-vie',
+        ctaLabel: 'Ce jeu',
+      },
+      {
+        deckName: "L'Oracle de Ganesh",
+        tagline: 'Obstacles · sagesse',
+        bodyMarkdown: 'Débloquer avec **bienveillance** ce qui résiste.',
+        href: '/oracle-ganesh',
+      },
+      {
+        deckName: 'Les Voix chamaniques',
+        tagline: 'Lignées · médecine',
+        bodyMarkdown: 'Rituels et **dialogue** avec les mondes subtils.',
+        href: '/voix-chamaniques',
+      },
+    ],
+  }),
+  RelatedDecksInline: () => ({
+    sectionTitle: 'Autres oracles',
+    introMarkdown: 'Liens vers les deux autres jeux de la même famille.',
+    items: [
+      {
+        label: "L'Oracle de Ganesh",
+        descriptionMarkdown: 'Pour les **montagnes** intérieures à gravir avec patience.',
+        href: '/oracle-ganesh',
+      },
+      {
+        label: 'Les Voix chamaniques',
+        descriptionMarkdown: 'Pour le **souffle**, les ancêtres et la médecine symbolique.',
+        href: '/voix-chamaniques',
       },
     ],
   }),

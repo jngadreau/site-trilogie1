@@ -15,6 +15,8 @@ const OUTCOMES = ['OutcomesBentoGrid', 'OutcomesSignalStrip'] as const;
 const HOW = ['HowToNumbered', 'HowToTimeline'] as const;
 const IN_BOX = ['IncludedChecklist', 'IncludedHighlightGrid'] as const;
 const FAQ = ['FaqAccordion', 'FaqTwoColumn'] as const;
+const CREATOR = ['CreatorSpotlight', 'CreatorQuoteBand'] as const;
+const RELATED = ['RelatedDecksGrid', 'RelatedDecksInline'] as const;
 const CTA = ['CtaMarqueeRibbon', 'CtaSplitAction'] as const;
 
 export class RegisterDeckLandingVariantDto {
@@ -51,6 +53,14 @@ export class RegisterDeckLandingVariantDto {
   @IsString()
   @IsIn([...FAQ])
   faq!: string;
+
+  @IsString()
+  @IsIn([...CREATOR])
+  creator!: string;
+
+  @IsString()
+  @IsIn([...RELATED])
+  related_decks!: string;
 
   @IsString()
   @IsIn([...CTA])
