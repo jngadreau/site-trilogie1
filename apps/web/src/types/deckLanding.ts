@@ -17,6 +17,8 @@ export type SectionId =
   | 'for_who'
   | 'outcomes'
   | 'how_to_use'
+  | 'in_the_box'
+  | 'faq'
   | 'cta_band'
 
 export interface DeckSectionMediaSlotV1 {

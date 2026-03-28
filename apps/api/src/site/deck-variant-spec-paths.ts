@@ -17,4 +17,8 @@ export const VARIANT_TO_SPEC_REL: Record<string, string> = {
   HowToTimeline: 'how_to_use/variants/HowToTimeline.spec.md',
   CtaMarqueeRibbon: 'cta_band/variants/CtaMarqueeRibbon.spec.md',
   CtaSplitAction: 'cta_band/variants/CtaSplitAction.spec.md',
+  IncludedChecklist: 'in_the_box/variants/IncludedChecklist.spec.md',
+  IncludedHighlightGrid: 'in_the_box/variants/IncludedHighlightGrid.spec.md',
+  FaqAccordion: 'faq/variants/FaqAccordion.spec.md',
+  FaqTwoColumn: 'faq/variants/FaqTwoColumn.spec.md',
 };

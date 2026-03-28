@@ -138,6 +138,60 @@
       "media": []
     },
     {
+      "id": "in_the_box",
+      "variant": "IncludedChecklist",
+      "props": {
+        "sectionTitle": "Dans la boîte",
+        "introMarkdown": "Tout ce qu’il faut pour commencer : cartes, livret et protection pour transporter ton oracle.",
+        "items": [
+          {
+            "title": "64 cartes marque-page",
+            "detailMarkdown": "**32 cartes Images** (mot-clé + message court) et **32 cartes Messages longs** (conseils détaillés, visualisations)."
+          },
+          {
+            "title": "Livret d’accompagnement",
+            "detailMarkdown": "Rituels de purification, **méthodes de tirage**, interprétations et pistes de réflexion."
+          },
+          {
+            "title": "Étui transparent",
+            "detailMarkdown": "Protège le jeu et permet de **glisser une carte** dans un livre ou un sac."
+          },
+          {
+            "title": "Format physique",
+            "detailMarkdown": "Marque-pages rigides, pensés pour une manipulation **quotidienne** et nomade."
+          }
+        ]
+      },
+      "media": []
+    },
+    {
+      "id": "faq",
+      "variant": "FaqAccordion",
+      "props": {
+        "sectionTitle": "Questions fréquentes",
+        "introMarkdown": "Réponses courtes sur l’usage et le contenu — le livret va plus en profondeur.",
+        "items": [
+          {
+            "question": "Différence entre carte Image et Message long ?",
+            "answerMarkdown": "L’**Image** donne un éclair rapide (mot-clé + texte court). Le **Message long** développe conseils, visualisation et affirmation."
+          },
+          {
+            "question": "Je débute : par où commencer ?",
+            "answerMarkdown": "Lis les pages d’introduction du **livret**, fais un tirage « Sève du jour » avec une seule carte, note ton ressenti."
+          },
+          {
+            "question": "Puis-je mélanger avec d’autres oracles ?",
+            "answerMarkdown": "Oui — beaucoup complètent avec *L’Oracle de Ganesh* ou *Les Voix chamaniques* pour des lectures croisées."
+          },
+          {
+            "question": "Y a-t-il des promesses de guérison ?",
+            "answerMarkdown": "Non. L’oracle est un **outil d’introspection** et d’accompagnement, pas un substitut à un soin médical ou psychologique."
+          }
+        ]
+      },
+      "media": []
+    },
+    {
       "id": "cta_band",
       "variant": "CtaMarqueeRibbon",
       "props": {

@@ -46,6 +46,8 @@ const VARIANT_CHOICES: Record<SectionKey, readonly string[]> = {
   for_who: ['ForWhoTwoColumns', 'ForWhoPillars'],
   outcomes: ['OutcomesBentoGrid', 'OutcomesSignalStrip'],
   how_to_use: ['HowToNumbered', 'HowToTimeline'],
+  in_the_box: ['IncludedChecklist', 'IncludedHighlightGrid'],
+  faq: ['FaqAccordion', 'FaqTwoColumn'],
   cta_band: ['CtaMarqueeRibbon', 'CtaSplitAction'],
 };
 

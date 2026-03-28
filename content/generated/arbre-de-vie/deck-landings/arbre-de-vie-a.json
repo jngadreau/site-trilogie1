@@ -16,16 +16,18 @@
   "sections": [
     {
       "id": "hero",
-      "variant": "HeroSplitImageRight",
+      "variant": "HeroGlowVault",
       "props": {
-        "title": "L’Arbre de vie",
-        "subtitle": "Oracle de présence et de ressourcement",
-        "bodyMarkdown": "Un jeu de cartes pour **poser les bonnes questions**, quand la tête tourne et que le cœur cherche une boussole. Chaque tirage devient un **petit rituel** : respirer, choisir, écouter ce qui émerge.",
-        "ctaLabel": "Découvrir les cartes",
-        "ctaHref": "#identite",
+        "kicker": "Oracle 64 cartes",
+        "title": "L'Oracle de l'Arbre de Vie",
+        "bodyMarkdown": "**32 cartes Images** + **32 Messages longs**, étui transparent et livret : un compagnon portable pour tes rituels du quotidien.",
+        "ctaLabel": "Voir le contenu",
+        "ctaHref": "#contenu",
         "imageUrl": "/ai/generated-images/banner-1.png",
-        "imageAlt": "Illustration douce, arbre stylisé et lumière dorée"
-      }
+        "imageAlt": "Ambiance boisée et lumineuse",
+        "glowIntensity": 0.68
+      },
+      "media": []
     },
     {
       "id": "deck_identity",
@@ -35,7 +37,8 @@
         "tagline": "52 chemins vers soi",
         "badge": "Oracle introspectif",
         "bodyMarkdown": "Ce deck mêle **symboles naturels** et invitations à l’écoute intérieure. Il ne prédit pas l’avenir : il **éclaire le présent** et ouvre des pistes concrètes pour avancer avec douceur."
-      }
+      },
+      "media": []
     },
     {
       "id": "for_who",
@@ -44,7 +47,48 @@
         "title": "Pour qui ?",
         "leftMarkdown": "- Tu cherches un **outil simple** pour faire le point sans te noyer dans les concepts.\n- Tu aimes les **images évocatrices** qui parlent au corps autant qu’à l’esprit.\n- Tu pratiques déjà journal, méditation ou thérapie et veux **une prolongation ludique**.",
         "rightMarkdown": "- Tu accompagnes des personnes (coaching, soin, animation) et veux **une médiation visuelle**.\n- Tu débutes : les cartes sont **lisibles sans manuel épais**.\n- Tu veux **rallumer la curiosité** plutôt que de te juger."
-      }
+      },
+      "media": []
+    },
+    {
+      "id": "outcomes",
+      "variant": "OutcomesBentoGrid",
+      "props": {
+        "sectionTitle": "Ce que tu peux en retirer",
+        "introMarkdown": "Des fruits concrets pour ton chemin : clarté, rituels et profondeur, sans promesse magique.",
+        "cells": [
+          {
+            "title": "Guidance du jour",
+            "bodyMarkdown": "Une **Image** ou un **Message** pour cadrer ta journée.",
+            "span": "wide"
+          },
+          {
+            "title": "Tirages guidés",
+            "bodyMarkdown": "Sève du jour, racines et cime, branches : méthodes dans le **livret**.",
+            "span": "tall"
+          },
+          {
+            "title": "Nomade",
+            "bodyMarkdown": "**Étui transparent** + format marque-page : emporte une carte partout.",
+            "span": "tall"
+          },
+          {
+            "title": "Profondeur",
+            "bodyMarkdown": "Messages longs avec **visualisations** et affirmations.",
+            "span": "wide"
+          },
+          {
+            "title": "Solo ou duo",
+            "bodyMarkdown": "Combine Image + Message pour **équilibre** intuition / détail."
+          },
+          {
+            "title": "Trilogie Créaticards",
+            "bodyMarkdown": "Complète avec *Ganesh* et *Voix chamaniques* pour des lectures croisées.",
+            "span": "featured"
+          }
+        ]
+      },
+      "media": []
     },
     {
       "id": "how_to_use",
@@ -66,7 +110,75 @@
             "bodyMarkdown": "Lis le texte court, puis **regarde l’image** : qu’est-ce qui résonne ? Note une phrase ou un geste concret pour la journée."
           }
         ]
-      }
+      },
+      "media": []
+    },
+    {
+      "id": "in_the_box",
+      "variant": "IncludedChecklist",
+      "props": {
+        "sectionTitle": "Dans la boîte",
+        "introMarkdown": "Tout ce qu’il faut pour commencer : cartes, livret et protection pour transporter ton oracle.",
+        "items": [
+          {
+            "title": "64 cartes marque-page",
+            "detailMarkdown": "**32 cartes Images** (mot-clé + message court) et **32 cartes Messages longs** (conseils détaillés, visualisations)."
+          },
+          {
+            "title": "Livret d’accompagnement",
+            "detailMarkdown": "Rituels de purification, **méthodes de tirage**, interprétations et pistes de réflexion."
+          },
+          {
+            "title": "Étui transparent",
+            "detailMarkdown": "Protège le jeu et permet de **glisser une carte** dans un livre ou un sac."
+          },
+          {
+            "title": "Format physique",
+            "detailMarkdown": "Marque-pages rigides, pensés pour une manipulation **quotidienne** et nomade."
+          }
+        ]
+      },
+      "media": []
+    },
+    {
+      "id": "faq",
+      "variant": "FaqAccordion",
+      "props": {
+        "sectionTitle": "Questions fréquentes",
+        "introMarkdown": "Réponses courtes sur l’usage et le contenu — le livret va plus en profondeur.",
+        "items": [
+          {
+            "question": "Différence entre carte Image et Message long ?",
+            "answerMarkdown": "L’**Image** donne un éclair rapide (mot-clé + texte court). Le **Message long** développe conseils, visualisation et affirmation."
+          },
+          {
+            "question": "Je débute : par où commencer ?",
+            "answerMarkdown": "Lis les pages d’introduction du **livret**, fais un tirage « Sève du jour » avec une seule carte, note ton ressenti."
+          },
+          {
+            "question": "Puis-je mélanger avec d’autres oracles ?",
+            "answerMarkdown": "Oui — beaucoup complètent avec *L’Oracle de Ganesh* ou *Les Voix chamaniques* pour des lectures croisées."
+          },
+          {
+            "question": "Y a-t-il des promesses de guérison ?",
+            "answerMarkdown": "Non. L’oracle est un **outil d’introspection** et d’accompagnement, pas un substitut à un soin médical ou psychologique."
+          }
+        ]
+      },
+      "media": []
+    },
+    {
+      "id": "cta_band",
+      "variant": "CtaMarqueeRibbon",
+      "props": {
+        "eyebrow": "Prêt·e à écouter l’Arbre ?",
+        "headline": "Accueille la guidance des racines et des branches",
+        "subline": "64 cartes, livret et étui — pour un compagnon de croissance au quotidien.",
+        "ctaLabel": "Découvrir l’oracle",
+        "ctaHref": "/oracle-arbre-de-vie",
+        "marqueeText": "Racines · Sève · Branches · Cycles · Intuition · Nature · Rituel · Ancrage · Lumière · Douceur"
+      },
+      "media": []
     }
   ]
 }

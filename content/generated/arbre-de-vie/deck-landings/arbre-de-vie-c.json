@@ -73,6 +73,46 @@
       "media": []
     },
     {
+      "id": "outcomes",
+      "variant": "OutcomesBentoGrid",
+      "props": {
+        "sectionTitle": "Ce que tu peux en retirer",
+        "introMarkdown": "Des fruits concrets pour ton chemin : clarté, rituels et profondeur, sans promesse magique.",
+        "cells": [
+          {
+            "title": "Guidance du jour",
+            "bodyMarkdown": "Une **Image** ou un **Message** pour cadrer ta journée.",
+            "span": "wide"
+          },
+          {
+            "title": "Tirages guidés",
+            "bodyMarkdown": "Sève du jour, racines et cime, branches : méthodes dans le **livret**.",
+            "span": "tall"
+          },
+          {
+            "title": "Nomade",
+            "bodyMarkdown": "**Étui transparent** + format marque-page : emporte une carte partout.",
+            "span": "tall"
+          },
+          {
+            "title": "Profondeur",
+            "bodyMarkdown": "Messages longs avec **visualisations** et affirmations.",
+            "span": "wide"
+          },
+          {
+            "title": "Solo ou duo",
+            "bodyMarkdown": "Combine Image + Message pour **équilibre** intuition / détail."
+          },
+          {
+            "title": "Trilogie Créaticards",
+            "bodyMarkdown": "Complète avec *Ganesh* et *Voix chamaniques* pour des lectures croisées.",
+            "span": "featured"
+          }
+        ]
+      },
+      "media": []
+    },
+    {
       "id": "how_to_use",
       "variant": "HowToTimeline",
       "props": {
@@ -96,6 +136,77 @@
             "detailMarkdown": "Glissez la carte dans son étui transparent pour l'emporter comme un talisman. Méditez-y dans la journée, visualisez sa guidance se déployer comme une branche vers le ciel. Revenez-y au soir pour ancrer les insights."
           }
         ]
+      },
+      "media": []
+    },
+    {
+      "id": "in_the_box",
+      "variant": "IncludedChecklist",
+      "props": {
+        "sectionTitle": "Dans la boîte",
+        "introMarkdown": "Tout ce qu’il faut pour commencer : cartes, livret et protection pour transporter ton oracle.",
+        "items": [
+          {
+            "title": "64 cartes marque-page",
+            "detailMarkdown": "**32 cartes Images** (mot-clé + message court) et **32 cartes Messages longs** (conseils détaillés, visualisations)."
+          },
+          {
+            "title": "Livret d’accompagnement",
+            "detailMarkdown": "Rituels de purification, **méthodes de tirage**, interprétations et pistes de réflexion."
+          },
+          {
+            "title": "Étui transparent",
+            "detailMarkdown": "Protège le jeu et permet de **glisser une carte** dans un livre ou un sac."
+          },
+          {
+            "title": "Format physique",
+            "detailMarkdown": "Marque-pages rigides, pensés pour une manipulation **quotidienne** et nomade."
+          }
+        ]
+      },
+      "media": []
+    },
+    {
+      "id": "faq",
+      "variant": "FaqTwoColumn",
+      "props": {
+        "sectionTitle": "FAQ",
+        "introMarkdown": "À gauche : achat et matériel. À droite : pratique des tirages.",
+        "leftColumnTitle": "Achat & boîte",
+        "rightColumnTitle": "Tirages",
+        "leftItems": [
+          {
+            "question": "Que contient exactement le jeu ?",
+            "answerMarkdown": "**64 cartes**, un **livret** et un **étui transparent**."
+          },
+          {
+            "question": "Le format marque-page, c’est pratique ?",
+            "answerMarkdown": "Oui pour le **quotidien** : une carte tient dans un livre, un carnet ou une poche de sac."
+          }
+        ],
+        "rightItems": [
+          {
+            "question": "Combien de cartes pour un tirage ?",
+            "answerMarkdown": "Souvent **1** pour le jour ; **2 à 4** pour explorer une situation (voir le livret pour les propositions)."
+          },
+          {
+            "question": "Faut-il purifier les cartes ?",
+            "answerMarkdown": "Le livret propose des rituels **simples** (souffle, intention, sauge) — adapte à tes croyances."
+          }
+        ]
+      },
+      "media": []
+    },
+    {
+      "id": "cta_band",
+      "variant": "CtaSplitAction",
+      "props": {
+        "title": "Passer à l’action",
+        "bodyMarkdown": "Commande le jeu, rejoins la communauté ou offre un oracle à quelqu’un qui traverse une saison intense.",
+        "primaryLabel": "Voir la fiche produit",
+        "primaryHref": "/oracle-arbre-de-vie",
+        "secondaryLabel": "Autres oracles Créaticards",
+        "secondaryHref": "/"
       },
       "media": []
     }

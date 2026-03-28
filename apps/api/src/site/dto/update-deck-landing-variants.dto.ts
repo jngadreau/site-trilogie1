@@ -13,6 +13,8 @@ const DECK_ID = ['IdentityPanel', 'IdentityMinimal'] as const;
 const FOR_WHO = ['ForWhoTwoColumns', 'ForWhoPillars'] as const;
 const OUTCOMES = ['OutcomesBentoGrid', 'OutcomesSignalStrip'] as const;
 const HOW = ['HowToNumbered', 'HowToTimeline'] as const;
+const IN_BOX = ['IncludedChecklist', 'IncludedHighlightGrid'] as const;
+const FAQ = ['FaqAccordion', 'FaqTwoColumn'] as const;
 const CTA = ['CtaMarqueeRibbon', 'CtaSplitAction'] as const;
 
 /**
@@ -50,6 +52,16 @@ export class UpdateDeckLandingVariantsDto {
   @IsString()
   @IsIn([...HOW])
   how_to_use?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsIn([...IN_BOX])
+  in_the_box?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsIn([...FAQ])
+  faq?: string;
 
   @IsOptional()
   @IsString()

@@ -147,6 +147,60 @@
       "media": []
     },
     {
+      "id": "in_the_box",
+      "variant": "IncludedHighlightGrid",
+      "props": {
+        "sectionTitle": "Contenu du jeu",
+        "introMarkdown": "L’essentiel en un coup d’œil avant ta première coupe.",
+        "highlights": [
+          {
+            "title": "64 cartes",
+            "bodyMarkdown": "Duo **Image / Message** pour chaque thème — du flash intuitif au conseil approfondi."
+          },
+          {
+            "title": "Livret",
+            "bodyMarkdown": "Tirages, symbolique et **exemples** pour t’approprier le jeu sans te presser."
+          },
+          {
+            "title": "Étui",
+            "bodyMarkdown": "Protection légère et **rappel visuel** : garde une carte sous les yeux."
+          },
+          {
+            "title": "Création",
+            "bodyMarkdown": "Canalisé par **Hélène Durand** — univers Arbre de Vie, cycles et sagesse du vivant."
+          }
+        ]
+      },
+      "media": []
+    },
+    {
+      "id": "faq",
+      "variant": "FaqAccordion",
+      "props": {
+        "sectionTitle": "Questions fréquentes",
+        "introMarkdown": "Réponses courtes sur l’usage et le contenu — le livret va plus en profondeur.",
+        "items": [
+          {
+            "question": "Différence entre carte Image et Message long ?",
+            "answerMarkdown": "L’**Image** donne un éclair rapide (mot-clé + texte court). Le **Message long** développe conseils, visualisation et affirmation."
+          },
+          {
+            "question": "Je débute : par où commencer ?",
+            "answerMarkdown": "Lis les pages d’introduction du **livret**, fais un tirage « Sève du jour » avec une seule carte, note ton ressenti."
+          },
+          {
+            "question": "Puis-je mélanger avec d’autres oracles ?",
+            "answerMarkdown": "Oui — beaucoup complètent avec *L’Oracle de Ganesh* ou *Les Voix chamaniques* pour des lectures croisées."
+          },
+          {
+            "question": "Y a-t-il des promesses de guérison ?",
+            "answerMarkdown": "Non. L’oracle est un **outil d’introspection** et d’accompagnement, pas un substitut à un soin médical ou psychologique."
+          }
+        ]
+      },
+      "media": []
+    },
+    {
       "id": "cta_band",
       "variant": "CtaMarqueeRibbon",
       "props": {

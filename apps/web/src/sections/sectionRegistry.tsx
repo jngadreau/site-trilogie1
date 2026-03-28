@@ -34,6 +34,10 @@ import { HowToNumbered } from './how_to_use/HowToNumbered'
 import type { HowToNumberedProps } from './how_to_use/HowToNumbered'
 import { HowToTimeline } from './how_to_use/HowToTimeline'
 import type { HowToTimelineProps } from './how_to_use/HowToTimeline'
+import { IncludedChecklist } from './in_the_box/IncludedChecklist'
+import { IncludedHighlightGrid } from './in_the_box/IncludedHighlightGrid'
+import { FaqAccordion } from './faq/FaqAccordion'
+import { FaqTwoColumn } from './faq/FaqTwoColumn'
 
 type AnyProps =
   | HeroSplitImageRightProps
@@ -72,6 +76,10 @@ const registry: Record<string, ComponentType<AnyProps>> = {
   HowToTimeline: HowToTimeline as ComponentType<AnyProps>,
   CtaMarqueeRibbon: CtaMarqueeRibbon as ComponentType<AnyProps>,
   CtaSplitAction: CtaSplitAction as ComponentType<AnyProps>,
+  IncludedChecklist: IncludedChecklist as unknown as ComponentType<AnyProps>,
+  IncludedHighlightGrid: IncludedHighlightGrid as unknown as ComponentType<AnyProps>,
+  FaqAccordion: FaqAccordion as unknown as ComponentType<AnyProps>,
+  FaqTwoColumn: FaqTwoColumn as unknown as ComponentType<AnyProps>,
 }
 
 export function renderDeckSection(section: DeckLandingSection) {

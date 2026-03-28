@@ -16,17 +16,19 @@
   "sections": [
     {
       "id": "hero",
-      "variant": "HeroFullBleed",
+      "variant": "HeroParallaxLayers",
       "props": {
-        "title": "Arbre de vie",
-        "tagline": "Quand la forêt intérieure reprend la parole",
-        "bodyMarkdown": "Cartes **poétiques et incarnées** pour nommer ce que tu ressens et retrouver un fil. Pas de fatalité : des **mises en lumière** et des portes.",
-        "ctaLabel": "Voir l’identité du jeu",
+        "eyebrow": "Arbre de vie",
+        "title": "L'Oracle de l'Arbre de Vie",
+        "strapline": "Écouter la forêt intérieure",
+        "bodyMarkdown": "Tirages **Sève du jour**, **Racines et cime**, **Équilibre des branches** : des clés simples pour t’ancrer et t’élargir.",
+        "ctaLabel": "Découvrir",
         "ctaHref": "#identite",
         "imageUrl": "/ai/generated-images/banner-1.png",
-        "imageAlt": "Forêt brumeuse au lever du jour",
-        "overlayOpacity": 0.52
-      }
+        "imageAlt": "Paysage forestier en profondeur",
+        "spineLabel": "Oracle"
+      },
+      "media": []
     },
     {
       "id": "deck_identity",
@@ -35,7 +37,8 @@
         "eyebrow": "Oracle · introspection guidée",
         "title": "52 cartes, une même invitation",
         "oneLiner": "Revenir au tronc : racines, branches, fruits — **mettre des mots** sur l’invisible sans l’écraser."
-      }
+      },
+      "media": []
     },
     {
       "id": "for_who",
@@ -57,7 +60,35 @@
             "bodyMarkdown": "Support **non intrusif** pour faire émerger des ressources chez la personne accueillie."
           }
         ]
-      }
+      },
+      "media": []
+    },
+    {
+      "id": "outcomes",
+      "variant": "OutcomesSignalStrip",
+      "props": {
+        "sectionTitle": "Les bienfaits",
+        "introMarkdown": "Quatre axes souvent ressentis par celles et ceux qui tirent régulièrement les cartes.",
+        "signals": [
+          {
+            "label": "Clarté",
+            "detailMarkdown": "Une **image** ou une phrase qui pose les choses simplement."
+          },
+          {
+            "label": "Rituel",
+            "detailMarkdown": "Un geste court pour **marquer** le passage entre avant et après."
+          },
+          {
+            "label": "Ancrage",
+            "detailMarkdown": "Des repères **sensoriels** (écorce, racine, brise) pour le corps."
+          },
+          {
+            "label": "Ouverture",
+            "detailMarkdown": "Des questions qui **élargissent** sans imposer une vérité unique."
+          }
+        ]
+      },
+      "media": []
     },
     {
       "id": "how_to_use",
@@ -79,7 +110,79 @@
             "detailMarkdown": "Lis à voix haute, puis **reformule avec tes mots**. Une seule action concrète pour les prochaines 24 h."
           }
         ]
-      }
+      },
+      "media": []
+    },
+    {
+      "id": "in_the_box",
+      "variant": "IncludedHighlightGrid",
+      "props": {
+        "sectionTitle": "Contenu du jeu",
+        "introMarkdown": "L’essentiel en un coup d’œil avant ta première coupe.",
+        "highlights": [
+          {
+            "title": "64 cartes",
+            "bodyMarkdown": "Duo **Image / Message** pour chaque thème — du flash intuitif au conseil approfondi."
+          },
+          {
+            "title": "Livret",
+            "bodyMarkdown": "Tirages, symbolique et **exemples** pour t’approprier le jeu sans te presser."
+          },
+          {
+            "title": "Étui",
+            "bodyMarkdown": "Protection légère et **rappel visuel** : garde une carte sous les yeux."
+          },
+          {
+            "title": "Création",
+            "bodyMarkdown": "Canalisé par **Hélène Durand** — univers Arbre de Vie, cycles et sagesse du vivant."
+          }
+        ]
+      },
+      "media": []
+    },
+    {
+      "id": "faq",
+      "variant": "FaqTwoColumn",
+      "props": {
+        "sectionTitle": "FAQ",
+        "introMarkdown": "À gauche : achat et matériel. À droite : pratique des tirages.",
+        "leftColumnTitle": "Achat & boîte",
+        "rightColumnTitle": "Tirages",
+        "leftItems": [
+          {
+            "question": "Que contient exactement le jeu ?",
+            "answerMarkdown": "**64 cartes**, un **livret** et un **étui transparent**."
+          },
+          {
+            "question": "Le format marque-page, c’est pratique ?",
+            "answerMarkdown": "Oui pour le **quotidien** : une carte tient dans un livre, un carnet ou une poche de sac."
+          }
+        ],
+        "rightItems": [
+          {
+            "question": "Combien de cartes pour un tirage ?",
+            "answerMarkdown": "Souvent **1** pour le jour ; **2 à 4** pour explorer une situation (voir le livret pour les propositions)."
+          },
+          {
+            "question": "Faut-il purifier les cartes ?",
+            "answerMarkdown": "Le livret propose des rituels **simples** (souffle, intention, sauge) — adapte à tes croyances."
+          }
+        ]
+      },
+      "media": []
+    },
+    {
+      "id": "cta_band",
+      "variant": "CtaSplitAction",
+      "props": {
+        "title": "Passer à l’action",
+        "bodyMarkdown": "Commande le jeu, rejoins la communauté ou offre un oracle à quelqu’un qui traverse une saison intense.",
+        "primaryLabel": "Voir la fiche produit",
+        "primaryHref": "/oracle-arbre-de-vie",
+        "secondaryLabel": "Autres oracles Créaticards",
+        "secondaryHref": "/"
+      },
+      "media": []
     }
   ]
 }

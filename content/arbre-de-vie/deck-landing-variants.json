@@ -5,6 +5,8 @@
     "for_who": "ForWhoTwoColumns",
     "outcomes": "OutcomesBentoGrid",
     "how_to_use": "HowToNumbered",
+    "in_the_box": "IncludedChecklist",
+    "faq": "FaqAccordion",
     "cta_band": "CtaMarqueeRibbon"
   },
   "arbre-de-vie-b": {
@@ -13,6 +15,8 @@
     "for_who": "ForWhoPillars",
     "outcomes": "OutcomesSignalStrip",
     "how_to_use": "HowToTimeline",
+    "in_the_box": "IncludedHighlightGrid",
+    "faq": "FaqTwoColumn",
     "cta_band": "CtaSplitAction"
   },
   "arbre-de-vie-c": {
@@ -21,6 +25,8 @@
     "for_who": "ForWhoPillars",
     "outcomes": "OutcomesBentoGrid",
     "how_to_use": "HowToTimeline",
+    "in_the_box": "IncludedChecklist",
+    "faq": "FaqTwoColumn",
     "cta_band": "CtaSplitAction"
   },
   "arbre-de-vie-d": {
@@ -29,6 +35,8 @@
     "for_who": "ForWhoPillars",
     "outcomes": "OutcomesSignalStrip",
     "how_to_use": "HowToNumbered",
+    "in_the_box": "IncludedHighlightGrid",
+    "faq": "FaqAccordion",
     "cta_band": "CtaMarqueeRibbon"
   },
   "arbre-de-vie-e": {
@@ -37,6 +45,8 @@
     "for_who": "ForWhoTwoColumns",
     "outcomes": "OutcomesBentoGrid",
     "how_to_use": "HowToNumbered",
+    "in_the_box": "IncludedChecklist",
+    "faq": "FaqAccordion",
     "cta_band": "CtaMarqueeRibbon"
   },
   "arbre-de-vie-f": {
@@ -45,6 +55,8 @@
     "for_who": "ForWhoTwoColumns",
     "outcomes": "OutcomesBentoGrid",
     "how_to_use": "HowToNumbered",
+    "in_the_box": "IncludedHighlightGrid",
+    "faq": "FaqAccordion",
     "cta_band": "CtaMarqueeRibbon"
   }
 }

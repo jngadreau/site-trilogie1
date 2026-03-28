@@ -66,7 +66,7 @@ export class SiteController {
     return this.landingGen.generateAndSave();
   }
 
-  /** JSON landing modulaire (6 sections, variantes React) — slug présent dans `deck-landing-variants.json`. */
+  /** JSON landing modulaire (8 sections, variantes React) — slug présent dans `deck-landing-variants.json`. */
   @Get('deck-landing/:slug')
   async deckLanding(@Param('slug') slug: string) {
     return this.deckModular.loadDeckLanding(slug);
@@ -87,6 +87,8 @@ export class SiteController {
       for_who: dto.for_who,
       outcomes: dto.outcomes,
       how_to_use: dto.how_to_use,
+      in_the_box: dto.in_the_box,
+      faq: dto.faq,
       cta_band: dto.cta_band,
     });
   }

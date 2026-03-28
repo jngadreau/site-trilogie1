@@ -27,7 +27,7 @@ S’appuie sur ces descriptions pour rédiger des **props** et des **globals** a
 
 Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck).
 
-**Ordre des sections (obligatoire)** : `hero` → `deck_identity` → `for_who` → `outcomes` → `how_to_use` → `cta_band`.
+**Ordre des sections (obligatoire)** : `hero` → `deck_identity` → `for_who` → `outcomes` → `how_to_use` → `in_the_box` → `faq` → `cta_band`.
 
 ```json
 {
@@ -91,6 +91,18 @@ Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck).
       "media": []
     },
     {
+      "id": "in_the_box",
+      "variant": "IncludedChecklist OU IncludedHighlightGrid",
+      "props": {},
+      "media": []
+    },
+    {
+      "id": "faq",
+      "variant": "FaqAccordion OU FaqTwoColumn",
+      "props": {},
+      "media": []
+    },
+    {
       "id": "cta_band",
       "variant": "CtaMarqueeRibbon OU CtaSplitAction",
       "props": {},
@@ -133,6 +145,14 @@ Chaque section doit inclure **`media`** : tableau d’objets slots (voir specs `
 **HowToNumbered** : `title`, `introMarkdown` (optionnel), `steps` (≥ 3 `{ "title", "bodyMarkdown" }`)
 
 **HowToTimeline** : `title`, `introMarkdown`, `steps` (≥ 3 `{ "label", "detailMarkdown" }`)
+
+**IncludedChecklist** : `sectionTitle`, `introMarkdown` (optionnel), `items` (≥ 3 `{ "title", "detailMarkdown?" }`)
+
+**IncludedHighlightGrid** : `sectionTitle`, `introMarkdown` (optionnel), `highlights` (2 à 6 `{ "title", "bodyMarkdown" }`)
+
+**FaqAccordion** : `sectionTitle`, `introMarkdown` (optionnel), `items` (≥ 3 `{ "question", "answerMarkdown" }`)
+
+**FaqTwoColumn** : `sectionTitle`, `introMarkdown` (optionnel), `leftColumnTitle` / `rightColumnTitle` (optionnels), `leftItems` / `rightItems` (≥ 2 chacune `{ "question", "answerMarkdown" }`)
 
 **CtaMarqueeRibbon** : `eyebrow`, `headline`, `subline`, `ctaLabel`, `ctaHref`, `marqueeText`
 

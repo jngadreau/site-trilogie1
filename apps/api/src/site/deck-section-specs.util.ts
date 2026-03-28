@@ -8,6 +8,8 @@ const SPEC_REL_PATHS = [
   'cta_band/variants/CtaSplitAction.spec.md',
   'deck_identity/variants/IdentityMinimal.spec.md',
   'deck_identity/variants/IdentityPanel.spec.md',
+  'faq/variants/FaqAccordion.spec.md',
+  'faq/variants/FaqTwoColumn.spec.md',
   'for_who/variants/ForWhoPillars.spec.md',
   'for_who/variants/ForWhoTwoColumns.spec.md',
   'hero/variants/HeroCardsFan.spec.md',
@@ -19,6 +21,8 @@ const SPEC_REL_PATHS = [
   'hero/variants/HeroSplitImageRight.spec.md',
   'how_to_use/variants/HowToNumbered.spec.md',
   'how_to_use/variants/HowToTimeline.spec.md',
+  'in_the_box/variants/IncludedChecklist.spec.md',
+  'in_the_box/variants/IncludedHighlightGrid.spec.md',
   'outcomes/variants/OutcomesBentoGrid.spec.md',
   'outcomes/variants/OutcomesSignalStrip.spec.md',
 ] as const;

@@ -6,7 +6,7 @@
 
 ## Landings existantes (à différencier)
 
-Ne reproduis **pas** la même combinaison de **six** variantes (toutes sections) que l’une ou l’autre :
+Ne reproduis **pas** la même combinaison de **huit** variantes (toutes sections) que l’une ou l’autre :
 
 ```json
 {{EXISTING_VARIANTS_A_B_JSON}}
@@ -31,6 +31,8 @@ Chaque bloc décrit **rôle visuel, données attendues, consignes pour l’IA**.
 | `for_who` | `ForWhoTwoColumns`, `ForWhoPillars` |
 | `outcomes` | `OutcomesBentoGrid`, `OutcomesSignalStrip` |
 | `how_to_use` | `HowToNumbered`, `HowToTimeline` |
+| `in_the_box` | `IncludedChecklist`, `IncludedHighlightGrid` |
+| `faq` | `FaqAccordion`, `FaqTwoColumn` |
 | `cta_band` | `CtaMarqueeRibbon`, `CtaSplitAction` |
 
 ---
@@ -47,6 +49,8 @@ Chaque bloc décrit **rôle visuel, données attendues, consignes pour l’IA**.
     "for_who": "…",
     "outcomes": "…",
     "how_to_use": "…",
+    "in_the_box": "…",
+    "faq": "…",
     "cta_band": "…"
   },
   "rationaleMarkdown": "…"
