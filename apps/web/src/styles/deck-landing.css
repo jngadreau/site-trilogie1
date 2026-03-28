@@ -942,13 +942,11 @@
   pointer-events: auto;
 }
 
+/* PNG cartes ~672×1877 ; 51/153 forçait une boîte trop haute + bande claire en haut */
 .dl-hero__cards-fan-img {
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 51 / 153;
-  object-fit: contain;
-  object-position: center bottom;
   border-radius: 10px;
   background: var(--dl-surface);
   box-shadow:
@@ -1021,8 +1019,7 @@
 .dl-hero__cards-strip-img {
   display: block;
   width: 100%;
-  aspect-ratio: 51 / 153;
-  object-fit: cover;
+  height: auto;
   border-radius: 10px;
   box-shadow: 0 10px 28px color-mix(in srgb, var(--dl-text) 14%, transparent);
   border: 1px solid color-mix(in srgb, var(--dl-text) 10%, transparent);
@@ -1083,21 +1080,18 @@
 }
 
 .dl-hero__cards-mosaic-img {
+  display: block;
   width: 100%;
-  aspect-ratio: 51 / 153;
-  object-fit: cover;
+  height: auto;
   border-radius: 10px;
   box-shadow: 0 8px 24px color-mix(in srgb, var(--dl-text) 12%, transparent);
   border: 1px solid color-mix(in srgb, var(--dl-text) 8%, transparent);
 }
 
 .dl-hero__cards-mosaic-img--feature {
-  flex: 1;
-  min-height: 220px;
-  max-height: 360px;
-  aspect-ratio: auto;
+  display: block;
   width: 100%;
-  object-fit: cover;
+  height: auto;
 }
 
 .dl-hero__cards-mosaic-feature-cap {

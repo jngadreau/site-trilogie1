@@ -13,6 +13,7 @@ export function AppTopNav({ tone = 'plain' }: Props) {
     <header className={cls}>
       <nav className="app-top-nav__links" aria-label="Navigation principale">
         <Link to="/">Accueil</Link>
+        <Link to="/demo/sections">Démos sections</Link>
         <Link to="/admin">Admin</Link>
       </nav>
     </header>

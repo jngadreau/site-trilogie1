@@ -31,7 +31,8 @@ export interface DeckSectionMediaSlotV1 {
 }
 
 export interface DeckLandingSection {
-  id: SectionId
+  /** Identifiant stable dans le JSON landing ; les démos utilisent des clés synthétiques uniques. */
+  id: SectionId | string
   variant: string
   props: Record<string, unknown>
   media?: DeckSectionMediaSlotV1[]

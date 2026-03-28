@@ -49,6 +49,10 @@ export function HomePage() {
             Choisis une variante ci-dessous. L’API Vite (proxy) et le serveur sur le port{' '}
             <strong>3040</strong> doivent être actifs.
           </p>
+          <p>
+            <Link to="/demo/sections">Démos par type de section</Link> — toutes les variantes React
+            (hero, identité, etc.) sur des pages dédiées.
+          </p>
         </div>
 
         {err ? <p className="home-page__err">Impossible de charger les variantes ({err}).</p> : null}

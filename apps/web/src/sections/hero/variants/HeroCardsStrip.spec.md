@@ -11,7 +11,7 @@ Hero **bandeau** : rangée horizontale de cartes (défilement tactile sur petit 
 | `bodyMarkdown` | string | |
 | `ctaLabel` | string | |
 | `ctaHref` | string | |
-| `cards` | array | **4 à 9** objets — `imageUrl` = **`/ai/generated-images/deck-cards/...`** (voir sync site) |
+| `cards` | array | **4 à 9** objets — `imageUrl` = **`/ai/generated-images/deck-cards/<fichier>`** (nom **exact** depuis `GET /ai/generated-images/deck-cards`, voir sync site) |
 
 ## Slots médias
 

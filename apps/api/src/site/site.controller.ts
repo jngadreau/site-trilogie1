@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { RegisterDeckLandingVariantDto } from './dto/register-deck-landing-variant.dto';
+import { UpdateDeckLandingVariantsDto } from './dto/update-deck-landing-variants.dto';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Job, Queue } from 'bullmq';
 import { SiteService } from './site.service';
@@ -88,6 +89,16 @@ export class SiteController {
       how_to_use: dto.how_to_use,
       cta_band: dto.cta_band,
     });
+  }
+
+  /**
+   * Met à jour une ou plusieurs variantes React pour un slug déjà présent dans
+   * `deck-landing-variants.json` (les champs omis sont conservés).
+   */
+  @Post('deck-landing-variants/update')
+  async updateDeckLandingVariants(@Body() dto: UpdateDeckLandingVariantsDto) {
+    const { slug, ...partial } = dto;
+    return this.deckModular.updateDeckLandingVariants(slug, partial);
   }
 
   /** Plan Grok pour une landing (ex. `arbre-de-vie-c`) : choix des variantes + rationale. */

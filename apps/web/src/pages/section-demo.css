@@ -1,0 +1,92 @@
+.section-demo {
+  min-height: 100vh;
+  background: var(--dl-bg);
+  color: var(--dl-text);
+}
+
+.section-demo__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--dl-text) 10%, transparent);
+  background: var(--dl-surface);
+}
+
+.section-demo__top h1 {
+  margin: 0;
+  font-family: var(--dl-font-heading);
+  font-size: 1.25rem;
+}
+
+.section-demo__nav a {
+  margin-right: 1rem;
+  color: var(--dl-accent);
+}
+
+.section-demo__intro {
+  padding: 1rem 1.25rem 0;
+  max-width: 42rem;
+  color: var(--dl-muted);
+  font-size: 0.95rem;
+}
+
+.section-demo__main {
+  padding-bottom: 3rem;
+}
+
+.section-demo__block {
+  margin-top: 2.5rem;
+  padding: 0 1.25rem;
+}
+
+.section-demo__block:first-of-type {
+  margin-top: 1.25rem;
+}
+
+.section-demo__block-title {
+  margin: 0 0 0.75rem;
+  font-family: var(--dl-font-heading);
+  font-size: 1.1rem;
+  color: var(--dl-muted);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.section-demo-hub__grid {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.section-demo-hub__card {
+  display: block;
+  padding: 1.1rem 1.25rem;
+  border-radius: var(--dl-radius);
+  background: var(--dl-surface);
+  border: 1px solid color-mix(in srgb, var(--dl-text) 8%, transparent);
+  color: inherit;
+  text-decoration: none;
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--dl-text) 5%, transparent);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.section-demo-hub__card:hover {
+  border-color: color-mix(in srgb, var(--dl-accent) 35%, transparent);
+  box-shadow: 0 8px 28px color-mix(in srgb, var(--dl-text) 8%, transparent);
+}
+
+.section-demo-hub__card h2 {
+  margin: 0 0 0.35rem;
+  font-family: var(--dl-font-heading);
+  font-size: 1.05rem;
+}
+
+.section-demo-hub__card p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--dl-muted);
+}

@@ -284,6 +284,55 @@ export class DeckModularLandingService {
     return { variantsPath };
   }
 
+  /**
+   * Met à jour partiellement les variantes d’un slug existant (au moins une clé de section requise).
+   */
+  async updateDeckLandingVariants(
+    slug: string,
+    partial: Partial<Record<SectionKey, string>>,
+  ): Promise<{ variantsPath: string; variants: Record<string, string> }> {
+    if (!this.isArbreDeVieSlug(slug)) {
+      throw new BadRequestException(`Slug invalide: ${slug}`);
+    }
+    const map = await this.loadVariantsMap();
+    const existing = map[slug];
+    if (!existing) {
+      throw new NotFoundException(`Slug inconnu: ${slug} — absent de deck-landing-variants.json`);
+    }
+
+    const patch: Partial<Record<SectionKey, string>> = {};
+    for (const key of SECTION_KEYS) {
+      const v = partial[key];
+      if (typeof v === 'string' && v.length > 0) {
+        patch[key] = v;
+      }
+    }
+    if (Object.keys(patch).length === 0) {
+      throw new BadRequestException(
+        'Aucune variante fournie — renseigner au moins une section (hero, deck_identity, …).',
+      );
+    }
+
+    const next = { ...existing };
+    for (const key of SECTION_KEYS) {
+      const v = patch[key];
+      if (v === undefined) continue;
+      const allowed = VARIANT_CHOICES[key];
+      if (!allowed.includes(v)) {
+        throw new BadRequestException(
+          `Variante invalide pour ${key}: ${v} (attendu: ${allowed.join(' | ')})`,
+        );
+      }
+      next[key] = v;
+    }
+
+    map[slug] = next;
+    const variantsPath = getDeckLandingVariantsPath();
+    await writeFile(variantsPath, JSON.stringify(map, null, 2) + '\n', 'utf8');
+    this.logger.log(`Updated deck variants for ${slug} in ${variantsPath}`);
+    return { variantsPath, variants: next };
+  }
+
   private validateVariantPlan(
     plan: DeckLandingVariantPlanV1,
     variantsMap: Record<string, Record<string, string>>,

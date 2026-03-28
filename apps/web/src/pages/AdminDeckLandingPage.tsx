@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
+import {
+  DECK_SECTION_ORDER,
+  SECTION_LABELS_FR,
+  VARIANTS_BY_SECTION,
+  type DeckSectionKey,
+} from '../lib/deckSectionCatalog'
 import { Markdown } from '../lib/Markdown'
 import './admin-deck-landing.css'
 
@@ -16,45 +22,10 @@ type PlanDoc = {
   rationaleMarkdown: string
 }
 
-const NV_SECTION_ORDER = [
-  'hero',
-  'deck_identity',
-  'for_who',
-  'outcomes',
-  'how_to_use',
-  'cta_band',
-] as const
-
-const VARIANT_PICKS: Record<(typeof NV_SECTION_ORDER)[number], readonly string[]> = {
-  hero: [
-    'HeroSplitImageRight',
-    'HeroFullBleed',
-    'HeroGlowVault',
-    'HeroParallaxLayers',
-    'HeroCardsFan',
-    'HeroCardsStrip',
-    'HeroCardsMosaic',
-  ],
-  deck_identity: ['IdentityPanel', 'IdentityMinimal'],
-  for_who: ['ForWhoTwoColumns', 'ForWhoPillars'],
-  outcomes: ['OutcomesBentoGrid', 'OutcomesSignalStrip'],
-  how_to_use: ['HowToNumbered', 'HowToTimeline'],
-  cta_band: ['CtaMarqueeRibbon', 'CtaSplitAction'],
-}
-
-const NV_LABELS: Record<(typeof NV_SECTION_ORDER)[number], string> = {
-  hero: 'Hero',
-  deck_identity: 'Identité deck',
-  for_who: 'Pour qui',
-  outcomes: 'Bienfaits (outcomes)',
-  how_to_use: 'Comment utiliser',
-  cta_band: 'Bandeau CTA',
-}
-
-function defaultNv(): Record<(typeof NV_SECTION_ORDER)[number], string> {
+function defaultNv(): Record<DeckSectionKey, string> {
   return Object.fromEntries(
-    NV_SECTION_ORDER.map((k) => [k, VARIANT_PICKS[k][0]]),
-  ) as Record<(typeof NV_SECTION_ORDER)[number], string>
+    DECK_SECTION_ORDER.map((k) => [k, VARIANTS_BY_SECTION[k][0]]),
+  ) as Record<DeckSectionKey, string>
 }
 
 type QueueJobRow = {
@@ -81,7 +52,9 @@ export function AdminDeckLandingPage() {
   const [queueJobs, setQueueJobs] = useState<QueueJobRow[]>([])
 
   const [newSlug, setNewSlug] = useState('arbre-de-vie-')
-  const [nv, setNv] = useState<Record<(typeof NV_SECTION_ORDER)[number], string>>(defaultNv)
+  const [nv, setNv] = useState<Record<DeckSectionKey, string>>(defaultNv)
+  const [editSlug, setEditSlug] = useState('')
+  const [editNv, setEditNv] = useState<Record<DeckSectionKey, string>>(defaultNv)
 
   const refresh = useCallback(() => {
     setErr(null)
@@ -120,6 +93,17 @@ export function AdminDeckLandingPage() {
     const slugs = Object.keys(dashboard.variants).sort()
     setPlanViewSlug((prev) => (prev && slugs.includes(prev) ? prev : slugs[0] ?? ''))
   }, [dashboard])
+
+  useEffect(() => {
+    if (!dashboard?.variants || !editSlug) return
+    const row = dashboard.variants[editSlug]
+    if (!row) return
+    const next = defaultNv()
+    for (const k of DECK_SECTION_ORDER) {
+      if (row[k]) next[k] = row[k]
+    }
+    setEditNv(next)
+  }, [dashboard, editSlug])
 
   useEffect(() => {
     if (!planViewSlug) {
@@ -240,12 +224,30 @@ export function AdminDeckLandingPage() {
     )
   }
 
+  async function submitUpdateVariants(e: FormEvent) {
+    e.preventDefault()
+    if (!editSlug.trim()) {
+      setErr('Choisis un slug existant.')
+      return
+    }
+    await postJson(
+      '/site/deck-landing-variants/update',
+      {
+        slug: editSlug.trim(),
+        ...editNv,
+      },
+      'update-variants',
+      () => `Variantes mises à jour — ${editSlug}`,
+    )
+  }
+
   return (
     <div className="admin-dl">
       <header className="admin-dl__head">
         <h1 className="admin-dl__title">Admin — landings deck modulaires</h1>
         <nav className="admin-dl__nav">
           <Link to="/">Accueil</Link>
+          <Link to="/demo/sections">Démos sections</Link>
           <Link to="/admin">Admin</Link>
         </nav>
       </header>
@@ -304,15 +306,15 @@ export function AdminDeckLandingPage() {
               placeholder="arbre-de-vie-e"
             />
           </div>
-          {NV_SECTION_ORDER.map((key) => (
+          {DECK_SECTION_ORDER.map((key) => (
             <div key={key} className="admin-dl__register-row">
-              <label htmlFor={`nv-${key}`}>{NV_LABELS[key]}</label>
+              <label htmlFor={`nv-${key}`}>{SECTION_LABELS_FR[key]}</label>
               <select
                 id={`nv-${key}`}
                 value={nv[key]}
                 onChange={(e) => setNv((prev) => ({ ...prev, [key]: e.target.value }))}
               >
-                {VARIANT_PICKS[key].map((x) => (
+                {VARIANTS_BY_SECTION[key].map((x) => (
                   <option key={x} value={x}>
                     {x}
                   </option>
@@ -326,6 +328,58 @@ export function AdminDeckLandingPage() {
             </button>
           </div>
         </form>
+      </section>
+
+      <section className="admin-dl__section">
+        <h2>Modifier les variantes d’un slug existant</h2>
+        <p className="admin-dl__muted">
+          Met à jour <code>deck-landing-variants.json</code> pour le slug choisi. Le JSON de landing
+          existant n’est pas régénéré : relance <strong>Grok → JSON</strong> ou le pipeline si tu veux
+          du contenu aligné sur les nouveaux composants.
+        </p>
+        {!dashboard || slugsSorted.length === 0 ? (
+          <p className="admin-dl__muted">Aucun slug à éditer.</p>
+        ) : (
+          <form className="admin-dl__register" onSubmit={submitUpdateVariants}>
+            <div className="admin-dl__register-row">
+              <label htmlFor="edit-slug">Slug</label>
+              <select
+                id="edit-slug"
+                value={editSlug}
+                onChange={(e) => setEditSlug(e.target.value)}
+              >
+                <option value="">— Choisir —</option>
+                {slugsSorted.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {DECK_SECTION_ORDER.map((key) => (
+              <div key={key} className="admin-dl__register-row">
+                <label htmlFor={`edit-${key}`}>{SECTION_LABELS_FR[key]}</label>
+                <select
+                  id={`edit-${key}`}
+                  value={editNv[key]}
+                  disabled={!editSlug}
+                  onChange={(e) => setEditNv((prev) => ({ ...prev, [key]: e.target.value }))}
+                >
+                  {VARIANTS_BY_SECTION[key].map((x) => (
+                    <option key={x} value={x}>
+                      {x}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ))}
+            <div className="admin-dl__register-actions">
+              <button type="submit" disabled={!!busy || !editSlug}>
+                {busy === 'update-variants' ? '…' : 'Enregistrer les variantes'}
+              </button>
+            </div>
+          </form>
+        )}
       </section>
 
       <section className="admin-dl__section">
@@ -349,7 +403,7 @@ export function AdminDeckLandingPage() {
               {slugsSorted.map((slug) => {
                 const v = dashboard.variants[slug]
                 const vStr = v
-                  ? NV_SECTION_ORDER.map((k) => v[k]).filter(Boolean).join(' · ')
+                  ? DECK_SECTION_ORDER.map((k) => v[k]).filter(Boolean).join(' · ')
                   : '—'
                 const pl = dashboard.plans[slug]
                 const ld = dashboard.landings[slug]

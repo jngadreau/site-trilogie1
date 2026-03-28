@@ -38,5 +38,13 @@
     "outcomes": "OutcomesBentoGrid",
     "how_to_use": "HowToNumbered",
     "cta_band": "CtaMarqueeRibbon"
+  },
+  "arbre-de-vie-f": {
+    "hero": "HeroCardsStrip",
+    "deck_identity": "IdentityPanel",
+    "for_who": "ForWhoTwoColumns",
+    "outcomes": "OutcomesBentoGrid",
+    "how_to_use": "HowToNumbered",
+    "cta_band": "CtaMarqueeRibbon"
   }
 }
