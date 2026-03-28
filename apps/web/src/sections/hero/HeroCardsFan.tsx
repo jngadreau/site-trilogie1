@@ -25,9 +25,8 @@ export function HeroCardsFan({
   ctaHref,
   cards,
 }: HeroCardsFanProps) {
-  const n = Math.min(7, Math.max(3, cards.length))
-  const slice = cards.slice(0, n)
-  const spreadDeg = Math.min(52, 18 + slice.length * 7)
+  const slice = cards.slice(0, Math.min(7, Math.max(1, cards.length)))
+  const spreadDeg = slice.length <= 1 ? 0 : Math.min(58, 22 + slice.length * 7)
 
   return (
     <section className="dl-hero dl-hero--cards-fan" aria-labelledby="dl-hero-fan-title">
@@ -46,26 +45,28 @@ export function HeroCardsFan({
           {slice.map((c, i) => {
             const t = slice.length === 1 ? 0 : (i / (slice.length - 1)) * 2 - 1
             const rotate = t * (spreadDeg / 2)
-            const tx = t * 36
-            const z = i
+            const mid = (slice.length - 1) / 2
+            const z = 30 - Math.round(Math.abs(i - mid) * 3)
             return (
               <li
                 key={`${c.imageUrl}-${i}`}
                 className="dl-hero__cards-fan-item"
-                style={{
-                  transform: `rotate(${rotate}deg) translateX(${tx}px)`,
-                  zIndex: z,
-                }}
+                style={{ zIndex: z }}
               >
-                <figure className="dl-hero__cards-fan-fig">
+                <div
+                  className="dl-hero__cards-fan-pivot"
+                  style={{ transform: `rotate(${rotate}deg)` }}
+                >
                   <img
                     src={c.imageUrl}
                     alt={c.alt}
                     className="dl-hero__cards-fan-img"
                     loading="eager"
                   />
-                  {c.caption ? <figcaption className="dl-hero__cards-fan-cap">{c.caption}</figcaption> : null}
-                </figure>
+                  {c.caption ? (
+                    <span className="dl-hero__cards-fan-cap">{c.caption}</span>
+                  ) : null}
+                </div>
               </li>
             )
           })}

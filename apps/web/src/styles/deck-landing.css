@@ -56,6 +56,7 @@
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 1.25rem 4rem;
+  overflow-x: visible;
 }
 
 .dl-section-title {
@@ -866,6 +867,7 @@
   gap: 2rem;
   align-items: center;
   padding: 2.5rem 0 3rem;
+  overflow: visible;
 }
 
 @media (max-width: 900px) {
@@ -899,46 +901,60 @@
 
 .dl-hero__cards-fan-stage {
   position: relative;
-  min-height: 300px;
+  min-height: min(380px, 48vw);
   display: flex;
   justify-content: center;
   align-items: flex-end;
+  overflow: visible;
 }
 
 .dl-hero__cards-fan-list {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 0 0.25rem;
   position: relative;
   width: 100%;
-  max-width: 420px;
-  height: 300px;
+  max-width: min(440px, 100%);
+  min-height: 320px;
+  height: auto;
+  overflow: visible;
 }
 
 .dl-hero__cards-fan-item {
   position: absolute;
   left: 50%;
   bottom: 0;
-  width: 112px;
-  margin-left: -56px;
-  transform-origin: bottom center;
-  transition: transform 0.25s ease;
+  width: 120px;
+  margin-left: -60px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  pointer-events: none;
 }
 
-.dl-hero__cards-fan-fig {
-  margin: 0;
+.dl-hero__cards-fan-pivot {
+  width: 100%;
+  transform-origin: bottom center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.28s ease;
+  pointer-events: auto;
 }
 
 .dl-hero__cards-fan-img {
   display: block;
   width: 100%;
+  height: auto;
   aspect-ratio: 51 / 153;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center bottom;
   border-radius: 10px;
+  background: var(--dl-surface);
   box-shadow:
     0 4px 6px color-mix(in srgb, #000 18%, transparent),
     0 18px 40px color-mix(in srgb, var(--dl-text) 16%, transparent);
-  border: 1px solid color-mix(in srgb, #fff 35%, transparent);
+  border: 1px solid color-mix(in srgb, var(--dl-text) 12%, transparent);
 }
 
 .dl-hero__cards-fan-cap {
@@ -948,6 +964,7 @@
   text-align: center;
   color: var(--dl-muted);
   line-height: 1.2;
+  max-width: 7rem;
 }
 
 .dl-hero--cards-strip {
