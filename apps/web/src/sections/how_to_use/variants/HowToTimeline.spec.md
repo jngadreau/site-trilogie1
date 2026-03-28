@@ -24,6 +24,10 @@ Même objectif que **HowToNumbered** mais avec une métaphore **temporelle** ou 
 
 - **Aucune image** requise.
 
+## Slots médias (pipeline Imagine)
+
+**Aucun.** `"media": []`.
+
 ## Contraintes éditoriales et ton
 
 - Les **`label`** doivent être **distincts** les uns des autres (pas trois fois « Étape 1 ») ; inclure un **indice temporel** ou de phase si pertinent (Silence, Choix, Lecture…).

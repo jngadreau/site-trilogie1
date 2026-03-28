@@ -48,6 +48,11 @@ export class DeckModularLandingService {
     }
   }
 
+  /** File d’attente BullMQ / pipeline. */
+  ensureDeckLandingSlug(slug: string): void {
+    this.assertSlug(slug);
+  }
+
   async loadDeckLanding(slug: string): Promise<DeckModularLandingV1> {
     this.assertSlug(slug);
     const p = path.join(getDeckLandingsDir(), `${slug}.json`);
@@ -352,6 +357,9 @@ export class DeckModularLandingService {
         throw new InternalServerErrorException(
           `Section ${s.id}: variante « ${s.variant} » ≠ carte « ${want} » pour ${slug}`,
         );
+      }
+      if (!Array.isArray(s.media)) {
+        s.media = [];
       }
     }
 

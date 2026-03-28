@@ -14,10 +14,34 @@ export interface DeckLandingGlobals {
   fontImportHref?: string;
 }
 
+/**
+ * Métadonnées pour **un** appel Imagine (point d’entrée commun).
+ * Remplies par Grok lors de « section generate elements », consommées par `deck-landing-generate-image`.
+ */
+export interface DeckSectionMediaSlotV1 {
+  slotId: string;
+  /** Ex. 16:9, 4:3, 1:1 — transmis à l’API image. */
+  aspectRatio: string;
+  /** Description de scène / sujet (contenu principal du futur prompt). */
+  sceneDescription: string;
+  /** Ambiance émotionnelle ou sensorielle. */
+  mood?: string;
+  /** Style pictural (illustration éditoriale, grain, référence d’art, etc.). */
+  styleVisual?: string;
+  /** Comment la palette globale (accent / fond) se reflète dans l’image. */
+  colorContext?: string;
+  /** Contraintes fortes (ex. pas de texte lisible, pas de visages identifiables). */
+  constraints?: string;
+  /** Texte FR pour aligner `imageAlt` / accessibilité. */
+  altHintFr?: string;
+}
+
 export interface DeckLandingSection {
   id: 'hero' | 'deck_identity' | 'for_who' | 'how_to_use';
   variant: string;
   props: Record<string, unknown>;
+  /** Slots image décrits par l’IA ; tableau vide si aucun visuel. */
+  media?: DeckSectionMediaSlotV1[];
 }
 
 export interface DeckModularLandingV1 {

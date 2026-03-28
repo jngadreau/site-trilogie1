@@ -50,26 +50,43 @@ Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck) 
     {
       "id": "hero",
       "variant": "HeroSplitImageRight OU HeroFullBleed selon carte",
-      "props": {}
+      "props": {},
+      "media": [
+        {
+          "slotId": "hero",
+          "aspectRatio": "16:9",
+          "sceneDescription": "…",
+          "mood": "…",
+          "styleVisual": "…",
+          "colorContext": "…",
+          "constraints": "No readable text or logos in the image.",
+          "altHintFr": "…"
+        }
+      ]
     },
     {
       "id": "deck_identity",
       "variant": "IdentityPanel OU IdentityMinimal",
-      "props": {}
+      "props": {},
+      "media": []
     },
     {
       "id": "for_who",
       "variant": "ForWhoTwoColumns OU ForWhoPillars",
-      "props": {}
+      "props": {},
+      "media": []
     },
     {
       "id": "how_to_use",
       "variant": "HowToNumbered OU HowToTimeline",
-      "props": {}
+      "props": {},
+      "media": []
     }
   ]
 }
 ```
+
+Chaque section doit inclure **`media`** : tableau d’objets slots (voir specs `.spec.md` « Slots médias ») ou `[]` si aucune image. Ces champs alimentent le **point d’entrée unique** Imagine (`buildImaginePrompt` côté API).
 
 ### Props par variant (obligatoires)
 

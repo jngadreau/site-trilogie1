@@ -13,6 +13,7 @@ Produire **un seul objet JSON valide** (aucun texte hors JSON) qui décrit une l
 - **Respect strict** des noms de variant indiqués dans le message utilisateur pour chaque section.
 - Les **specs Markdown** fournies dans le message utilisateur décrivent chaque layout : respecte-en les **contraintes éditoriales** et **visuelles** pour les textes et paramètres (ex. `overlayOpacity`, longueur des colonnes, nombre de piliers).
 - Ordre des sections dans le tableau `sections` : **1) hero**, **2) deck_identity**, **3) for_who**, **4) how_to_use** (champs `id` exacts).
+- Chaque section inclut **`media`** : slots pour Imagine (voir specs) ou `[]` — jamais omis.
 
 ## Schéma attendu
 

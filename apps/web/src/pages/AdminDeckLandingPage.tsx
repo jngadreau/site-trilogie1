@@ -17,6 +17,19 @@ type PlanDoc = {
 
 const SLUGS = ['arbre-de-vie-a', 'arbre-de-vie-b', 'arbre-de-vie-c'] as const
 
+type QueueJobRow = {
+  queue: string
+  id: string
+  name: string
+  state: string
+  data: unknown
+  returnvalue?: unknown
+  failedReason?: string
+  timestamp?: number
+  processedOn?: number
+  finishedOn?: number
+}
+
 export function AdminDeckLandingPage() {
   const [dashboard, setDashboard] = useState<Dashboard | null>(null)
   const [err, setErr] = useState<string | null>(null)
@@ -24,6 +37,7 @@ export function AdminDeckLandingPage() {
   const [message, setMessage] = useState<string | null>(null)
   const [planC, setPlanC] = useState<PlanDoc | null>(null)
   const [planErr, setPlanErr] = useState<string | null>(null)
+  const [queueJobs, setQueueJobs] = useState<QueueJobRow[]>([])
 
   const refresh = useCallback(() => {
     setErr(null)
@@ -36,9 +50,22 @@ export function AdminDeckLandingPage() {
       .catch((e: Error) => setErr(e.message))
   }, [])
 
+  const refreshJobs = useCallback(() => {
+    fetch('/site/deck-landing-pipeline-jobs?limit=45')
+      .then((r) => r.json())
+      .then((j: { jobs?: QueueJobRow[] }) => setQueueJobs(j.jobs ?? []))
+      .catch(() => setQueueJobs([]))
+  }, [])
+
   useEffect(() => {
     refresh()
   }, [refresh])
+
+  useEffect(() => {
+    refreshJobs()
+    const id = setInterval(refreshJobs, 5000)
+    return () => clearInterval(id)
+  }, [refreshJobs])
 
   useEffect(() => {
     fetch('/site/deck-landing-variant-plan/arbre-de-vie-c')
@@ -89,6 +116,7 @@ export function AdminDeckLandingPage() {
       setErr((e as Error).message)
     } finally {
       setBusy(null)
+      refreshJobs()
     }
   }
 
@@ -105,8 +133,9 @@ export function AdminDeckLandingPage() {
       </header>
 
       <p className="admin-dl__hint">
-        Nécessite l’API sur le port <strong>3040</strong> et <code>GROK_API_KEY</code>. Les images hero
-        utilisent aussi <code>GROK_IMAGE_MODEL</code> (défaut <code>grok-imagine-image</code>).
+        API <strong>3040</strong>, <code>GROK_API_KEY</code>, <code>GROK_IMAGE_MODEL</code>. Pipeline
+        BullMQ : <strong>Redis</strong> (<code>REDIS_URL</code> ou <code>REDIS_HOST</code>) + workers API
+        actifs. Jobs rafraîchis toutes les 5 s.
       </p>
 
       {err ? <p className="admin-dl__err">{err}</p> : null}
@@ -154,7 +183,24 @@ export function AdminDeckLandingPage() {
                           post(`/site/generate-deck-landing/${slug}`, `landing-${slug}`)
                         }
                       >
-                        Grok → JSON
+                        Grok → JSON (sync)
+                      </button>
+                      <button
+                        type="button"
+                        disabled={!!busy}
+                        title="Composition → 4× sections → finalize → images (BullMQ)"
+                        onClick={() =>
+                          post(
+                            `/site/generate-deck-landing-pipeline/${encodeURIComponent(slug)}`,
+                            `pipe-${slug}`,
+                            (b) =>
+                              typeof b.traceId === 'string' && typeof b.jobId === 'string'
+                                ? `Pipeline — trace ${b.traceId} job ${b.jobId}`
+                                : 'Pipeline démarré',
+                          )
+                        }
+                      >
+                        Pipeline BullMQ
                       </button>
                       <button
                         type="button"
@@ -182,6 +228,59 @@ export function AdminDeckLandingPage() {
               })}
             </tbody>
           </table>
+        )}
+      </section>
+
+      <section className="admin-dl__section">
+        <h2>Jobs BullMQ (pipeline + images)</h2>
+        <p className="admin-dl__muted">
+          <button type="button" className="admin-dl__linkish" onClick={() => refreshJobs()}>
+            Rafraîchir maintenant
+          </button>
+        </p>
+        {queueJobs.length === 0 ? (
+          <p className="admin-dl__muted">Aucun job récent (ou Redis indisponible).</p>
+        ) : (
+          <div className="admin-dl__jobs-wrap">
+            <table className="admin-dl__table admin-dl__jobs">
+              <thead>
+                <tr>
+                  <th>État</th>
+                  <th>File</th>
+                  <th>Nom</th>
+                  <th>id</th>
+                  <th>Données / erreur</th>
+                </tr>
+              </thead>
+              <tbody>
+                {queueJobs.map((j) => (
+                  <tr key={`${j.queue}-${j.id}`}>
+                    <td>
+                      <span className={`admin-dl__state admin-dl__state--${j.state}`}>{j.state}</span>
+                    </td>
+                    <td className="admin-dl__mono">{j.queue}</td>
+                    <td>{j.name}</td>
+                    <td className="admin-dl__mono">{j.id}</td>
+                    <td className="admin-dl__job-detail">
+                      {j.state === 'failed' && j.failedReason ? (
+                        <span className="admin-dl__err-inline">{j.failedReason}</span>
+                      ) : null}
+                      {j.returnvalue != null ? (
+                        <pre className="admin-dl__pre admin-dl__pre--tiny">
+                          {JSON.stringify(j.returnvalue).slice(0, 400)}
+                        </pre>
+                      ) : null}
+                      {j.data != null && j.state !== 'completed' ? (
+                        <pre className="admin-dl__pre admin-dl__pre--tiny">
+                          {JSON.stringify(j.data).slice(0, 320)}
+                        </pre>
+                      ) : null}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </section>
 

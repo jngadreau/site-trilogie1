@@ -25,6 +25,10 @@ Après le hero, **ancrer l’identité du jeu** : nom officiel, promesse courte,
 - **Aucune image requise** dans le JSON ; le rendu repose sur le **design system** (`globals`).
 - **Optionnel** : si une future variante ajoute une vignette, prévoir un champ `imageUrl` dans une évolution de schéma — pour l’instant, ne pas en générer sauf demande explicite du pipeline.
 
+## Slots médias (pipeline Imagine)
+
+**Aucun.** Retourner `"media": []`.
+
 ## Contraintes éditoriales et ton
 
 - `bodyMarkdown` : 2–4 paragraphes ou équivalent ; peut inclure **gras** pour 2–3 notions clés ; pas de jargon ésotérique opaque — **invitant**.

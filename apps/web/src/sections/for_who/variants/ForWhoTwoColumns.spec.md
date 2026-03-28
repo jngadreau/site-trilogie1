@@ -24,6 +24,10 @@ Répondre à **« pour qui ? »** avec une lecture **scannable** : deux listes o
 - **Aucune image** requise.
 - **Optionnel** : pictogrammes futurs — non gérés par le composant actuel ; ne pas les inventer en JSON.
 
+## Slots médias (pipeline Imagine)
+
+**Aucun.** `"media": []`.
+
 ## Contraintes éditoriales et ton
 
 - Viser **symétrie de longueur** entre les deux colonnes (±20 %) pour un rendu équilibré.

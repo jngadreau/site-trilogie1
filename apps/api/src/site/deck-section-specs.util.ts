@@ -1,5 +1,6 @@
 import { readFile } from 'fs/promises';
 import * as path from 'path';
+import { VARIANT_TO_SPEC_REL } from './deck-variant-spec-paths';
 
 /** Ordre stable : par type de section puis par nom de variante. */
 const SPEC_REL_PATHS = [
@@ -21,4 +22,16 @@ export async function readDeckSectionSpecsBundle(sectionsRoot: string): Promise<
     chunks.push(`## Spécification — \`${rel}\`\n\n${body.trim()}`);
   }
   return chunks.join('\n\n---\n\n');
+}
+
+export async function readDeckSectionSpecByVariant(
+  sectionsRoot: string,
+  variant: string,
+): Promise<string> {
+  const rel = VARIANT_TO_SPEC_REL[variant];
+  if (!rel) {
+    throw new Error(`Variante sans spec MD enregistrée: ${variant}`);
+  }
+  const filePath = path.join(sectionsRoot, rel);
+  return readFile(filePath, 'utf8');
 }

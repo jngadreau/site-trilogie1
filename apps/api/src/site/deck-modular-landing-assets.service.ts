@@ -12,6 +12,8 @@ import { AiService } from '../ai/ai.service';
 import { getDeckLandingsDir, getDeckModularLandingPromptsDir } from '../paths';
 import type { DeckModularLandingV1 } from './deck-modular-landing.types';
 import { DeckModularLandingService } from './deck-modular-landing.service';
+import { DeckLandingImageAssemblyService } from './deck-landing-image-assembly.service';
+import { DeckLandingJsonPatchService } from './deck-landing-json-patch.service';
 
 const HERO_VARIANTS_WITH_IMAGE = new Set(['HeroSplitImageRight', 'HeroFullBleed']);
 
@@ -23,17 +25,70 @@ export class DeckModularLandingAssetsService {
     private readonly config: ConfigService,
     private readonly ai: AiService,
     private readonly deckModular: DeckModularLandingService,
+    private readonly assembly: DeckLandingImageAssemblyService,
+    private readonly jsonPatch: DeckLandingJsonPatchService,
   ) {}
 
   /**
-   * Grok Imagine → PNG dans `content/generated/.../images/`, puis mise à jour de
-   * `hero.props.imageUrl` dans le JSON landing (`/ai/generated-images/<fichier>.png`).
+   * Point d’entrée **commun** : lit `media[]` dans le JSON pour `sectionId` + `slotId`.
+   */
+  async generateImageFromSlot(
+    slug: string,
+    sectionId: string,
+    slotId: string,
+  ): Promise<{
+    imagePath: string;
+    imageUrl: string;
+    model: string;
+    promptPreview: string;
+    promptSource: 'media-slot';
+  }> {
+    const doc = await this.deckModular.loadDeckLanding(slug);
+    const sec = doc.sections.find((s) => s.id === sectionId);
+    if (!sec) {
+      throw new NotFoundException(`Section ${sectionId} absente`);
+    }
+    const slot = sec.media?.find((m) => m.slotId === slotId);
+    if (!slot) {
+      throw new NotFoundException(
+        `Slot média « ${slotId} » absent pour ${sectionId} — régénère le JSON (pipeline ou Grok)`,
+      );
+    }
+
+    const prompt = this.assembly.buildImaginePrompt(slot, doc.globals);
+    const aspectRatio = this.assembly.resolveAspectRatio(slot);
+    const outputSlug = this.assembly.resolveOutputSlug(slug, sectionId, slotId);
+
+    this.logger.log(`Imagine slot ${slug}/${sectionId}/${slotId}`);
+
+    const { path: imagePath, model } = await this.ai.generateImageToFile({
+      prompt,
+      outputSlug,
+      aspectRatio,
+    });
+
+    const fileName = path.basename(imagePath);
+    const imageUrl = `/ai/generated-images/${fileName}`;
+
+    await this.jsonPatch.applySlotImage(slug, sectionId, slot, imageUrl);
+
+    return {
+      imagePath,
+      imageUrl,
+      model,
+      promptPreview: prompt.length > 280 ? `${prompt.slice(0, 280)}…` : prompt,
+      promptSource: 'media-slot',
+    };
+  }
+
+  /**
+   * Hero : préfère `sections[hero].media` (`slotId` `hero`), sinon `imagePrompts.hero`, sinon synthèse Grok.
    */
   async generateHeroImage(slug: string): Promise<{
     imagePath: string;
     imageUrl: string;
     model: string;
-    promptSource: 'json' | 'synthesized';
+    promptSource: 'media-slot' | 'json' | 'synthesized';
     promptPreview: string;
   }> {
     const doc = await this.deckModular.loadDeckLanding(slug);
@@ -47,38 +102,52 @@ export class DeckModularLandingAssetsService {
       );
     }
 
-    const props = hero.props as Record<string, unknown>;
-    let prompt = doc.imagePrompts?.hero?.trim();
-    let promptSource: 'json' | 'synthesized' = 'json';
+    const heroSlot = hero.media?.find((m) => m.slotId === 'hero');
+    let prompt: string;
+    let aspectRatio = '16:9';
+    let outputSlug = `deck-hero-${slug.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+    let promptSource: 'media-slot' | 'json' | 'synthesized';
 
-    if (!prompt) {
-      prompt = await this.synthesizeHeroImaginePrompt(doc, hero.variant, props);
+    if (heroSlot) {
+      prompt = this.assembly.buildImaginePrompt(heroSlot, doc.globals);
+      aspectRatio = this.assembly.resolveAspectRatio(heroSlot);
+      outputSlug = this.assembly.resolveOutputSlug(slug, 'hero', 'hero');
+      promptSource = 'media-slot';
+    } else if (doc.imagePrompts?.hero?.trim()) {
+      prompt = doc.imagePrompts.hero.trim();
+      promptSource = 'json';
+    } else {
+      prompt = await this.synthesizeHeroImaginePrompt(doc, hero.variant, hero.props as Record<string, unknown>);
       promptSource = 'synthesized';
     }
 
-    const outputSlug = `deck-hero-${slug.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
-    this.logger.log(`Imagine hero slug=${slug} source=${promptSource} file=${outputSlug}.png`);
+    this.logger.log(`Imagine hero slug=${slug} source=${promptSource}`);
 
     const { path: imagePath, model } = await this.ai.generateImageToFile({
       prompt,
       outputSlug,
-      aspectRatio: '16:9',
+      aspectRatio,
     });
 
     const fileName = path.basename(imagePath);
     const imageUrl = `/ai/generated-images/${fileName}`;
 
-    props.imageUrl = imageUrl;
-    if (promptSource === 'synthesized' && !doc.imagePrompts) {
-      doc.imagePrompts = {};
-    }
-    if (promptSource === 'synthesized') {
-      doc.imagePrompts = { ...doc.imagePrompts, hero: prompt };
+    if (heroSlot) {
+      await this.jsonPatch.applySlotImage(slug, 'hero', heroSlot, imageUrl);
+    } else {
+      await this.jsonPatch.applySlotImage(slug, 'hero', {
+        slotId: 'hero',
+        aspectRatio,
+        sceneDescription: prompt,
+      }, imageUrl);
     }
 
-    const outJson = path.join(getDeckLandingsDir(), `${slug}.json`);
-    await writeFile(outJson, JSON.stringify(doc, null, 2), 'utf8');
-    this.logger.log(`Mis à jour ${outJson} → imageUrl=${imageUrl}`);
+    if (promptSource === 'synthesized') {
+      const out = await this.deckModular.loadDeckLanding(slug);
+      out.imagePrompts = { ...out.imagePrompts, hero: prompt };
+      const p = path.join(getDeckLandingsDir(), `${slug}.json`);
+      await writeFile(p, JSON.stringify(out, null, 2), 'utf8');
+    }
 
     const promptPreview =
       prompt.length > 280 ? `${prompt.slice(0, 280)}…` : prompt;

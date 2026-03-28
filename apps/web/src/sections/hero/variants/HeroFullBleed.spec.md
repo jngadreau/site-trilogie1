@@ -30,6 +30,21 @@ Impact **cinématographique** : le visuel occupe toute la largeur et une **grand
 - **Image** : **grande définition**, **paysage** fort (16:9 ou plus large), zone de **détails** ou de **vide** utilisable sous le texte (bas ou tiers) pour ne pas masquer le sujet principal.
 - Ajuster mentalement **`overlayOpacity`** : image très sombre → valeur plus basse ; image claire → plus haute pour garder le contraste du texte blanc.
 
+## Slots médias (pipeline Imagine)
+
+Un slot **`hero`** (image de fond pleine largeur).
+
+| Champ JSON `media[]` | Rôle |
+| --- | --- |
+| `slotId` | `hero` |
+| `aspectRatio` | `16:9` ou plus large (ex. `21:9`) si tu veux souligner le cinémascope |
+| `sceneDescription` | Scène **immersive** : profondeur, brume, contre-jour, espace pour texte en overlay (bas ou centre-vide) |
+| `mood` | Cinématographique, intime, nocturne, etc. |
+| `styleVisual` | Ex. photographie stylisée, matte painting léger |
+| `colorContext` | Compatibilité avec **texte blanc** en overlay (souvent tons moyens à sombres dans l’image) |
+| `constraints` | Pas de texte dans l’image ; pas de cadre « fausse interface » |
+| `altHintFr` | Aligné sur `imageAlt` |
+
 ## Contraintes éditoriales et ton
 
 - **`tagline`** : une phrase **sensorielle** ou **évocative**, pas un sous-titre produit répétitif du `title`.
@@ -40,5 +55,5 @@ Impact **cinématographique** : le visuel occupe toute la largeur et une **grand
 
 - Choisir **`overlayOpacity`** en fonction de la **luminosité** décrite ou supposée de l’image : viser **WCAG** approximatif pour le texte blanc sur overlay+image.
 - Rédiger **`imageAlt`** comme pour une **affiche** : ambiance + éléments principaux, sans keyword stuffing.
-- Si le contexte deck insiste sur la **nature**, la **nuit**, le **rituel**, refléter cela dans tagline + brief visuel implicite (pour génération d’image ultérieure).
+- Remplir **`media`** (slot `hero`) pour le pipeline ; le brief visuel y vit, pas dans un endpoint séparé.
 - **`ctaHref`** : même logique que HeroSplitImageRight (ancre interne ou URL boutique si fournie dans le contexte).

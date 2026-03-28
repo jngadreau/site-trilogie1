@@ -17,10 +17,22 @@ export type SectionId =
   | 'for_who'
   | 'how_to_use'
 
+export interface DeckSectionMediaSlotV1 {
+  slotId: string
+  aspectRatio: string
+  sceneDescription: string
+  mood?: string
+  styleVisual?: string
+  colorContext?: string
+  constraints?: string
+  altHintFr?: string
+}
+
 export interface DeckLandingSection {
   id: SectionId
   variant: string
   props: Record<string, unknown>
+  media?: DeckSectionMediaSlotV1[]
 }
 
 export interface DeckModularLandingV1 {

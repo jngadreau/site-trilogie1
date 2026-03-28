@@ -1,4 +1,7 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { randomUUID } from 'crypto';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Job, Queue } from 'bullmq';
 import { SiteService } from './site.service';
 import { LandingGenerationService } from './landing-generation.service';
 import { GameContextGenerationService } from './game-context-generation.service';
@@ -8,6 +11,11 @@ import { DeckModularLandingAssetsService } from './deck-modular-landing-assets.s
 import { CardFanService } from './card-fan.service';
 import { ComposeFanDto } from './dto/compose-fan.dto';
 import { GenerateLandingAssetsDto } from './dto/generate-landing-assets.dto';
+import {
+  DECK_LANDING_IMAGE_QUEUE,
+  DECK_LANDING_PIPELINE_QUEUE,
+  JOB_DECK_COMPOSITION,
+} from './deck-landing-queue.constants';
 
 @Controller('site')
 export class SiteController {
@@ -19,6 +27,10 @@ export class SiteController {
     private readonly deckModular: DeckModularLandingService,
     private readonly deckModularAssets: DeckModularLandingAssetsService,
     private readonly cardFan: CardFanService,
+    @InjectQueue(DECK_LANDING_PIPELINE_QUEUE)
+    private readonly deckPipelineQueue: Queue,
+    @InjectQueue(DECK_LANDING_IMAGE_QUEUE)
+    private readonly deckImageQueue: Queue,
   ) {}
 
   @Get('manifest')
@@ -87,6 +99,77 @@ export class SiteController {
   @Post('generate-deck-landing/:slug')
   async generateDeckLanding(@Param('slug') slug: string) {
     return this.deckModular.generateAndSave(slug);
+  }
+
+  /**
+   * Pipeline BullMQ : composition (globals) → 4 jobs « section elements » → finalize (écrit JSON) →
+   * jobs Imagine par slot `media`. Nécessite **Redis**. Réponse : `traceId` + `jobId` du job composition.
+   */
+  @Post('generate-deck-landing-pipeline/:slug')
+  async generateDeckLandingPipeline(@Param('slug') slug: string) {
+    this.deckModular.ensureDeckLandingSlug(slug);
+    const traceId = randomUUID();
+    const job = await this.deckPipelineQueue.add(
+      JOB_DECK_COMPOSITION,
+      { slug, traceId },
+      { removeOnComplete: 40, removeOnFail: 25 },
+    );
+    return { traceId, jobId: String(job.id), queue: DECK_LANDING_PIPELINE_QUEUE };
+  }
+
+  /** Liste récente des jobs pipeline + images (admin). */
+  @Get('deck-landing-pipeline-jobs')
+  async deckLandingPipelineJobs(@Query('limit') limitRaw?: string) {
+    const limit = Math.min(80, Math.max(5, parseInt(limitRaw ?? '35', 10) || 35));
+    const types = ['waiting', 'active', 'delayed', 'completed', 'failed'] as (
+      | 'waiting'
+      | 'active'
+      | 'delayed'
+      | 'completed'
+      | 'failed'
+    )[];
+    const [pipeJobs, imgJobs] = await Promise.all([
+      this.deckPipelineQueue.getJobs(types, 0, limit - 1),
+      this.deckImageQueue.getJobs(types, 0, limit - 1),
+    ]);
+    const mapJob = async (q: string, j: Job) => {
+      const state = await j.getState();
+      return {
+        queue: q,
+        id: String(j.id),
+        name: j.name,
+        state,
+        data: j.data,
+        returnvalue: j.returnvalue,
+        failedReason: j.failedReason,
+        timestamp: j.timestamp,
+        processedOn: j.processedOn,
+        finishedOn: j.finishedOn,
+      };
+    };
+    const pipeline = await Promise.all(
+      pipeJobs.map((j) => mapJob(DECK_LANDING_PIPELINE_QUEUE, j)),
+    );
+    const images = await Promise.all(
+      imgJobs.map((j) => mapJob(DECK_LANDING_IMAGE_QUEUE, j)),
+    );
+    const merged = [...pipeline, ...images].sort(
+      (a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0),
+    );
+    return { limit, jobs: merged.slice(0, limit) };
+  }
+
+  /**
+   * Point d’entrée **commun** Imagine : lit le slot `media` dans le JSON (`sectionId` + `slotId`),
+   * assemble le prompt et met à jour les `props` (ex. `imageUrl` pour hero).
+   */
+  @Post('generate-deck-landing-image/:slug/:sectionId/:slotId')
+  async generateDeckLandingImage(
+    @Param('slug') slug: string,
+    @Param('sectionId') sectionId: string,
+    @Param('slotId') slotId: string,
+  ) {
+    return this.deckModularAssets.generateImageFromSlot(slug, sectionId, slotId);
   }
 
   /**

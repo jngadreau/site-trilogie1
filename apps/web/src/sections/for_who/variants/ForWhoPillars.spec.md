@@ -24,6 +24,10 @@ Présenter le **public ou les cas d’usage** sous forme de **piliers** : cartes
 - **Aucune image** dans le schéma actuel.
 - **Évolution possible** : champ `icon` (nom d’icône ou URL) — si non présent dans le schéma validé, **ne pas générer** d’icônes.
 
+## Slots médias (pipeline Imagine)
+
+**Aucun** pour l’instant. `"media": []`. (Si des icônes PNG sont ajoutées plus tard, définir ici de nouveaux `slotId` et les brancher côté API.)
+
 ## Contraintes éditoriales et ton
 
 - **Minimum 3 piliers** ; 4 acceptables si le contexte le justifie ; au-delà, préférer une autre variante ou fusionner.

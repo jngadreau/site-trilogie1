@@ -24,6 +24,10 @@ Variante **ultra légère** de l’identité : peu de mots, **beaucoup d’air**
 
 - **Aucune image** ; toute la présence vient du **rythme** et de la **typographie** (polices `globals`).
 
+## Slots médias (pipeline Imagine)
+
+**Aucun.** `"media": []`.
+
 ## Contraintes éditoriales et ton
 
 - **`oneLiner`** : une seule **période** ou deux très courtes ; pas de liste ; éviter les répétitions du titre.

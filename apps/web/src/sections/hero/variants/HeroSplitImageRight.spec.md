@@ -29,6 +29,23 @@ Premier écran de la landing : poser **immédiatement** le nom / l’esprit du d
 - **Image hero** : une image forte (bannière, scène symbolique, détail de cartes, nature, etc.), **haute résolution**, **paysage** ; éviter les bords critiques collés au cadre (marge de sécurité pour le crop).
 - **Optionnel (hors JSON)** : brief de génération d’image aligné sur `globals` (palette, luminosité) pour cohérence avec le reste de la page.
 
+## Slots médias (pipeline Imagine)
+
+Un seul slot, **`slotId` = `hero`** (obligatoire si la section inclut une image).
+
+| Champ JSON `media[]` | Rôle pour l’assemblage du prompt |
+| --- | --- |
+| `slotId` | Toujours `hero` |
+| `aspectRatio` | `16:9` (bannière) ou `4:3` si le layout évolue |
+| `sceneDescription` | Cœur du prompt : sujet, cadrage, lumière, premier plan / arrière-plan |
+| `mood` | Ambiance (sérénité, mystère doux, etc.) |
+| `styleVisual` | Ex. illustration éditoriale, grain léger, peinture numérique aérée |
+| `colorContext` | Lien explicite avec `globals.accent` / `background` (sans recopier les hex si l’ambiance suffit) |
+| `constraints` | Rappels : pas de texte lisible, pas de logos, pas d’imageries médicales |
+| `altHintFr` | Doit **cohérence** avec `props.imageAlt` (souvent identique ou plus court) |
+
+L’API assemble ensuite un **prompt unique** pour Grok Imagine (`DeckLandingImageAssemblyService`) + `aspectRatio` pour l’appel ; pas de point d’entrée HTTP par slot.
+
 ## Contraintes éditoriales et ton
 
 - Français, **chaleureux**, poétique possible sans mièvrerie ; **aucune** promesse médicale ou thérapeutique normative.
@@ -39,5 +56,5 @@ Premier écran de la landing : poser **immédiatement** le nom / l’esprit du d
 
 - Lire **`globals`** (couleurs, polices) et **aligner le ton** du texte sur l’identité du deck dans le contexte fourni.
 - **`imageAlt`** : décrire le **contenu** et l’ambiance (pour accessibilité et cohérence SEO), pas la technique.
-- Choisir une **`imageUrl`** cohérente avec le texte ; si fichier fictif, utiliser les chemins API documentés et un **brief** de substitution dans une note de travail si le pipeline image existe.
+- Renseigner **`media`** avec le slot `hero` (voir ci-dessus) pour le pipeline ; `imageUrl` peut rester un placeholder (`/ai/generated-images/banner-1.png`) jusqu’au job Imagine.
 - **`ctaHref`** : privilégier une ancre vers `#identite` ou la section suivante si la landing est une seule page.

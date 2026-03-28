@@ -23,6 +23,10 @@ Expliquer **comment utiliser** le deck de façon **simple et ordonnée** : étap
 
 - **Aucune image** requise.
 
+## Slots médias (pipeline Imagine)
+
+**Aucun.** `"media": []`.
+
 ## Contraintes éditoriales et ton
 
 - **Ordre logique** : installation du moment → tirage → interprétation (ou équivalent adapté au deck).

@@ -120,3 +120,53 @@
 .admin-dl .md p {
   margin: 0 0 0.5rem;
 }
+
+.admin-dl__linkish {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #2563eb;
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+}
+
+.admin-dl__jobs-wrap {
+  overflow-x: auto;
+}
+
+.admin-dl__jobs .admin-dl__job-detail {
+  max-width: 28rem;
+  vertical-align: top;
+}
+
+.admin-dl__pre--tiny {
+  font-size: 0.68rem;
+  margin: 0.25rem 0 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.admin-dl__err-inline {
+  color: #b91c1c;
+  font-size: 0.8rem;
+}
+
+.admin-dl__state {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.admin-dl__state--completed {
+  color: #15803d;
+}
+
+.admin-dl__state--failed {
+  color: #b91c1c;
+}
+
+.admin-dl__state--active,
+.admin-dl__state--waiting {
+  color: #b45309;
+}
