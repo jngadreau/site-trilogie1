@@ -5,6 +5,9 @@ const HERO = [
   'HeroFullBleed',
   'HeroGlowVault',
   'HeroParallaxLayers',
+  'HeroCardsFan',
+  'HeroCardsStrip',
+  'HeroCardsMosaic',
 ] as const;
 const DECK_ID = ['IdentityPanel', 'IdentityMinimal'] as const;
 const FOR_WHO = ['ForWhoTwoColumns', 'ForWhoPillars'] as const;

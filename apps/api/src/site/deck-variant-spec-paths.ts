@@ -1,5 +1,8 @@
 /** Variante React → chemin relatif sous `apps/web/src/sections/`. */
 export const VARIANT_TO_SPEC_REL: Record<string, string> = {
+  HeroCardsFan: 'hero/variants/HeroCardsFan.spec.md',
+  HeroCardsMosaic: 'hero/variants/HeroCardsMosaic.spec.md',
+  HeroCardsStrip: 'hero/variants/HeroCardsStrip.spec.md',
   HeroSplitImageRight: 'hero/variants/HeroSplitImageRight.spec.md',
   HeroFullBleed: 'hero/variants/HeroFullBleed.spec.md',
   HeroGlowVault: 'hero/variants/HeroGlowVault.spec.md',

@@ -858,3 +858,251 @@
   align-items: stretch;
   min-width: 200px;
 }
+
+/* Hero — cartes du jeu (fichiers /cards/arbre-de-vie/…) */
+.dl-hero--cards-fan {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+  padding: 2.5rem 0 3rem;
+}
+
+@media (max-width: 900px) {
+  .dl-hero--cards-fan {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dl-hero__cards-fan-kicker {
+  margin: 0 0 0.4rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--dl-muted);
+}
+
+.dl-hero__cards-fan-title {
+  font-family: var(--dl-font-heading);
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  line-height: 1.08;
+  margin: 0 0 1rem;
+}
+
+.dl-hero__cards-fan-body {
+  color: var(--dl-muted);
+}
+
+.dl-hero__cards-fan-cta {
+  margin-top: 1.1rem;
+}
+
+.dl-hero__cards-fan-stage {
+  position: relative;
+  min-height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.dl-hero__cards-fan-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  height: 300px;
+}
+
+.dl-hero__cards-fan-item {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 112px;
+  margin-left: -56px;
+  transform-origin: bottom center;
+  transition: transform 0.25s ease;
+}
+
+.dl-hero__cards-fan-fig {
+  margin: 0;
+}
+
+.dl-hero__cards-fan-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 51 / 153;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow:
+    0 4px 6px color-mix(in srgb, #000 18%, transparent),
+    0 18px 40px color-mix(in srgb, var(--dl-text) 16%, transparent);
+  border: 1px solid color-mix(in srgb, #fff 35%, transparent);
+}
+
+.dl-hero__cards-fan-cap {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.68rem;
+  text-align: center;
+  color: var(--dl-muted);
+  line-height: 1.2;
+}
+
+.dl-hero--cards-strip {
+  padding: 2.5rem 0 2rem;
+}
+
+.dl-hero__cards-strip-head {
+  text-align: center;
+  max-width: 40rem;
+  margin: 0 auto 1.75rem;
+}
+
+.dl-hero__cards-strip-sub {
+  margin: 0 0 0.35rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--dl-muted);
+}
+
+.dl-hero__cards-strip-title {
+  font-family: var(--dl-font-heading);
+  font-size: clamp(1.85rem, 4vw, 2.75rem);
+  margin: 0 0 0.75rem;
+}
+
+.dl-hero__cards-strip-body {
+  color: var(--dl-muted);
+  text-align: left;
+}
+
+.dl-hero__cards-strip-cta {
+  margin-top: 1rem;
+}
+
+.dl-hero__cards-strip-rail {
+  display: flex;
+  gap: 0.85rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 0.5rem 0 0.75rem;
+  margin: 0 -1.25rem;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dl-hero__cards-strip-card {
+  flex: 0 0 auto;
+  scroll-snap-align: center;
+  width: 118px;
+}
+
+.dl-hero__cards-strip-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 51 / 153;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--dl-text) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--dl-text) 10%, transparent);
+}
+
+.dl-hero__cards-strip-cap {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.65rem;
+  color: var(--dl-muted);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.dl-hero--cards-mosaic {
+  padding: 2.5rem 0 3rem;
+}
+
+.dl-hero__cards-mosaic-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.25rem;
+  align-items: center;
+}
+
+@media (max-width: 880px) {
+  .dl-hero__cards-mosaic-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dl-hero__cards-mosaic-visual {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 0.55rem;
+  align-items: stretch;
+  min-height: 260px;
+}
+
+@media (max-width: 480px) {
+  .dl-hero__cards-mosaic-visual {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dl-hero__cards-mosaic-feature {
+  grid-row: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.dl-hero__cards-mosaic-stack {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+  align-content: start;
+}
+
+.dl-hero__cards-mosaic-img {
+  width: 100%;
+  aspect-ratio: 51 / 153;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--dl-text) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--dl-text) 8%, transparent);
+}
+
+.dl-hero__cards-mosaic-img--feature {
+  flex: 1;
+  min-height: 220px;
+  max-height: 360px;
+  aspect-ratio: auto;
+  width: 100%;
+  object-fit: cover;
+}
+
+.dl-hero__cards-mosaic-feature-cap {
+  margin-top: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--dl-muted);
+}
+
+.dl-hero__cards-mosaic-tag {
+  margin: 0 0 0.4rem;
+  font-size: 0.9rem;
+  color: var(--dl-accent);
+  font-weight: 600;
+}
+
+.dl-hero__cards-mosaic-title {
+  font-family: var(--dl-font-heading);
+  font-size: clamp(1.9rem, 4vw, 2.85rem);
+  margin: 0 0 0.75rem;
+  line-height: 1.1;
+}
+
+.dl-hero__cards-mosaic-body {
+  color: var(--dl-muted);
+}

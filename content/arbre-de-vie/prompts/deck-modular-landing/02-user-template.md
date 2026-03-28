@@ -51,7 +51,7 @@ Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck).
   "sections": [
     {
       "id": "hero",
-      "variant": "selon carte — HeroSplitImageRight | HeroFullBleed | HeroGlowVault | HeroParallaxLayers",
+      "variant": "selon carte — HeroSplitImageRight | HeroFullBleed | HeroGlowVault | HeroParallaxLayers | HeroCardsFan | HeroCardsStrip | HeroCardsMosaic",
       "props": {},
       "media": [
         {
@@ -100,7 +100,7 @@ Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck).
 }
 ```
 
-Chaque section doit inclure **`media`** : tableau d’objets slots (voir specs `.spec.md` « Slots médias ») ou `[]` si aucune image.
+Chaque section doit inclure **`media`** : tableau d’objets slots (voir specs `.spec.md` « Slots médias ») ou `[]` si aucune image. Pour **`HeroCardsFan`**, **`HeroCardsStrip`**, **`HeroCardsMosaic`** : `media` du hero = **`[]`** (images = `cards[]` uniquement).
 
 ### Props par variant (obligatoires)
 
@@ -111,6 +111,12 @@ Chaque section doit inclure **`media`** : tableau d’objets slots (voir specs `
 **HeroGlowVault** : `kicker`, `title`, `bodyMarkdown`, `ctaLabel`, `ctaHref`, `imageUrl`, `imageAlt`, `glowIntensity` (0.35–0.95)
 
 **HeroParallaxLayers** : `eyebrow`, `title`, `strapline`, `bodyMarkdown`, `ctaLabel`, `ctaHref`, `imageUrl`, `imageAlt`, `spineLabel` (optionnel)
+
+**HeroCardsFan** : `title`, `kicker`, `bodyMarkdown`, `ctaLabel`, `ctaHref`, `cards` (tableau **3 à 7** objets `{ "imageUrl", "alt", "caption?" }` — `imageUrl` = chemin API **`/cards/arbre-de-vie/<fichier.png>`**)
+
+**HeroCardsStrip** : `title`, `subtitle`, `bodyMarkdown`, `ctaLabel`, `ctaHref`, `cards` (**4 à 9** mêmes objets)
+
+**HeroCardsMosaic** : `title`, `tagline`, `bodyMarkdown`, `ctaLabel`, `ctaHref`, `cards` (**4 à 6** mêmes objets)
 
 **IdentityPanel** : `deckName`, `tagline`, `bodyMarkdown`, `badge` (optionnel)
 

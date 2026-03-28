@@ -26,7 +26,7 @@ Chaque bloc décrit **rôle visuel, données attendues, consignes pour l’IA**.
 
 | Section | Variantes possibles |
 |---------|---------------------|
-| `hero` | `HeroSplitImageRight`, `HeroFullBleed`, `HeroGlowVault`, `HeroParallaxLayers` |
+| `hero` | `HeroSplitImageRight`, `HeroFullBleed`, `HeroGlowVault`, `HeroParallaxLayers`, `HeroCardsFan`, `HeroCardsStrip`, `HeroCardsMosaic` |
 | `deck_identity` | `IdentityPanel`, `IdentityMinimal` |
 | `for_who` | `ForWhoTwoColumns`, `ForWhoPillars` |
 | `outcomes` | `OutcomesBentoGrid`, `OutcomesSignalStrip` |

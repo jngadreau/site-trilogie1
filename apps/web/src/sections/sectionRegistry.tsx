@@ -4,6 +4,12 @@ import { CtaMarqueeRibbon } from './cta_band/CtaMarqueeRibbon'
 import type { CtaMarqueeRibbonProps } from './cta_band/CtaMarqueeRibbon'
 import { CtaSplitAction } from './cta_band/CtaSplitAction'
 import type { CtaSplitActionProps } from './cta_band/CtaSplitAction'
+import { HeroCardsFan } from './hero/HeroCardsFan'
+import type { HeroCardsFanProps } from './hero/HeroCardsFan'
+import { HeroCardsMosaic } from './hero/HeroCardsMosaic'
+import type { HeroCardsMosaicProps } from './hero/HeroCardsMosaic'
+import { HeroCardsStrip } from './hero/HeroCardsStrip'
+import type { HeroCardsStripProps } from './hero/HeroCardsStrip'
 import { HeroFullBleed } from './hero/HeroFullBleed'
 import type { HeroFullBleedProps } from './hero/HeroFullBleed'
 import { HeroGlowVault } from './hero/HeroGlowVault'
@@ -34,6 +40,9 @@ type AnyProps =
   | HeroFullBleedProps
   | HeroGlowVaultProps
   | HeroParallaxLayersProps
+  | HeroCardsFanProps
+  | HeroCardsStripProps
+  | HeroCardsMosaicProps
   | IdentityPanelProps
   | IdentityMinimalProps
   | ForWhoTwoColumnsProps
@@ -50,6 +59,9 @@ const registry: Record<string, ComponentType<AnyProps>> = {
   HeroFullBleed: HeroFullBleed as ComponentType<AnyProps>,
   HeroGlowVault: HeroGlowVault as ComponentType<AnyProps>,
   HeroParallaxLayers: HeroParallaxLayers as ComponentType<AnyProps>,
+  HeroCardsFan: HeroCardsFan as unknown as ComponentType<AnyProps>,
+  HeroCardsStrip: HeroCardsStrip as unknown as ComponentType<AnyProps>,
+  HeroCardsMosaic: HeroCardsMosaic as unknown as ComponentType<AnyProps>,
   IdentityPanel: IdentityPanel as ComponentType<AnyProps>,
   IdentityMinimal: IdentityMinimal as ComponentType<AnyProps>,
   ForWhoTwoColumns: ForWhoTwoColumns as ComponentType<AnyProps>,

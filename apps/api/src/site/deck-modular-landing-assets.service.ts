@@ -98,7 +98,7 @@ export class DeckModularLandingAssetsService {
     }
     if (!HERO_VARIANTS_WITH_IMAGE.has(hero.variant)) {
       throw new InternalServerErrorException(
-        `Variante hero « ${hero.variant} » sans image attendue`,
+        `Variante hero « ${hero.variant} » : pas d’Imagine hero (cartes = fichiers /cards/… dans le JSON ; sinon HeroSplitImageRight / HeroFullBleed)`,
       );
     }
 
