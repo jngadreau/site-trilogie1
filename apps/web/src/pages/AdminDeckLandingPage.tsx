@@ -59,17 +59,31 @@ export function AdminDeckLandingPage() {
       .catch(() => setPlanErr('Erreur chargement plan'))
   }, [dashboard])
 
-  async function post(path: string, label: string) {
+  async function post(
+    path: string,
+    label: string,
+    formatSuccess?: (body: Record<string, unknown>) => string,
+  ) {
     setBusy(label)
     setMessage(null)
     setErr(null)
     try {
       const r = await fetch(path, { method: 'POST' })
-      const body = await r.json().catch(() => ({}))
+      const body = (await r.json().catch(() => ({}))) as Record<string, unknown>
       if (!r.ok) {
-        throw new Error(body?.message || `${r.status}`)
+        const msg = body?.message
+        throw new Error(
+          typeof msg === 'string' ? msg : Array.isArray(msg) ? msg.join(', ') : `${r.status}`,
+        )
       }
-      setMessage(typeof body?.path === 'string' ? `OK — ${body.path}` : 'OK')
+      const custom = formatSuccess?.(body)
+      if (custom) {
+        setMessage(custom)
+      } else if (typeof body.path === 'string') {
+        setMessage(`OK — ${body.path}`)
+      } else {
+        setMessage('OK')
+      }
       refresh()
     } catch (e) {
       setErr((e as Error).message)
@@ -91,8 +105,8 @@ export function AdminDeckLandingPage() {
       </header>
 
       <p className="admin-dl__hint">
-        Nécessite l’API sur le port <strong>3040</strong> et <code>GROK_API_KEY</code> pour les boutons
-        Grok.
+        Nécessite l’API sur le port <strong>3040</strong> et <code>GROK_API_KEY</code>. Les images hero
+        utilisent aussi <code>GROK_IMAGE_MODEL</code> (défaut <code>grok-imagine-image</code>).
       </p>
 
       {err ? <p className="admin-dl__err">{err}</p> : null}
@@ -141,6 +155,26 @@ export function AdminDeckLandingPage() {
                         }
                       >
                         Grok → JSON
+                      </button>
+                      <button
+                        type="button"
+                        disabled={!!busy}
+                        title="Grok Imagine 16:9 + mise à jour imageUrl dans le JSON"
+                        onClick={() =>
+                          post(
+                            `/site/generate-deck-landing-hero-image/${encodeURIComponent(slug)}`,
+                            `hero-${slug}`,
+                            (b) => {
+                              const url = b.imageUrl
+                              const src = b.promptSource
+                              return typeof url === 'string'
+                                ? `Image hero OK — ${url} (prompt: ${String(src)})`
+                                : 'Image hero OK'
+                            },
+                          )
+                        }
+                      >
+                        Imagine hero
                       </button>
                     </td>
                   </tr>

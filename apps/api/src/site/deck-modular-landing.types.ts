@@ -25,4 +25,11 @@ export interface DeckModularLandingV1 {
   slug: string;
   globals: DeckLandingGlobals;
   sections: DeckLandingSection[];
+  /**
+   * Prompt anglais pour Grok Imagine (hero). Si absent, l’API peut le synthétiser
+   * (chat) à partir du hero + globals avant `POST …/generate-deck-landing-hero-image/:slug`.
+   */
+  imagePrompts?: {
+    hero?: string;
+  };
 }

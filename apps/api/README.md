@@ -39,6 +39,9 @@ npm run start:dev
 | `GET` | `/site/landing-spec` | JSON `landing-spec.json` (landing détaillée Grok) — 404 si non généré |
 | `POST` | `/site/generate-landing` | Étape 2 : génère `landing-spec.json` + CSS/HTML depuis `prompts/landing/` (utilise `game-context.md` si présent) |
 | `POST` | `/site/generate-landing-assets` | Bannière PNG (Grok Imagine, `imagePrompts.heroBanner`) + éventail (Sharp, cartes locales). Corps optionnel `{"hero":true,"fan":true}` |
+| `GET` | `/site/deck-landing/:slug` | JSON landing modulaire (`deck-landings/{slug}.json`) |
+| `POST` | `/site/generate-deck-landing/:slug` | Grok → JSON modulaire (4 sections) |
+| `POST` | `/site/generate-deck-landing-hero-image/:slug` | Grok Imagine → PNG hero + mise à jour `hero.props.imageUrl` dans le même JSON (`imagePrompts.hero` optionnel, anglais) |
 | `GET` | `/cards/arbre-de-vie` | Liste des fichiers image dans `images-jeux/arbre_de_vie/` |
 | `GET` | `/cards/arbre-de-vie/metadata` | `metadata.json` enrichi : `physicalSizeMm` (ex. 51×153), ratio mesuré (Sharp) |
 | `POST` | `/cards/arbre-de-vie/refresh-metadata` | Recalcule les ratios depuis les pixels et réécrit `metadata.json` |

@@ -2,80 +2,80 @@
   "version": 1,
   "slug": "arbre-de-vie-c",
   "globals": {
-    "accent": "#4a6fa5",
-    "background": "#faf8f5",
-    "surface": "#ffffff",
-    "text": "#1c1a18",
-    "textMuted": "#6b6560",
-    "fontHeading": "'Libre Baskerville', Georgia, serif",
-    "fontBody": "'Nunito Sans', system-ui, sans-serif",
-    "radius": "12px",
-    "fontImportNote": "Libre Baskerville + Nunito Sans",
-    "fontImportHref": "https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Nunito+Sans:ital,wght@0,400;0,600;1,400&display=swap"
+    "accent": "#8B7355",
+    "background": "#F8F4F0",
+    "surface": "#FDFAF7",
+    "text": "#3D2B1F",
+    "textMuted": "#8A7A6D",
+    "fontHeading": "'Playfair Display', Georgia, serif",
+    "fontBody": "system-ui, -apple-system, sans-serif",
+    "radius": "16px",
+    "fontImportNote": "Google Fonts: Playfair Display",
+    "fontImportHref": "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap"
   },
   "sections": [
     {
       "id": "hero",
       "variant": "HeroSplitImageRight",
       "props": {
-        "title": "Arbre de vie — variante C",
-        "subtitle": "Clarté douce, cartes en appui",
-        "bodyMarkdown": "Une même clé : **ralentir**, tirer une carte, laisser l’image faire son chemin. Ici le visuel et le texte **côte à côte** : tu vois le jeu avant même de défiler.",
-        "ctaLabel": "Lire l’essentiel",
-        "ctaHref": "#identite",
-        "imageUrl": "/ai/generated-images/banner-1.png",
-        "imageAlt": "Composition calme, arbre et lumière tamisée sur fond crème"
+        "title": "L’Oracle de l’Arbre de Vie",
+        "subtitle": "Racines, élévation et sagesse du vivant",
+        "bodyMarkdown": "Un oracle canalisé de 64 cartes pour accompagner ta croissance intérieure, comme un arbre qui puise dans la terre nourricière et s’élève vers le ciel.\n\n**Guidance intuitive** au fil des cycles naturels : ancrage dans l’ombre comme expansion dans la lumière, à travers rituels simples et messages poétiques.\n\nGlisse une carte dans ton quotidien pour cultiver patience et résilience.",
+        "ctaLabel": "Découvrir l’identité",
+        "ctaHref": "#deck_identity",
+        "imageUrl": "/ai/generated-images/landing-hero-arbre-de-vie.png",
+        "imageAlt": "Arbre de vie majestueux aux racines profondes dans la terre humide et branches s’élevant vers un ciel lumineux, feuilles dansantes et fruits abondants, symbolisant croissance et harmonie naturelle."
       }
     },
     {
       "id": "deck_identity",
       "variant": "IdentityMinimal",
       "props": {
-        "eyebrow": "Oracle · 52 cartes",
-        "title": "Ni oracle figé, ni devinette",
-        "oneLiner": "Un **langage symbolique** pour nommer ce que tu traverses — avec des mots du quotidien, des images naturelles, et la liberté de t’arrêter quand ça suffit."
+        "eyebrow": "Oracle · 64 cartes canalisées",
+        "title": "Racines, élévation et sagesse du vivant",
+        "oneLiner": "Créé par **Hélène Durand**, compagnon portable pour l’épanouissement spirituel, inspiré des cycles de l’Arbre de Vie."
       }
     },
     {
       "id": "for_who",
       "variant": "ForWhoPillars",
       "props": {
-        "title": "Trois portes vers le jeu",
-        "introMarkdown": "Tu peux t’y retrouver sous plusieurs formes : l’important est que la carte serve de **miroir**, pas de verdict.",
+        "title": "Pour qui cet oracle ?",
+        "introMarkdown": "Que tu sois en quête d’équilibre ou en pleine transition, cet oracle t’invite à écouter la sagesse organique de la nature pour nourrir ton chemin.",
         "pillars": [
           {
-            "title": "En quête de repères",
-            "bodyMarkdown": "Tu veux **une phrase**, une image, un angle neuf sur une situation qui tourne en boucle — sans tout analyser pendant des heures."
+            "title": "En quête d’introspection",
+            "bodyMarkdown": "Pour celles et ceux qui cherchent un **fil conducteur** dans leurs émotions, un espace pour respirer et se recentrer au quotidien."
           },
           {
-            "title": "Déjà en pratique introspective",
-            "bodyMarkdown": "Journal, thérapie, méditation : le deck devient un **objet transition** entre séance et quotidien, concret et poétique."
+            "title": "Traversant des transitions",
+            "bodyMarkdown": "**Défis ou renouveaux** : laisse les cycles de l’arbre t’accompagner dans l’ancrage face aux vents du changement."
           },
           {
-            "title": "Accompagnant·e",
-            "bodyMarkdown": "Tu proposes un cadre : les cartes **ouvrent la parole** et désamorcent le blocage « je ne sais pas quoi dire »."
+            "title": "Connecté·e à la nature",
+            "bodyMarkdown": "**Méditant·e·s et accompagnant·e·s** spirituel·le·s : amplifie ton intuition avec des messages sensoriels et poétiques."
           }
         ]
       }
     },
     {
       "id": "how_to_use",
-      "variant": "HowToTimeline",
+      "variant": "HowToNumbered",
       "props": {
-        "title": "Un fil du temps, du silence à la carte",
-        "introMarkdown": "Comme une **sève** qui monte : pas besoin d’aller vite. Ce déroulé est une boussole, pas une règle.",
+        "title": "Comment l’utiliser",
+        "introMarkdown": "Rituel simple et flexible, seul·e ou en groupe. Le livret guide les détails, commence par ces étapes essentielles.",
         "steps": [
           {
-            "label": "0 — Racines",
-            "detailMarkdown": "Pose le jeu, ferme les yeux un instant. **Une question** ou un mot suffit : « qu’est-ce qui me tient debout aujourd’hui ? »"
+            "title": "Prépare ton espace",
+            "bodyMarkdown": "Respire profondément, pose l’étui transparent sur ton autel, livre ou près de toi. Nettoie par le souffle ou une intention bienveillante."
           },
           {
-            "label": "1 — Montée",
-            "detailMarkdown": "Mélange lentement. Quand tu t’arrêtes, **tire** une ou trois cartes selon l’espace que tu t’offres."
+            "title": "Choisis ton tirage",
+            "bodyMarkdown": "**Sève du Jour** (1 carte), **Racines et Cime** (2 cartes) ou **Équilibre des Branches** (3-4 cartes). Mélange en écoutant ton ressenti."
           },
           {
-            "label": "2 — Cime",
-            "detailMarkdown": "Lis à voix basse, regarde l’image. **Note** une image, une sensation au corps, une micro-action pour les prochaines heures."
+            "title": "Reçois et intègre",
+            "bodyMarkdown": "Lis l’**Image** pour l’élan immédiat, le **Message Long** pour approfondir. Visualise, affirme, porte la carte avec toi dans la journée."
           }
         ]
       }

@@ -4,6 +4,7 @@ import { LandingGenerationService } from './landing-generation.service';
 import { GameContextGenerationService } from './game-context-generation.service';
 import { LandingAssetsService } from './landing-assets.service';
 import { DeckModularLandingService } from './deck-modular-landing.service';
+import { DeckModularLandingAssetsService } from './deck-modular-landing-assets.service';
 import { CardFanService } from './card-fan.service';
 import { ComposeFanDto } from './dto/compose-fan.dto';
 import { GenerateLandingAssetsDto } from './dto/generate-landing-assets.dto';
@@ -16,6 +17,7 @@ export class SiteController {
     private readonly landingGen: LandingGenerationService,
     private readonly landingAssets: LandingAssetsService,
     private readonly deckModular: DeckModularLandingService,
+    private readonly deckModularAssets: DeckModularLandingAssetsService,
     private readonly cardFan: CardFanService,
   ) {}
 
@@ -85,6 +87,16 @@ export class SiteController {
   @Post('generate-deck-landing/:slug')
   async generateDeckLanding(@Param('slug') slug: string) {
     return this.deckModular.generateAndSave(slug);
+  }
+
+  /**
+   * Bannière hero (Grok Imagine) pour une landing modulaire : lit `deck-landings/{slug}.json`,
+   * utilise `imagePrompts.hero` si présent sinon synthétise un prompt (Grok chat),
+   * écrit un PNG sous `images/` et met à jour `hero.props.imageUrl` dans le JSON.
+   */
+  @Post('generate-deck-landing-hero-image/:slug')
+  async generateDeckLandingHeroImage(@Param('slug') slug: string) {
+    return this.deckModularAssets.generateHeroImage(slug);
   }
 
   /**

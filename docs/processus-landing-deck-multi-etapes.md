@@ -128,6 +128,7 @@ Liste de **référence** pour l’étape 2 (sélection par l’IA). Les noms son
 - **JSON servi :** `content/generated/arbre-de-vie/deck-landings/{slug}.json` — `globals` (couleurs, polices, `fontImportHref` optionnel) + **4 sections** dans l’ordre imposé.
 - **API :** `GET /site/deck-landing/:slug`, `POST /site/generate-deck-landing/:slug` ; `GET /site/deck-modular-landing-dashboard`, `GET /site/deck-landing-variant-plan/:slug`, `POST /site/generate-deck-landing-variant-plan/arbre-de-vie-c` (plan + mise à jour `deck-landing-variants.json`). Slugs `a` \| `b` \| `c`.
 - **Prompts Grok :** `content/arbre-de-vie/prompts/deck-modular-landing/`.
+- **Image hero (Imagine) :** `POST /site/generate-deck-landing-hero-image/:slug` — écrit un PNG dans `content/generated/.../images/` et met à jour `hero.props.imageUrl`. Champ JSON optionnel racine `imagePrompts.hero` (anglais) pour le brief ; sinon synthèse par Grok (chat) via `03-hero-imagine-prompt.md`.
 - **Variantes par landing :** `content/arbre-de-vie/deck-landing-variants.json`. Specs des champs par layout : `apps/web/src/sections/*/variants/*.spec.md`.
 
 ---

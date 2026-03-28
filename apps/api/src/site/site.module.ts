@@ -7,6 +7,7 @@ import { LandingGenerationService } from './landing-generation.service';
 import { GameContextGenerationService } from './game-context-generation.service';
 import { LandingAssetsService } from './landing-assets.service';
 import { DeckModularLandingService } from './deck-modular-landing.service';
+import { DeckModularLandingAssetsService } from './deck-modular-landing-assets.service';
 import { CardFanService } from './card-fan.service';
 
 @Module({
@@ -18,6 +19,7 @@ import { CardFanService } from './card-fan.service';
     LandingGenerationService,
     LandingAssetsService,
     DeckModularLandingService,
+    DeckModularLandingAssetsService,
     CardFanService,
   ],
 })

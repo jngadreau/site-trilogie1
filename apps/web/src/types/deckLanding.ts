@@ -28,4 +28,8 @@ export interface DeckModularLandingV1 {
   slug: string
   globals: DeckLandingGlobals
   sections: DeckLandingSection[]
+  /** Prompt anglais optionnel pour générer la bannière hero (Grok Imagine). */
+  imagePrompts?: {
+    hero?: string
+  }
 }

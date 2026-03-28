@@ -31,6 +31,9 @@ Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck) 
 {
   "version": 1,
   "slug": "{{LANDING_SLUG}}",
+  "imagePrompts": {
+    "hero": "string optionnel — UN prompt en anglais, une phrase ou court paragraphe, pour Grok Imagine (bannière hero 16:9). Décrire scène, lumière, style ; pas de texte dans l’image. Si omis, l’API le synthétisera avant génération PNG."
+  },
   "globals": {
     "accent": "#hex",
     "background": "#hex",

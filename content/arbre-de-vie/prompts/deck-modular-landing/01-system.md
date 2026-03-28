@@ -8,7 +8,7 @@ Produire **un seul objet JSON valide** (aucun texte hors JSON) qui décrit une l
 
 - Langue des textes : **français**. Ton chaleureux, poétique sans mièvrerie ; pas de promesses médicales.
 - **Cohérence visuelle** : `globals` pilote toute la page (couleurs en hex, polices en stack web-safe ou Google Fonts citées dans `globals.fontImportNote` si besoin).
-- **Images** : pour chaque `imageUrl`, utilise une URL **relative API preview** si tu n’as pas de fichier réel : par ex. `/ai/generated-images/landing-hero-from-spec.png` ou `/ai/generated-images/banner-1.png`. Sinon URL absolue https uniquement si pertinent.
+- **Images** : pour chaque `imageUrl` du hero, utilise une URL **relative API preview** si aucun PNG dédié n’existe encore : par ex. `/ai/generated-images/banner-1.png`. Après `POST /site/generate-deck-landing-hero-image/:slug`, le fichier sera du type `/ai/generated-images/deck-hero-<slug>.png`. Tu peux remplir **`imagePrompts.hero`** (anglais) pour guider Imagine ; sinon l’API synthétisera un prompt à partir du hero + `globals`.
 - **Markdown** dans les props : syntaxe GitHub-flavored simple (paragraphes, **gras**, listes). Pas de blocs de code sauf exception.
 - **Respect strict** des noms de variant indiqués dans le message utilisateur pour chaque section.
 - Les **specs Markdown** fournies dans le message utilisateur décrivent chaque layout : respecte-en les **contraintes éditoriales** et **visuelles** pour les textes et paramètres (ex. `overlayOpacity`, longueur des colonnes, nombre de piliers).
