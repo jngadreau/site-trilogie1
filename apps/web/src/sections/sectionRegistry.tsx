@@ -122,6 +122,26 @@ const registry: Record<string, ComponentType<AnyProps>> = {
   NewsletterSplit: NewsletterSplit as ComponentType<AnyProps>,
 }
 
+function resolveSectionBackground(section: DeckLandingSection): {
+  url: string
+  imageAlt?: string
+} {
+  const fromField = section.backgroundImage?.imageUrl?.trim() ?? ''
+  if (fromField) {
+    const alt = section.backgroundImage?.imageAlt?.trim()
+    return { url: fromField, ...(alt ? { imageAlt: alt } : {}) }
+  }
+  const slots = section.imageSlots ?? []
+  const bgSlot = slots.find(
+    (s) => s.slotId === 'section_background' || s.purpose === 'section_background',
+  )
+  const u = bgSlot?.resolved?.imageUrl
+  const url = typeof u === 'string' ? u.trim() : ''
+  const a = bgSlot?.resolved?.imageAlt
+  const imageAlt = typeof a === 'string' && a.trim() ? a.trim() : undefined
+  return { url, ...(imageAlt ? { imageAlt } : {}) }
+}
+
 export function renderDeckSection(section: DeckLandingSection) {
   const Cmp = registry[section.variant]
   if (!Cmp) {
@@ -131,8 +151,7 @@ export function renderDeckSection(section: DeckLandingSection) {
       </section>
     )
   }
-  const bg = section.backgroundImage
-  const url = typeof bg?.imageUrl === 'string' ? bg.imageUrl.trim() : ''
+  const { url, imageAlt } = resolveSectionBackground(section)
   const wrapStyle: CSSProperties | undefined = url
     ? {
         backgroundImage: `url(${url})`,
@@ -148,7 +167,7 @@ export function renderDeckSection(section: DeckLandingSection) {
       key={section.id}
       className="dl-section-outer"
       style={wrapStyle}
-      {...(bg?.imageAlt ? { title: bg.imageAlt } : {})}
+      {...(imageAlt ? { title: imageAlt } : {})}
     >
       <Cmp {...(section.props as AnyProps)} />
     </div>

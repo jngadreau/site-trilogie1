@@ -16,6 +16,10 @@ import type { PatchDeckLandingImageSlotDto } from './dto/patch-deck-landing-imag
 import { applySlotImageUrlToSectionContent } from './deck-landing-mongo-media-slot-patch';
 import { appendLandingImageHistory } from './landing-image-history.util';
 import { normalizeImageSlotsInLandingDoc } from './landing-image-slots-normalize';
+import {
+  SECTION_BACKGROUND_DEFAULT_SCENE_EN,
+  SECTION_BACKGROUND_SLOT_ID,
+} from './section-background-slot.constants';
 import { LandingStructureWizardService } from './landing-structure-wizard.service';
 import {
   DeckLandingProject,
@@ -166,7 +170,13 @@ export class DeckLandingStorageService {
     }
     const v = await this.versionModel.findById(versionId).lean().exec();
     if (!v) throw new NotFoundException('Version introuvable');
-    return v;
+    const out = { ...v } as Record<string, unknown>;
+    if (out.content && typeof out.content === 'object' && !Array.isArray(out.content)) {
+      const c = JSON.parse(JSON.stringify(out.content)) as Record<string, unknown>;
+      normalizeImageSlotsInLandingDoc(c);
+      out.content = c;
+    }
+    return out as unknown as typeof v;
   }
 
   /** Vérifie que la version appartient au projet. */
@@ -417,13 +427,29 @@ export class DeckLandingStorageService {
 
     const variant = typeof sec.variant === 'string' ? sec.variant : '';
     const slots = Array.isArray(sec.imageSlots) ? sec.imageSlots : [];
-    const slotIdx = slots.findIndex(
+    let slotIdx = slots.findIndex(
       (x) => isRecord(x) && (x as { slotId?: string }).slotId === dto.slotId,
     );
     if (slotIdx < 0) {
-      throw new BadRequestException(
-        `Slot inconnu : ${dto.sectionId} / ${dto.slotId} (remplis le contenu ou vérifie les ids)`,
-      );
+      if (dto.slotId === SECTION_BACKGROUND_SLOT_ID) {
+        const ns: Record<string, unknown> = {
+          slotId: SECTION_BACKGROUND_SLOT_ID,
+          purpose: 'section_background',
+          aspectRatio: '16:9',
+          sceneDescription: SECTION_BACKGROUND_DEFAULT_SCENE_EN,
+          generation: {
+            autoGenerate: false,
+            primaryModel: 'grok_imagine',
+          },
+        };
+        slots.push(ns);
+        sec.imageSlots = slots;
+        slotIdx = slots.length - 1;
+      } else {
+        throw new BadRequestException(
+          `Slot inconnu : ${dto.sectionId} / ${dto.slotId} (remplis le contenu ou vérifie les ids)`,
+        );
+      }
     }
 
     const slotDef = slots[slotIdx] as Record<string, unknown>;
@@ -469,6 +495,7 @@ export class DeckLandingStorageService {
             ? String(fromMedia.sceneDescription).trim()
             : ' ';
 
+      const resolvedAltForApply = dto.resolved.imageAlt?.trim();
       const mediaSlot: DeckSectionMediaSlotV1 = {
         slotId: dto.slotId,
         aspectRatio:
@@ -482,11 +509,13 @@ export class DeckLandingStorageService {
         ...(typeof fromMedia?.styleVisual === 'string' ? { styleVisual: fromMedia.styleVisual } : {}),
         ...(typeof fromMedia?.colorContext === 'string' ? { colorContext: fromMedia.colorContext } : {}),
         ...(typeof fromMedia?.constraints === 'string' ? { constraints: fromMedia.constraints } : {}),
-        ...(typeof slotDef.altHintFr === 'string'
-          ? { altHintFr: slotDef.altHintFr }
-          : typeof fromMedia?.altHintFr === 'string'
-            ? { altHintFr: fromMedia.altHintFr as string }
-            : {}),
+        ...(resolvedAltForApply
+          ? { altHintFr: resolvedAltForApply }
+          : typeof slotDef.altHintFr === 'string'
+            ? { altHintFr: slotDef.altHintFr }
+            : typeof fromMedia?.altHintFr === 'string'
+              ? { altHintFr: fromMedia.altHintFr as string }
+              : {}),
       };
 
       const applied = applySlotImageUrlToSectionContent(sec, dto.sectionId, variant, mediaSlot, url);
@@ -502,6 +531,15 @@ export class DeckLandingStorageService {
         ...(alt ? { imageAlt: alt } : {}),
         source: dto.resolved.source ?? 'upload',
       };
+
+      if (dto.slotId === SECTION_BACKGROUND_SLOT_ID) {
+        const bg: Record<string, unknown> = {
+          imageUrl: url,
+          source: dto.resolved.source ?? 'upload',
+        };
+        if (alt) bg.imageAlt = alt;
+        sec.backgroundImage = bg;
+      }
 
       appendLandingImageHistory(content, dto.sectionId, dto.slotId, {
         id: randomUUID(),
@@ -558,6 +596,7 @@ export class DeckLandingStorageService {
       }
     }
 
+    normalizeImageSlotsInLandingDoc(content);
     v.content = content;
     await v.save();
     return v.toJSON() as unknown;

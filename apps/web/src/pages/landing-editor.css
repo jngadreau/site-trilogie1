@@ -371,6 +371,22 @@
   margin: 0 0 0.4rem;
 }
 
+.le__ve-slots-lead {
+  margin: 0 0 0.5rem;
+  font-size: 0.74rem;
+  line-height: 1.4;
+}
+
+.le__slot-bg-note {
+  margin: 0.35rem 0 0.45rem;
+  font-size: 0.74rem;
+  line-height: 1.4;
+}
+
+.le__slot-bg-actions {
+  margin: 0 0 0.5rem;
+}
+
 .le__ve-slots-empty {
   margin: 0;
   font-size: 0.76rem;

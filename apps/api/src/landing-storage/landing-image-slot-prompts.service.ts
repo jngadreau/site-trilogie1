@@ -12,6 +12,10 @@ import type { DeckLandingGlobals } from '../site/deck-modular-landing.types';
 import type { DeckSectionMediaSlotV1 } from '../site/deck-modular-landing.types';
 import { DeckLandingStorageService } from './deck-landing-storage.service';
 import { normalizeImageSlotsInLandingDoc } from './landing-image-slots-normalize';
+import {
+  SECTION_BACKGROUND_DEFAULT_SCENE_EN,
+  SECTION_BACKGROUND_SLOT_ID,
+} from './section-background-slot.constants';
 
 function isRecord(x: unknown): x is Record<string, unknown> {
   return Boolean(x) && typeof x === 'object' && !Array.isArray(x);
@@ -76,9 +80,24 @@ export class LandingImageSlotPromptsService {
     }
 
     const slots = Array.isArray(sec.imageSlots) ? sec.imageSlots : [];
-    const slotIdx = slots.findIndex(
+    let slotIdx = slots.findIndex(
       (x) => isRecord(x) && (x as { slotId?: string }).slotId === slotId,
     );
+    if (slotIdx < 0 && slotId === SECTION_BACKGROUND_SLOT_ID) {
+      const ns: Record<string, unknown> = {
+        slotId: SECTION_BACKGROUND_SLOT_ID,
+        purpose: 'section_background',
+        aspectRatio: '16:9',
+        sceneDescription: SECTION_BACKGROUND_DEFAULT_SCENE_EN,
+        generation: {
+          autoGenerate: false,
+          primaryModel: 'grok_imagine',
+        },
+      };
+      slots.unshift(ns);
+      sec.imageSlots = slots;
+      slotIdx = 0;
+    }
     if (slotIdx < 0) {
       throw new BadRequestException(`Slot inconnu : ${sectionId} / ${slotId}`);
     }

@@ -1,4 +1,5 @@
 import type { DeckSectionMediaSlotV1 } from '../site/deck-modular-landing.types';
+import { SECTION_BACKGROUND_SLOT_ID } from './section-background-slot.constants';
 
 /** Hero avec bannière Imagine (pas les variantes « cartes seules »). */
 export const HERO_VARIANTS_WITH_IMAGINE_BANNER = new Set([
@@ -39,6 +40,13 @@ export function applySlotImageUrlToSectionContent(
 ): boolean {
   const props = ensureProps(section);
   const alt = slot.altHintFr?.trim();
+
+  if (slot.slotId === SECTION_BACKGROUND_SLOT_ID) {
+    const bg: Record<string, unknown> = { imageUrl };
+    if (alt) bg.imageAlt = alt;
+    section.backgroundImage = bg;
+    return true;
+  }
 
   if (sectionId === 'hero' && slot.slotId === 'hero') {
     if (!HERO_VARIANTS_WITH_IMAGINE_BANNER.has(variant)) {

@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { SECTION_BACKGROUND_SLOT_ID } from '../../lib/sectionBackgroundSlot'
 import '../landing-editor.css'
 
 export type ImageSlotRow = {
@@ -67,7 +68,11 @@ export function collectImageSlotRowsForSection(
 ): ImageSlotRow[] {
   const sid = sectionId.trim()
   if (!sid) return []
-  return collectImageSlotRows(content).filter((r) => r.sectionId === sid)
+  const isBg = (r: ImageSlotRow) =>
+    r.slotId === SECTION_BACKGROUND_SLOT_ID || r.purpose === 'section_background'
+  return collectImageSlotRows(content)
+    .filter((r) => r.sectionId === sid)
+    .sort((a, b) => Number(isBg(b)) - Number(isBg(a)))
 }
 
 export function ImageSlotRowBlock(props: {
@@ -104,6 +109,12 @@ export function ImageSlotRowBlock(props: {
     setAltDraft(row.resolvedAlt ?? '')
   }, [row.sectionId, row.slotId, row.sceneDescription, row.resolvedAlt])
 
+  useEffect(() => {
+    if (row.promptAlternatives && row.promptAlternatives.length > 0) {
+      setPendingAlternatives(null)
+    }
+  }, [row.promptAlternatives])
+
   const [suggestingAlts, setSuggestingAlts] = useState(false)
   const [applyingScene, setApplyingScene] = useState(false)
   const [patchingModel, setPatchingModel] = useState(false)
@@ -112,6 +123,9 @@ export function ImageSlotRowBlock(props: {
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null)
   const [applyingLanding, setApplyingLanding] = useState(false)
   const [freshGeneratedUrl, setFreshGeneratedUrl] = useState<string | null>(null)
+  const [clearingBg, setClearingBg] = useState(false)
+  /** Affichage immédiat après Variantes Grok ; effacé quand `row` reflète Mongo. */
+  const [pendingAlternatives, setPendingAlternatives] = useState<string[] | null>(null)
 
   useEffect(() => {
     if (freshGeneratedUrl && row.resolvedUrl === freshGeneratedUrl) {
@@ -224,8 +238,9 @@ export function ImageSlotRowBlock(props: {
         const msg = body?.message
         throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
       }
-      const n = Array.isArray(body.promptAlternativesEn) ? body.promptAlternativesEn.length : 0
-      onMessage(`Variantes Grok enregistrées (${n}) — ${row.sectionId} / ${row.slotId}`)
+      const alts = Array.isArray(body.promptAlternativesEn) ? body.promptAlternativesEn : []
+      setPendingAlternatives(alts.length > 0 ? alts : null)
+      onMessage(`Variantes Grok enregistrées (${alts.length}) — ${row.sectionId} / ${row.slotId}`)
       onReload()
     } catch (err) {
       onError((err as Error).message)
@@ -349,6 +364,33 @@ export function ImageSlotRowBlock(props: {
     }
   }
 
+  async function clearSectionBackgroundSlot() {
+    if (row.slotId !== SECTION_BACKGROUND_SLOT_ID) return
+    setClearingBg(true)
+    onError('')
+    try {
+      const r = await fetch(
+        `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(versionId)}/content-section`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sectionId: row.sectionId, patch: { backgroundImage: null } }),
+        },
+      )
+      const body = (await r.json().catch(() => ({}))) as { message?: string }
+      if (!r.ok) {
+        const msg = body?.message
+        throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
+      }
+      onMessage('Fond de section retiré (slot section_background).')
+      onReload()
+    } catch (err) {
+      onError((err as Error).message)
+    } finally {
+      setClearingBg(false)
+    }
+  }
+
   async function applyImageToLanding(imageUrl: string) {
     const u = imageUrl.trim()
     if (!u) return
@@ -422,6 +464,13 @@ export function ImageSlotRowBlock(props: {
     }
   }
 
+  const displayAlternatives =
+    row.promptAlternatives && row.promptAlternatives.length > 0
+      ? row.promptAlternatives
+      : pendingAlternatives && pendingAlternatives.length > 0
+        ? pendingAlternatives
+        : null
+
   return (
     <li className="le__slot-item">
       <div className="le__slot-head">
@@ -430,6 +479,24 @@ export function ImageSlotRowBlock(props: {
         <code className="le__mono">{row.slotId}</code>
         {row.purpose ? <span className="le__slot-purpose">{row.purpose}</span> : null}
       </div>
+      {row.slotId === SECTION_BACKGROUND_SLOT_ID || row.purpose === 'section_background' ? (
+        <p className="le__muted le__slot-bg-note">
+          Image optionnelle du même registre que les autres slots : si une URL est définie, elle sert de{' '}
+          <strong>fond CSS</strong> derrière toute la section (pas un bloc dans le flux du composant).
+        </p>
+      ) : null}
+      {row.slotId === SECTION_BACKGROUND_SLOT_ID ? (
+        <div className="le__slot-bg-actions">
+          <button
+            type="button"
+            className="le__btn le__btn--small le__btn--secondary"
+            disabled={disabled || clearingBg || !row.resolvedUrl}
+            onClick={() => void clearSectionBackgroundSlot()}
+          >
+            {clearingBg ? '…' : 'Retirer le fond'}
+          </button>
+        </div>
+      ) : null}
       <div className="le__slot-model-row">
         <label className="le__label le__label--inline">
           <span className="le__muted">Modèle préféré</span>
@@ -510,11 +577,11 @@ export function ImageSlotRowBlock(props: {
           Imagine côté API.
         </p>
       </div>
-      {row.promptAlternatives && row.promptAlternatives.length > 0 ? (
+      {displayAlternatives ? (
         <div className="le__slot-alt-prompts">
           <p className="le__muted le__slot-alt-prompts-title">Variantes enregistrées (Mongo)</p>
           <ol className="le__slot-alt-prompts-list">
-            {row.promptAlternatives.map((p, idx) => (
+            {displayAlternatives.map((p, idx) => (
               <li key={idx} className="le__slot-alt-prompts-item">
                 <p className="le__slot-alt-prompt-text">{p}</p>
                 <div className="le__slot-alt-prompt-actions">

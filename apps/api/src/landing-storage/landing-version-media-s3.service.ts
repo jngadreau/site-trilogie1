@@ -20,6 +20,10 @@ import {
 import { DeckLandingStorageService } from './deck-landing-storage.service';
 import { appendLandingImageHistory } from './landing-image-history.util';
 import { normalizeImageSlotsInLandingDoc } from './landing-image-slots-normalize';
+import {
+  SECTION_BACKGROUND_DEFAULT_SCENE_EN,
+  SECTION_BACKGROUND_SLOT_ID,
+} from './section-background-slot.constants';
 import { S3AssetsService } from './s3-assets.service';
 
 function isRecord(x: unknown): x is Record<string, unknown> {
@@ -86,11 +90,31 @@ export class LandingVersionMediaS3Service {
     }
 
     const mediaList = Array.isArray(sec.media) ? sec.media : [];
-    const rawSlot = mediaList.find((m) => {
+    let rawSlot = mediaList.find((m) => {
       if (!isRecord(m)) return false
       const sid = typeof m.slotId === 'string' ? m.slotId.trim() : ''
       return sid === slotId
     })
+    if ((!rawSlot || !isRecord(rawSlot)) && slotId === SECTION_BACKGROUND_SLOT_ID) {
+      const imageSlots = Array.isArray(sec.imageSlots) ? sec.imageSlots : [];
+      const fromDef = imageSlots.find(
+        (x) => isRecord(x) && (x as { slotId?: string }).slotId === SECTION_BACKGROUND_SLOT_ID,
+      );
+      if (fromDef && isRecord(fromDef)) {
+        const sd =
+          typeof fromDef.sceneDescription === 'string' && String(fromDef.sceneDescription).trim()
+            ? String(fromDef.sceneDescription).trim()
+            : SECTION_BACKGROUND_DEFAULT_SCENE_EN;
+        rawSlot = {
+          slotId: SECTION_BACKGROUND_SLOT_ID,
+          aspectRatio:
+            typeof fromDef.aspectRatio === 'string' && String(fromDef.aspectRatio).trim()
+              ? String(fromDef.aspectRatio).trim()
+              : '16:9',
+          sceneDescription: sd,
+        };
+      }
+    }
     if (!rawSlot || !isRecord(rawSlot)) {
       throw new BadRequestException(`Slot média absent : ${sectionId} / ${slotId}`);
     }
@@ -139,6 +163,13 @@ export class LandingVersionMediaS3Service {
       if (override) {
         slotDef.sceneDescription = override;
       }
+    }
+
+    if (slotId === SECTION_BACKGROUND_SLOT_ID) {
+      sec.backgroundImage = {
+        imageUrl: r.publicUrl,
+        source: 'grok_imagine',
+      };
     }
 
     if (sectionId === 'hero' && slotId === 'hero') {

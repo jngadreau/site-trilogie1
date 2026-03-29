@@ -2,6 +2,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { SECTION_LABELS_FR } from '../lib/deckSectionCatalog'
+import { SECTION_BACKGROUND_SLOT_ID } from '../lib/sectionBackgroundSlot'
 import { DeckLandingView } from '../components/DeckLandingView'
 import { isDeckModularLandingV1 } from '../lib/deckLandingGuards'
 import type { DeckModularLandingV1 } from '../types/deckLanding'
@@ -130,14 +131,27 @@ export function LandingEditorVersionPage() {
 
   const selectedSectionId = sectionEntries[selectedIndex]?.id ?? ''
 
-  const selectedSectionSlots = useMemo(
-    () =>
-      collectImageSlotRowsForSection(
-        version?.content as Record<string, unknown> | undefined,
-        selectedSectionId,
-      ),
-    [version?.content, selectedSectionId],
-  )
+  const selectedSectionSlots = useMemo(() => {
+    const rows = collectImageSlotRowsForSection(
+      version?.content as Record<string, unknown> | undefined,
+      selectedSectionId,
+    )
+    const hasBg = rows.some(
+      (r) => r.slotId === SECTION_BACKGROUND_SLOT_ID || r.purpose === 'section_background',
+    )
+    if (hasBg || !selectedSectionId) return rows
+    const variant = sectionEntries[selectedIndex]?.variant ?? ''
+    return [
+      {
+        sectionId: selectedSectionId,
+        sectionVariant: variant,
+        slotId: SECTION_BACKGROUND_SLOT_ID,
+        purpose: 'section_background',
+        sceneDescription: undefined,
+      },
+      ...rows,
+    ]
+  }, [version?.content, selectedSectionId, sectionEntries, selectedIndex])
 
   const selectedSectionJson = useMemo(() => {
     const s = sectionEntries[selectedIndex]
@@ -159,7 +173,7 @@ export function LandingEditorVersionPage() {
     }
     setPropsDraft(safeStringify(raw.props ?? {}))
     setMediaDraft(safeStringify(Array.isArray(raw.media) ? raw.media : []))
-    const omit = new Set(['id', 'variant', 'props', 'media', 'imageSlots'])
+    const omit = new Set(['id', 'variant', 'props', 'media', 'imageSlots', 'backgroundImage'])
     const extra: Record<string, unknown> = {}
     for (const [k, v] of Object.entries(raw)) {
       if (!omit.has(k)) extra[k] = v
@@ -194,7 +208,7 @@ export function LandingEditorVersionPage() {
       media,
     }
     for (const [k, v] of Object.entries(extra)) {
-      if (k === 'id' || k === 'imageSlots' || k === 'variant') continue
+      if (k === 'id' || k === 'imageSlots' || k === 'variant' || k === 'backgroundImage') continue
       patch[k] = v
     }
     setSavingSection(true)
@@ -299,6 +313,8 @@ export function LandingEditorVersionPage() {
     }
   }
 
+  const sectionFieldsBusy = reordering || savingSection
+
   function moveSection(index: number, delta: -1 | 1) {
     const j = index + delta
     if (j < 0 || j >= sectionEntries.length) return
@@ -352,8 +368,9 @@ export function LandingEditorVersionPage() {
                 ) : null}
               </p>
               <p className="le__muted le__ve-context-hint">
-                Ici : ordre des sections, champs éditables de la section (<code>props</code>, <code>media</code>, autres
-                clés) et slots image. Variante React et structure Grok : page projet.
+                Ici : ordre des sections, champs (<code>props</code>, <code>media</code>, autres clés) et slots image
+                (dont le fond optionnel <code>section_background</code>). Fond de page : page projet. Variante React et
+                structure Grok : page projet.
               </p>
             </div>
             <div className="le__ve-context-actions">
@@ -453,8 +470,9 @@ export function LandingEditorVersionPage() {
               <div className="le__ve-section-fields">
                 <h3 className="le__ve-section-fields-title">Contenu section</h3>
                 <p className="le__muted le__ve-section-fields-lead">
-                  <code>props</code>, <code>media</code> et autres clés (hors <code>id</code>, <code>variant</code> et{' '}
-                  <code>imageSlots</code>). Enregistrement via l’API puis rechargement.
+                  <code>props</code>, <code>media</code> et autres clés (hors <code>id</code>, <code>variant</code>,{' '}
+                  <code>imageSlots</code>, <code>backgroundImage</code> — le fond passe par le slot{' '}
+                  <code>section_background</code> ci-dessous). Enregistrement via l’API puis rechargement.
                 </p>
                 {selectedSectionId ? (
                   <>
@@ -474,7 +492,7 @@ export function LandingEditorVersionPage() {
                       rows={8}
                       value={propsDraft}
                       onChange={(e) => setPropsDraft(e.target.value)}
-                      disabled={reordering || savingSection}
+                      disabled={sectionFieldsBusy}
                       spellCheck={false}
                     />
                     <label className="le__ve-field-label" htmlFor="le-ve-media-ta">
@@ -486,7 +504,7 @@ export function LandingEditorVersionPage() {
                       rows={6}
                       value={mediaDraft}
                       onChange={(e) => setMediaDraft(e.target.value)}
-                      disabled={reordering || savingSection}
+                      disabled={sectionFieldsBusy}
                       spellCheck={false}
                     />
                     <label className="le__ve-field-label" htmlFor="le-ve-extra-ta">
@@ -498,13 +516,13 @@ export function LandingEditorVersionPage() {
                       rows={4}
                       value={extraDraft}
                       onChange={(e) => setExtraDraft(e.target.value)}
-                      disabled={reordering || savingSection}
+                      disabled={sectionFieldsBusy}
                       spellCheck={false}
                     />
                     <button
                       type="button"
                       className="le__btn le__btn--small"
-                      disabled={reordering || savingSection}
+                      disabled={sectionFieldsBusy}
                       onClick={() => void saveSectionFields()}
                     >
                       {savingSection ? 'Enregistrement…' : 'Enregistrer la section'}
@@ -516,6 +534,10 @@ export function LandingEditorVersionPage() {
               </div>
               <div className="le__ve-slots-block">
                 <h3 className="le__ve-slots-title">Images (slots)</h3>
+                <p className="le__muted le__ve-slots-lead">
+                  Chaque slot peut recevoir upload, URL ou Imagine. Le slot <code>section_background</code> (affiché en
+                  premier s’il existe) est optionnel : s’il a une image, elle sert de fond plein cadre derrière la section.
+                </p>
                 {selectedSectionId ? (
                   selectedSectionSlots.length > 0 ? (
                     <ul className="le__slot-list">
@@ -547,7 +569,9 @@ export function LandingEditorVersionPage() {
                     </ul>
                   ) : (
                     <p className="le__muted le__ve-slots-empty">
-                      Aucune entrée <code>imageSlots</code> pour <code>{selectedSectionId}</code>.
+                      Aucune entrée <code>imageSlots</code> pour <code>{selectedSectionId}</code>. Le fond optionnel
+                      apparaîtra ici après la première assignation sur <code>section_background</code> (upload / URL /
+                      Imagine).
                     </p>
                   )
                 ) : (
