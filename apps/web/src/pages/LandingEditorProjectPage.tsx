@@ -48,6 +48,7 @@ type ImageSlotRow = {
   resolvedUrl?: string
   resolvedAlt?: string
   promptAlternatives?: string[]
+  primaryModel?: 'grok_imagine' | 'midjourney' | 'none'
 }
 
 function collectImageSlotRows(content: Record<string, unknown> | undefined): ImageSlotRow[] {
@@ -130,6 +131,80 @@ function ImageSlotRowBlock(props: {
 
   const [suggestingAlts, setSuggestingAlts] = useState(false)
   const [applyingScene, setApplyingScene] = useState(false)
+  const [patchingModel, setPatchingModel] = useState(false)
+  const [copyingPrompt, setCopyingPrompt] = useState(false)
+
+  async function savePrimaryModel(m: 'grok_imagine' | 'midjourney' | 'none') {
+    setPatchingModel(true)
+    onError('')
+    try {
+      const r = await fetch(
+        `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(versionId)}/image-slot`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sectionId: row.sectionId,
+            slotId: row.slotId,
+            primaryModel: m,
+          }),
+        },
+      )
+      const body = (await r.json().catch(() => ({}))) as { message?: string }
+      if (!r.ok) {
+        const msg = body?.message
+        throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
+      }
+      onMessage(`Modèle préféré : ${m}`)
+      onReload()
+    } catch (err) {
+      onError((err as Error).message)
+    } finally {
+      setPatchingModel(false)
+    }
+  }
+
+  async function copyAssembledPromptToClipboard() {
+    setCopyingPrompt(true)
+    onError('')
+    try {
+      const q = new URLSearchParams({
+        sectionId: row.sectionId,
+        slotId: row.slotId,
+      })
+      const r = await fetch(
+        `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(versionId)}/assembled-image-prompt?${q.toString()}`,
+      )
+      const body = (await r.json().catch(() => ({}))) as {
+        message?: string
+        assembledPromptEn?: string
+      }
+      if (!r.ok) {
+        const msg = body?.message
+        throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
+      }
+      const text = typeof body.assembledPromptEn === 'string' ? body.assembledPromptEn : ''
+      if (!text) {
+        throw new Error('Réponse sans prompt')
+      }
+      await navigator.clipboard.writeText(text)
+      onMessage('Prompt Imagine (EN) copié — collage dans Midjourney ou autre outil.')
+    } catch (err) {
+      onError((err as Error).message)
+    } finally {
+      setCopyingPrompt(false)
+    }
+  }
+
+  async function copyPlainText(t: string) {
+    onError('')
+    try {
+      await navigator.clipboard.writeText(t)
+      onMessage('Texte copié dans le presse-papiers.')
+    } catch {
+      onError('Copie impossible (permissions navigateur).')
+    }
+  }
 
   async function suggestAlternatives() {
     setSuggestingAlts(true)
@@ -282,6 +357,34 @@ function ImageSlotRowBlock(props: {
         <code className="le__mono">{row.slotId}</code>
         {row.purpose ? <span className="le__slot-purpose">{row.purpose}</span> : null}
       </div>
+      <div className="le__slot-model-row">
+        <label className="le__label le__label--inline">
+          <span className="le__muted">Modèle préféré</span>
+          <select
+            className="le__select le__select--compact"
+            value={row.primaryModel ?? 'grok_imagine'}
+            disabled={disabled || patchingModel || suggestingAlts || savingScene || applyingScene}
+            onChange={(e) =>
+              void savePrimaryModel(e.target.value as 'grok_imagine' | 'midjourney' | 'none')
+            }
+          >
+            <option value="grok_imagine">Grok Imagine</option>
+            <option value="midjourney">Midjourney (export prompt)</option>
+            <option value="none">Aucun</option>
+          </select>
+        </label>
+        <button
+          type="button"
+          className="le__btn le__btn--small le__btn--secondary"
+          disabled={disabled || copyingPrompt || patchingModel}
+          onClick={() => void copyAssembledPromptToClipboard()}
+        >
+          {copyingPrompt ? '…' : 'Copier le prompt Imagine (EN)'}
+        </button>
+      </div>
+      <p className="le__muted le__slot-mj-hint">
+        Même texte que pour la génération API ; utile pour Midjourney ou un autre service sans API ici.
+      </p>
       <form className="le__slot-scene-form" onSubmit={saveScene}>
         <label className="le__label le__label--compact">
           Description de scène (Imagine / prompt)
@@ -314,14 +417,24 @@ function ImageSlotRowBlock(props: {
             {row.promptAlternatives.map((p, idx) => (
               <li key={idx} className="le__slot-alt-prompts-item">
                 <p className="le__slot-alt-prompt-text">{p}</p>
-                <button
-                  type="button"
-                  className="le__btn le__btn--small le__btn--secondary"
-                  disabled={disabled || applyingScene || suggestingAlts}
-                  onClick={() => void applyAlternativeAsScene(p)}
-                >
-                  {applyingScene ? '…' : 'Utiliser comme scène'}
-                </button>
+                <div className="le__slot-alt-prompt-actions">
+                  <button
+                    type="button"
+                    className="le__btn le__btn--small le__btn--secondary"
+                    disabled={disabled || applyingScene || suggestingAlts}
+                    onClick={() => void applyAlternativeAsScene(p)}
+                  >
+                    {applyingScene ? '…' : 'Utiliser comme scène'}
+                  </button>
+                  <button
+                    type="button"
+                    className="le__btn le__btn--small le__btn--secondary"
+                    disabled={disabled}
+                    onClick={() => void copyPlainText(p)}
+                  >
+                    Copier
+                  </button>
+                </div>
               </li>
             ))}
           </ol>

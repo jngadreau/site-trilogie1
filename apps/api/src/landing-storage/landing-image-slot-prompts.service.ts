@@ -44,6 +44,121 @@ export class LandingImageSlotPromptsService {
     private readonly assembly: DeckLandingImageAssemblyService,
   ) {}
 
+  /**
+   * Lit le slot après normalisation ; `requireNonEmptyScene` pour les flux qui exigent une scène (variantes Grok).
+   */
+  private resolveSlotMediaSlot(
+    content: Record<string, unknown>,
+    sectionId: string,
+    slotId: string,
+    opts: { requireNonEmptyScene: boolean },
+  ): {
+    globals: DeckLandingGlobals;
+    slotDef: Record<string, unknown>;
+    mediaSlot: DeckSectionMediaSlotV1;
+  } {
+    normalizeImageSlotsInLandingDoc(content);
+
+    const sections = content.sections;
+    if (!Array.isArray(sections)) {
+      throw new BadRequestException('content.sections manquant');
+    }
+
+    const globalsRaw = content.globals;
+    if (!globalsRaw || typeof globalsRaw !== 'object' || Array.isArray(globalsRaw)) {
+      throw new BadRequestException('content.globals manquant');
+    }
+    const globals = globalsRaw as DeckLandingGlobals;
+
+    const sec = sections.find((s) => isRecord(s) && s.id === sectionId);
+    if (!sec || !isRecord(sec)) {
+      throw new BadRequestException(`Section inconnue : ${sectionId}`);
+    }
+
+    const slots = Array.isArray(sec.imageSlots) ? sec.imageSlots : [];
+    const slotIdx = slots.findIndex(
+      (x) => isRecord(x) && (x as { slotId?: string }).slotId === slotId,
+    );
+    if (slotIdx < 0) {
+      throw new BadRequestException(`Slot inconnu : ${sectionId} / ${slotId}`);
+    }
+
+    const slotDef = slots[slotIdx] as Record<string, unknown>;
+    const mediaList = Array.isArray(sec.media) ? sec.media : [];
+    const fromMedia = mediaList.find(
+      (m): m is Record<string, unknown> => isRecord(m) && m.slotId === slotId,
+    );
+
+    let scene =
+      typeof slotDef.sceneDescription === 'string' && slotDef.sceneDescription.trim()
+        ? slotDef.sceneDescription.trim()
+        : typeof fromMedia?.sceneDescription === 'string' && String(fromMedia.sceneDescription).trim()
+          ? String(fromMedia.sceneDescription).trim()
+          : '';
+    if (opts.requireNonEmptyScene && !scene) {
+      throw new BadRequestException(
+        'sceneDescription vide pour ce slot — remplis la scène avant de demander des variantes',
+      );
+    }
+    if (!scene) {
+      scene = ' ';
+    }
+
+    const mediaSlot: DeckSectionMediaSlotV1 = {
+      slotId,
+      aspectRatio:
+        typeof fromMedia?.aspectRatio === 'string' && fromMedia.aspectRatio.trim()
+          ? fromMedia.aspectRatio.trim()
+          : typeof slotDef.aspectRatio === 'string' && String(slotDef.aspectRatio).trim()
+            ? String(slotDef.aspectRatio).trim()
+            : '16:9',
+      sceneDescription: scene,
+      ...(typeof fromMedia?.mood === 'string' ? { mood: fromMedia.mood } : {}),
+      ...(typeof fromMedia?.styleVisual === 'string' ? { styleVisual: fromMedia.styleVisual } : {}),
+      ...(typeof fromMedia?.colorContext === 'string' ? { colorContext: fromMedia.colorContext } : {}),
+      ...(typeof fromMedia?.constraints === 'string' ? { constraints: fromMedia.constraints } : {}),
+      ...(typeof slotDef.altHintFr === 'string'
+        ? { altHintFr: slotDef.altHintFr }
+        : typeof fromMedia?.altHintFr === 'string'
+          ? { altHintFr: fromMedia.altHintFr as string }
+          : {}),
+    };
+
+    return { globals, slotDef, mediaSlot };
+  }
+
+  async getAssembledImaginePrompt(
+    projectId: string,
+    versionId: string,
+    sectionId: string,
+    slotId: string,
+  ): Promise<{
+    assembledPromptEn: string;
+    aspectRatio: string;
+    primaryModel?: 'grok_imagine' | 'midjourney' | 'none';
+  }> {
+    await this.storage.assertVersionBelongsToProject(projectId, versionId);
+    const v = await this.storage.getVersion(versionId);
+    const content = JSON.parse(JSON.stringify(v.content ?? {})) as Record<string, unknown>;
+    const { globals, slotDef, mediaSlot } = this.resolveSlotMediaSlot(content, sectionId, slotId, {
+      requireNonEmptyScene: false,
+    });
+    const assembledPromptEn = this.assembly.buildImaginePrompt(mediaSlot, globals);
+    const aspectRatio = this.assembly.resolveAspectRatio(mediaSlot);
+    const gen =
+      slotDef.generation && typeof slotDef.generation === 'object' && !Array.isArray(slotDef.generation)
+        ? (slotDef.generation as Record<string, unknown>)
+        : null;
+    const pm = gen?.primaryModel;
+    const primaryModel =
+      pm === 'grok_imagine' || pm === 'midjourney' || pm === 'none' ? pm : undefined;
+    return {
+      assembledPromptEn,
+      aspectRatio,
+      ...(primaryModel ? { primaryModel } : {}),
+    };
+  }
+
   async suggestPromptAlternatives(
     projectId: string,
     versionId: string,
@@ -69,69 +184,12 @@ export class LandingImageSlotPromptsService {
 
     const v = await this.storage.getVersion(versionId);
     const content = JSON.parse(JSON.stringify(v.content ?? {})) as Record<string, unknown>;
-    normalizeImageSlotsInLandingDoc(content);
-
-    const sections = content.sections;
-    if (!Array.isArray(sections)) {
-      throw new BadRequestException('content.sections manquant');
-    }
-
-    const globalsRaw = content.globals;
-    if (!globalsRaw || typeof globalsRaw !== 'object' || Array.isArray(globalsRaw)) {
-      throw new BadRequestException('content.globals manquant');
-    }
-    const globals = globalsRaw as DeckLandingGlobals;
-
-    const sec = sections.find((s) => isRecord(s) && s.id === dto.sectionId);
-    if (!sec || !isRecord(sec)) {
-      throw new BadRequestException(`Section inconnue : ${dto.sectionId}`);
-    }
-
-    const slots = Array.isArray(sec.imageSlots) ? sec.imageSlots : [];
-    const slotIdx = slots.findIndex(
-      (x) => isRecord(x) && (x as { slotId?: string }).slotId === dto.slotId,
+    const { globals, slotDef, mediaSlot } = this.resolveSlotMediaSlot(
+      content,
+      dto.sectionId,
+      dto.slotId,
+      { requireNonEmptyScene: true },
     );
-    if (slotIdx < 0) {
-      throw new BadRequestException(`Slot inconnu : ${dto.sectionId} / ${dto.slotId}`);
-    }
-
-    const slotDef = slots[slotIdx] as Record<string, unknown>;
-    const mediaList = Array.isArray(sec.media) ? sec.media : [];
-    const fromMedia = mediaList.find(
-      (m): m is Record<string, unknown> => isRecord(m) && m.slotId === dto.slotId,
-    );
-
-    const scene =
-      typeof slotDef.sceneDescription === 'string' && slotDef.sceneDescription.trim()
-        ? slotDef.sceneDescription.trim()
-        : typeof fromMedia?.sceneDescription === 'string' && String(fromMedia.sceneDescription).trim()
-          ? String(fromMedia.sceneDescription).trim()
-          : '';
-    if (!scene) {
-      throw new BadRequestException(
-        'sceneDescription vide pour ce slot — remplis la scène avant de demander des variantes',
-      );
-    }
-
-    const mediaSlot: DeckSectionMediaSlotV1 = {
-      slotId: dto.slotId,
-      aspectRatio:
-        typeof fromMedia?.aspectRatio === 'string' && fromMedia.aspectRatio.trim()
-          ? fromMedia.aspectRatio.trim()
-          : typeof slotDef.aspectRatio === 'string' && String(slotDef.aspectRatio).trim()
-            ? String(slotDef.aspectRatio).trim()
-            : '16:9',
-      sceneDescription: scene,
-      ...(typeof fromMedia?.mood === 'string' ? { mood: fromMedia.mood } : {}),
-      ...(typeof fromMedia?.styleVisual === 'string' ? { styleVisual: fromMedia.styleVisual } : {}),
-      ...(typeof fromMedia?.colorContext === 'string' ? { colorContext: fromMedia.colorContext } : {}),
-      ...(typeof fromMedia?.constraints === 'string' ? { constraints: fromMedia.constraints } : {}),
-      ...(typeof slotDef.altHintFr === 'string'
-        ? { altHintFr: slotDef.altHintFr }
-        : typeof fromMedia?.altHintFr === 'string'
-          ? { altHintFr: fromMedia.altHintFr as string }
-          : {}),
-    };
 
     const baselineEn = this.assembly.buildImaginePrompt(mediaSlot, globals);
     const purpose = typeof slotDef.purpose === 'string' ? slotDef.purpose : 'other';

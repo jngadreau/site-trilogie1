@@ -364,6 +364,39 @@
   font-size: 0.82rem;
 }
 
+.le__slot-model-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.5rem 0.75rem;
+  margin: 0.35rem 0 0.15rem;
+}
+
+.le__label--inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 500;
+}
+
+.le__select--compact {
+  font-size: 0.78rem;
+  padding: 0.22rem 0.35rem;
+}
+
+.le__slot-mj-hint {
+  margin: 0 0 0.5rem;
+  font-size: 0.74rem;
+  line-height: 1.4;
+}
+
+.le__slot-alt-prompt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+
 .le__slot-purpose {
   font-size: 0.75rem;
   color: #666;

@@ -36,4 +36,8 @@ export class PatchDeckLandingImageSlotDto {
   @IsString()
   @MaxLength(4000)
   imageAlt?: string;
+
+  @IsOptional()
+  @IsIn(['grok_imagine', 'midjourney', 'none'])
+  primaryModel?: 'grok_imagine' | 'midjourney' | 'none';
 }

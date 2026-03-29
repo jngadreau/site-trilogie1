@@ -176,6 +176,25 @@ export class LandingStorageController {
   }
 
   /**
+   * Prompt Imagine assemblé (EN) + ratio — pour copie manuelle (ex. Midjourney). Query : `sectionId`, `slotId`.
+   */
+  @Get('projects/:projectId/versions/:versionId/assembled-image-prompt')
+  async getAssembledImagePrompt(
+    @Param('projectId') projectId: string,
+    @Param('versionId') versionId: string,
+    @Query('sectionId') sectionId: string,
+    @Query('slotId') slotId: string,
+  ) {
+    await this.storage.assertVersionBelongsToProject(projectId, versionId);
+    const sid = sectionId?.trim();
+    const sl = slotId?.trim();
+    if (!sid || !sl) {
+      throw new BadRequestException('Query sectionId et slotId requis');
+    }
+    return this.slotPrompts.getAssembledImaginePrompt(projectId, versionId, sid, sl);
+  }
+
+  /**
    * Grok : variantes de prompts EN pour un slot ; persiste `generation.promptAlternativesEn`.
    * Body : `sectionId`, `slotId`, `count?` (5–12, défaut 6).
    */

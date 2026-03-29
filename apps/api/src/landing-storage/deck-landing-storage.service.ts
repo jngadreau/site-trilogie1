@@ -304,8 +304,15 @@ export class DeckLandingStorageService {
     const v = await this.versionModel.findById(versionId).exec();
     if (!v) throw new NotFoundException('Version introuvable');
 
-    if (dto.resolved === undefined && dto.sceneDescription === undefined && dto.imageAlt === undefined) {
-      throw new BadRequestException('Fournis au moins resolved, sceneDescription ou imageAlt');
+    if (
+      dto.resolved === undefined &&
+      dto.sceneDescription === undefined &&
+      dto.imageAlt === undefined &&
+      dto.primaryModel === undefined
+    ) {
+      throw new BadRequestException(
+        'Fournis au moins resolved, sceneDescription, imageAlt ou primaryModel',
+      );
     }
 
     const content = JSON.parse(JSON.stringify(v.content ?? {})) as Record<string, unknown>;
@@ -333,6 +340,14 @@ export class DeckLandingStorageService {
     }
 
     const slotDef = slots[slotIdx] as Record<string, unknown>;
+
+    if (dto.primaryModel !== undefined) {
+      const prevGen =
+        slotDef.generation && typeof slotDef.generation === 'object' && !Array.isArray(slotDef.generation)
+          ? { ...(slotDef.generation as Record<string, unknown>) }
+          : {};
+      slotDef.generation = { ...prevGen, primaryModel: dto.primaryModel };
+    }
 
     if (dto.sceneDescription !== undefined) {
       const sd = dto.sceneDescription.trim();
