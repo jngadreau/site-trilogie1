@@ -62,6 +62,7 @@ export function AdminHomePage() {
         <nav className="admin-home__nav">
           <Link to="/">Accueil</Link>
           <Link to="/demo/sections">Démos sections</Link>
+          <Link to="/admin/landing-editor">Éditeur landings</Link>
           <Link to="/admin/deck-landing-legacy">Legacy deck (JSON)</Link>
         </nav>
       </header>
