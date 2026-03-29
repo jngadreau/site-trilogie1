@@ -563,6 +563,51 @@ export class DeckLandingStorageService {
     return v.toJSON() as unknown;
   }
 
+  /**
+   * Fusionne `patch` dans l’entrée `content.sections[]` identifiée par `sectionId` (mise à jour des clés
+   * de premier niveau ; la clé `id` est ignorée). Puis `normalizeImageSlotsInLandingDoc`.
+   */
+  async patchContentSection(
+    versionId: string,
+    sectionId: string,
+    patch: Record<string, unknown>,
+  ): Promise<unknown> {
+    if (!Types.ObjectId.isValid(versionId)) {
+      throw new NotFoundException('Identifiant version invalide');
+    }
+    const sid = sectionId.trim();
+    if (!sid) {
+      throw new BadRequestException('sectionId vide');
+    }
+    const v = await this.versionModel.findById(versionId).exec();
+    if (!v) throw new NotFoundException('Version introuvable');
+
+    const content = JSON.parse(JSON.stringify(v.content ?? {})) as Record<string, unknown>;
+    const sections = content.sections;
+    if (!Array.isArray(sections)) {
+      throw new BadRequestException('content.sections manquant');
+    }
+
+    const sec = sections.find((s) => isRecord(s) && s.id === sid);
+    if (!sec || !isRecord(sec)) {
+      throw new BadRequestException(`Section inconnue : ${sid}`);
+    }
+
+    if (!patch || typeof patch !== 'object' || Array.isArray(patch)) {
+      throw new BadRequestException('patch doit être un objet');
+    }
+
+    for (const [key, value] of Object.entries(patch)) {
+      if (key === 'id') continue;
+      sec[key] = JSON.parse(JSON.stringify(value)) as unknown;
+    }
+
+    normalizeImageSlotsInLandingDoc(content);
+    v.content = content;
+    await v.save();
+    return v.toJSON() as unknown;
+  }
+
   /** Remplace entièrement `content` (objet déjà cloné / muté côté appelant). */
   async persistVersionContent(versionId: string, content: Record<string, unknown>): Promise<unknown> {
     if (!Types.ObjectId.isValid(versionId)) {

@@ -27,6 +27,14 @@ type VersionRow = {
 
 type SectionEntry = { id: string; variant: string; raw: Record<string, unknown> }
 
+function safeStringify(value: unknown): string {
+  try {
+    return JSON.stringify(value, null, 2) ?? ''
+  } catch {
+    return String(value)
+  }
+}
+
 function parseSections(content: Record<string, unknown> | undefined): SectionEntry[] {
   if (!content) return []
   const sections = content.sections
@@ -54,6 +62,10 @@ export function LandingEditorVersionPage() {
   const afterLoadSelectId = useRef<string | null>(null)
   const [storageStatus, setStorageStatus] = useState<{ storageReady: boolean } | null>(null)
   const [slotUploadingKey, setSlotUploadingKey] = useState<string | null>(null)
+  const [propsDraft, setPropsDraft] = useState('{}')
+  const [mediaDraft, setMediaDraft] = useState('[]')
+  const [extraDraft, setExtraDraft] = useState('{}')
+  const [savingSection, setSavingSection] = useState(false)
 
   const load = useCallback(() => {
     if (!projectId || !versionId) return
@@ -136,6 +148,80 @@ export function LandingEditorVersionPage() {
       return String(s.raw)
     }
   }, [sectionEntries, selectedIndex])
+
+  useEffect(() => {
+    const raw = sectionEntries[selectedIndex]?.raw
+    if (!raw) {
+      setPropsDraft('{}')
+      setMediaDraft('[]')
+      setExtraDraft('{}')
+      return
+    }
+    setPropsDraft(safeStringify(raw.props ?? {}))
+    setMediaDraft(safeStringify(Array.isArray(raw.media) ? raw.media : []))
+    const omit = new Set(['id', 'variant', 'props', 'media', 'imageSlots'])
+    const extra: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(raw)) {
+      if (!omit.has(k)) extra[k] = v
+    }
+    setExtraDraft(safeStringify(extra))
+  }, [version?.content, selectedIndex, sectionEntries])
+
+  async function saveSectionFields() {
+    if (!projectId || !versionId || !selectedSectionId) return
+    let props: unknown
+    let media: unknown
+    let extra: Record<string, unknown>
+    try {
+      props = JSON.parse(propsDraft || '{}')
+      if (typeof props !== 'object' || props === null || Array.isArray(props)) {
+        throw new Error('props doit être un objet JSON')
+      }
+      media = JSON.parse(mediaDraft || '[]')
+      if (!Array.isArray(media)) {
+        throw new Error('media doit être un tableau JSON')
+      }
+      extra = JSON.parse(extraDraft || '{}') as Record<string, unknown>
+      if (!extra || typeof extra !== 'object' || Array.isArray(extra)) {
+        throw new Error('Autres champs : objet JSON attendu')
+      }
+    } catch (e) {
+      setErr((e as Error).message)
+      return
+    }
+    const patch: Record<string, unknown> = {
+      props,
+      media,
+    }
+    for (const [k, v] of Object.entries(extra)) {
+      if (k === 'id' || k === 'imageSlots' || k === 'variant') continue
+      patch[k] = v
+    }
+    setSavingSection(true)
+    setErr(null)
+    setMessage(null)
+    try {
+      const r = await fetch(
+        `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(versionId)}/content-section`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sectionId: selectedSectionId, patch }),
+        },
+      )
+      const body = (await r.json().catch(() => ({}))) as { message?: string }
+      if (!r.ok) {
+        const msg = body?.message
+        throw new Error(typeof msg === 'string' ? msg : `section ${r.status}`)
+      }
+      setMessage('Section enregistrée.')
+      await load()
+    } catch (e) {
+      setErr((e as Error).message)
+    } finally {
+      setSavingSection(false)
+    }
+  }
 
   async function uploadAndAssignSlot(sectionId: string, slotId: string, file: File) {
     if (!projectId || !versionId) return
@@ -266,8 +352,8 @@ export function LandingEditorVersionPage() {
                 ) : null}
               </p>
               <p className="le__muted le__ve-context-hint">
-                Le projet et la version ne sont pas modifiables ici — retourne au projet pour structure, contenu et
-                images.
+                Ici : ordre des sections, champs éditables de la section (<code>props</code>, <code>media</code>, autres
+                clés) et slots image. Variante React et structure Grok : page projet.
               </p>
             </div>
             <div className="le__ve-context-actions">
@@ -364,6 +450,70 @@ export function LandingEditorVersionPage() {
                   })}
                 </ul>
               )}
+              <div className="le__ve-section-fields">
+                <h3 className="le__ve-section-fields-title">Contenu section</h3>
+                <p className="le__muted le__ve-section-fields-lead">
+                  <code>props</code>, <code>media</code> et autres clés (hors <code>id</code>, <code>variant</code> et{' '}
+                  <code>imageSlots</code>). Enregistrement via l’API puis rechargement.
+                </p>
+                {selectedSectionId ? (
+                  <>
+                    <p className="le__ve-section-fields-id">
+                      id <code className="le__mono">{selectedSectionId}</code>
+                    </p>
+                    <p className="le__ve-section-fields-variant" aria-label="Variante (lecture seule)">
+                      variante <code className="le__mono">{sectionEntries[selectedIndex]?.variant || '—'}</code>
+                      <span className="le__muted"> (non modifiable ici)</span>
+                    </p>
+                    <label className="le__ve-field-label" htmlFor="le-ve-props-ta">
+                      props (JSON objet)
+                    </label>
+                    <textarea
+                      id="le-ve-props-ta"
+                      className="le__ve-field-textarea le__pre"
+                      rows={8}
+                      value={propsDraft}
+                      onChange={(e) => setPropsDraft(e.target.value)}
+                      disabled={reordering || savingSection}
+                      spellCheck={false}
+                    />
+                    <label className="le__ve-field-label" htmlFor="le-ve-media-ta">
+                      media (JSON tableau)
+                    </label>
+                    <textarea
+                      id="le-ve-media-ta"
+                      className="le__ve-field-textarea le__pre"
+                      rows={6}
+                      value={mediaDraft}
+                      onChange={(e) => setMediaDraft(e.target.value)}
+                      disabled={reordering || savingSection}
+                      spellCheck={false}
+                    />
+                    <label className="le__ve-field-label" htmlFor="le-ve-extra-ta">
+                      Autres champs (JSON objet)
+                    </label>
+                    <textarea
+                      id="le-ve-extra-ta"
+                      className="le__ve-field-textarea le__pre"
+                      rows={4}
+                      value={extraDraft}
+                      onChange={(e) => setExtraDraft(e.target.value)}
+                      disabled={reordering || savingSection}
+                      spellCheck={false}
+                    />
+                    <button
+                      type="button"
+                      className="le__btn le__btn--small"
+                      disabled={reordering || savingSection}
+                      onClick={() => void saveSectionFields()}
+                    >
+                      {savingSection ? 'Enregistrement…' : 'Enregistrer la section'}
+                    </button>
+                  </>
+                ) : (
+                  <p className="le__muted">Sélectionne une section.</p>
+                )}
+              </div>
               <div className="le__ve-slots-block">
                 <h3 className="le__ve-slots-title">Images (slots)</h3>
                 {selectedSectionId ? (

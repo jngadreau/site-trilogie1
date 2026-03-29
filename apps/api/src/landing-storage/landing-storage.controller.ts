@@ -25,6 +25,7 @@ import { PatchDeckLandingContentGlobalsDto } from './dto/patch-deck-landing-cont
 import { PatchDeckLandingImageSlotDto } from './dto/patch-deck-landing-image-slot.dto';
 import { GenerateImageSlotImagineS3Dto } from './dto/generate-image-slot-imagine-s3.dto';
 import { ReorderDeckLandingSectionsDto } from './dto/reorder-deck-landing-sections.dto';
+import { PatchDeckLandingContentSectionDto } from './dto/patch-deck-landing-content-section.dto';
 import { SuggestPromptAlternativesDto } from './dto/suggest-prompt-alternatives.dto';
 import { DeckLandingStorageService } from './deck-landing-storage.service';
 import { LandingContentPopulateService } from './landing-content-populate.service';
@@ -150,6 +151,20 @@ export class LandingStorageController {
   ) {
     await this.storage.assertVersionBelongsToProject(projectId, versionId);
     return this.storage.updateVersion(versionId, dto);
+  }
+
+  /**
+   * Met à jour une section dans `content.sections` : `patch` fusionné au premier niveau (sauf `id`).
+   * Réaligne `imageSlots` depuis `media` si besoin.
+   */
+  @Patch('projects/:projectId/versions/:versionId/content-section')
+  async patchContentSection(
+    @Param('projectId') projectId: string,
+    @Param('versionId') versionId: string,
+    @Body() dto: PatchDeckLandingContentSectionDto,
+  ) {
+    await this.storage.assertVersionBelongsToProject(projectId, versionId);
+    return this.storage.patchContentSection(versionId, dto.sectionId, dto.patch);
   }
 
   /** Réordonne `content.sections` + `sectionOrder` (permutation des ids existants, sans rebuild Grok). */

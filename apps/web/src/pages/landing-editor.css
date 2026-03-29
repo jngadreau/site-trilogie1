@@ -301,6 +301,65 @@
   cursor: not-allowed;
 }
 
+.le__ve-section-fields {
+  margin-top: 0.5rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed #c8c8c8;
+}
+
+.le__ve-section-fields-title {
+  font-size: 0.88rem;
+  margin: 0 0 0.35rem;
+}
+
+.le__ve-section-fields-lead {
+  margin: 0 0 0.5rem;
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.le__ve-section-fields-id,
+.le__ve-section-fields-variant {
+  margin: 0 0 0.45rem;
+  font-size: 0.78rem;
+}
+
+.le__ve-field-label {
+  display: block;
+  margin: 0.45rem 0 0.2rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.le__ve-field-input {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  font-size: 0.8rem;
+  padding: 0.35rem 0.45rem;
+  border: 1px solid #c8c8c8;
+  border-radius: 6px;
+  font-family: ui-monospace, monospace;
+}
+
+.le__ve-field-textarea {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  font-size: 0.68rem;
+  line-height: 1.45;
+  padding: 0.4rem 0.45rem;
+  border: 1px solid #c8c8c8;
+  border-radius: 6px;
+  resize: vertical;
+  min-height: 4rem;
+}
+
+.le__ve-section-fields .le__btn {
+  margin-top: 0.55rem;
+}
+
 .le__ve-slots-block {
   margin-top: 0.5rem;
   padding-top: 0.6rem;
