@@ -28,4 +28,8 @@ export class CreateDeckLandingVersionDto {
   @IsString()
   @MaxLength(200)
   label?: string;
+
+  @IsOptional()
+  @IsObject()
+  buildOptions?: Record<string, unknown>;
 }

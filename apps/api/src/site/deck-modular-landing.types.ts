@@ -14,6 +14,75 @@ export interface DeckLandingGlobals {
   fontImportNote?: string;
   /** Lien `<link href>` Google Fonts (ou autre) pour charger les familles citées. */
   fontImportHref?: string;
+  /**
+   * Brief visuel global (ton, ambiance, cohérence) — réutilisé pour l’assemblage des prompts image.
+   * @see docs/landing-image-management-plan.md
+   */
+  visualBrief?: string;
+  visualBriefMarkdown?: string;
+  /** Fond plein page (référence résolue ou à résoudre). */
+  backgroundImage?: DeckLandingResolvedImageRef;
+}
+
+/**
+ * Rôle sémantique d’un visuel (plan image management).
+ * @see docs/landing-image-management-plan.md
+ */
+export type DeckLandingImagePurpose =
+  | 'hero_banner'
+  | 'page_background'
+  | 'section_background'
+  | 'deck_card_front'
+  | 'deck_card_back'
+  | 'booklet_cover_front'
+  | 'booklet_cover_back'
+  | 'box'
+  | 'lifestyle'
+  | 'decoration'
+  | 'other';
+
+export type DeckImageGenerationModelPreference = 'grok_imagine' | 'midjourney' | 'none';
+
+export interface DeckLandingDeckAssetRef {
+  kind: 'deck_card' | 'booklet' | 'box';
+  side?: 'front' | 'back' | 'spine';
+  selector: { type: 'filename' | 'ordinal' | 'slug'; value: string | number };
+}
+
+export interface DeckLandingResolvedImageRef {
+  imageUrl: string;
+  imageAlt?: string;
+  s3Key?: string;
+  source?: 'upload' | 'grok_imagine' | 'midjourney' | 'deck_mirror' | 'external';
+}
+
+export interface DeckLandingImageSlotGeneration {
+  autoGenerate?: boolean;
+  primaryModel?: DeckImageGenerationModelPreference;
+  assembledPromptEn?: string;
+  promptAlternativesEn?: string[];
+  originalIndicationFingerprint?: string;
+  lastGeneratedAt?: string;
+}
+
+/**
+ * Définition enrichie d’un slot image (évolution de `media[]`).
+ * Optionnel tant que la migration n’est pas faite.
+ */
+export interface DeckLandingImageSlotDefinition {
+  slotId: string;
+  purpose: DeckLandingImagePurpose;
+  aspectRatio: string;
+  sizeHint?: string;
+  sceneDescription: string;
+  mood?: string;
+  styleVisual?: string;
+  colorContext?: string;
+  constraints?: string;
+  altHintFr?: string;
+  deckAssetRef?: DeckLandingDeckAssetRef;
+  generation?: DeckLandingImageSlotGeneration;
+  resolved?: DeckLandingResolvedImageRef;
 }
 
 /**
@@ -44,6 +113,10 @@ export interface DeckLandingSection {
   props: Record<string, unknown>;
   /** Slots image décrits par l’IA ; tableau vide si aucun visuel. */
   media?: DeckSectionMediaSlotV1[];
+  /** Fond de section (plan image management). */
+  backgroundImage?: DeckLandingResolvedImageRef;
+  /** Slots enrichis (purpose, métadonnées génération) — complète `media[]` à terme. */
+  imageSlots?: DeckLandingImageSlotDefinition[];
 }
 
 /** Entrée d’historique pour une position image `sectionId:slotId` (ex. `hero:hero`). */

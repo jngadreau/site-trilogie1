@@ -2,7 +2,7 @@
 
 Ce document fixe la cible pour remplacer l’admin « monolithique » actuel par un **éditeur dédié** (wizard, IA, prévisualisation) et décrit le **stockage MongoDB + S3** introduit en amont.
 
-Il complète [processus-landing-deck-multi-etapes.md](./processus-landing-deck-multi-etapes.md).
+Il complète [processus-landing-deck-multi-etapes.md](./processus-landing-deck-multi-etapes.md). Le plan détaillé **images** (slots enrichis, assets jeu, Grok/Midjourney, fonds) est dans [landing-image-management-plan.md](./landing-image-management-plan.md).
 
 ---
 

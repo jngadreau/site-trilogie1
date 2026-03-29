@@ -30,6 +30,13 @@ export class DeckLandingVersion {
   @Prop({ type: Object, default: {} })
   variantsBySection!: Record<string, string>;
 
+  /**
+   * Options de build / génération (ex. `autoGenerateImages`, défaut logique `true` si absent).
+   * @see docs/landing-image-management-plan.md
+   */
+  @Prop({ type: Object })
+  buildOptions?: Record<string, unknown>;
+
   /** Document landing complet (équivalent `deck-landings/*.json`, évolutif). */
   @Prop({ type: Object, required: true })
   content!: Record<string, unknown>;

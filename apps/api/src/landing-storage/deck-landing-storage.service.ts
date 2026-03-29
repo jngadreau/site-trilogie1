@@ -121,6 +121,7 @@ export class DeckLandingStorageService {
       sectionOrder: dto.sectionOrder ?? [],
       variantsBySection: dto.variantsBySection ?? {},
       content: dto.content,
+      ...(dto.buildOptions !== undefined ? { buildOptions: dto.buildOptions } : {}),
     });
 
     if (status === 'draft') {
@@ -185,6 +186,9 @@ export class DeckLandingStorageService {
     }
     if (dto.variantsBySection !== undefined) {
       v.variantsBySection = dto.variantsBySection;
+    }
+    if (dto.buildOptions !== undefined) {
+      v.set('buildOptions', dto.buildOptions);
     }
 
     const order = v.sectionOrder;

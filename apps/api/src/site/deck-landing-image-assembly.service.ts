@@ -37,7 +37,14 @@ export class DeckLandingImageAssemblyService {
    * Peut mélanger FR dans sceneDescription si Grok l’a laissé — acceptable.
    */
   buildImaginePrompt(slot: DeckSectionMediaSlotV1, globals: DeckLandingGlobals): string {
-    const parts: string[] = [slot.sceneDescription.trim()];
+    const parts: string[] = [];
+    const visualBrief = globals.visualBrief?.trim();
+    if (visualBrief) {
+      parts.push(
+        `Overall landing visual direction (stay consistent with this tone and style): ${visualBrief}`,
+      );
+    }
+    parts.push(slot.sceneDescription.trim());
 
     if (slot.mood?.trim()) {
       parts.push(`Mood: ${slot.mood.trim()}`);

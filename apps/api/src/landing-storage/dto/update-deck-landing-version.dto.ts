@@ -22,4 +22,12 @@ export class UpdateDeckLandingVersionDto {
   @IsOptional()
   @IsBoolean()
   rebuildContentSections?: boolean;
+
+  /**
+   * ex. `{ "autoGenerateImages": true }` — défaut logique `true` si absent.
+   * @see docs/landing-image-management-plan.md
+   */
+  @IsOptional()
+  @IsObject()
+  buildOptions?: Record<string, unknown>;
 }
