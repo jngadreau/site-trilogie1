@@ -23,11 +23,13 @@ import { UpdateDeckLandingVersionDto } from './dto/update-deck-landing-version.d
 import { PopulateDeckLandingVersionDto } from './dto/populate-deck-landing-version.dto';
 import { PatchDeckLandingContentGlobalsDto } from './dto/patch-deck-landing-content-globals.dto';
 import { PatchDeckLandingImageSlotDto } from './dto/patch-deck-landing-image-slot.dto';
+import { SuggestPromptAlternativesDto } from './dto/suggest-prompt-alternatives.dto';
 import { DeckLandingStorageService } from './deck-landing-storage.service';
 import { LandingContentPopulateService } from './landing-content-populate.service';
 import { LandingStructureWizardService } from './landing-structure-wizard.service';
 import { S3AssetsService } from './s3-assets.service';
 import { LandingVersionMediaS3Service } from './landing-version-media-s3.service';
+import { LandingImageSlotPromptsService } from './landing-image-slot-prompts.service';
 import * as path from 'path';
 
 const MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
@@ -42,6 +44,7 @@ export class LandingStorageController {
     private readonly structureWizard: LandingStructureWizardService,
     private readonly contentPopulate: LandingContentPopulateService,
     private readonly mediaS3: LandingVersionMediaS3Service,
+    private readonly slotPrompts: LandingImageSlotPromptsService,
   ) {}
 
   /** Santé connexion Mongo + présence config stockage (sans exposer le bucket ni les clés S3). */
@@ -170,6 +173,24 @@ export class LandingStorageController {
   ) {
     await this.storage.assertVersionBelongsToProject(projectId, versionId);
     return this.storage.patchContentGlobals(versionId, dto);
+  }
+
+  /**
+   * Grok : variantes de prompts EN pour un slot ; persiste `generation.promptAlternativesEn`.
+   * Body : `sectionId`, `slotId`, `count?` (5–12, défaut 6).
+   */
+  @Post('projects/:projectId/versions/:versionId/suggest-prompt-alternatives')
+  async suggestPromptAlternatives(
+    @Param('projectId') projectId: string,
+    @Param('versionId') versionId: string,
+    @Body() dto: SuggestPromptAlternativesDto,
+  ) {
+    await this.storage.assertVersionBelongsToProject(projectId, versionId);
+    return this.slotPrompts.suggestPromptAlternatives(projectId, versionId, {
+      sectionId: dto.sectionId,
+      slotId: dto.slotId,
+      count: dto.count,
+    });
   }
 
   /**

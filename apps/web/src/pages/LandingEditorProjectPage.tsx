@@ -47,6 +47,7 @@ type ImageSlotRow = {
   sceneDescription?: string
   resolvedUrl?: string
   resolvedAlt?: string
+  promptAlternatives?: string[]
 }
 
 function collectImageSlotRows(content: Record<string, unknown> | undefined): ImageSlotRow[] {
@@ -70,6 +71,14 @@ function collectImageSlotRows(content: Record<string, unknown> | undefined): Ima
           ? (slot.resolved as Record<string, unknown>)
           : null
       const url = typeof resolved?.imageUrl === 'string' ? resolved.imageUrl : undefined
+      const gen =
+        slot.generation && typeof slot.generation === 'object'
+          ? (slot.generation as Record<string, unknown>)
+          : null
+      const rawAlts = gen?.promptAlternativesEn
+      const promptAlternatives = Array.isArray(rawAlts)
+        ? rawAlts.filter((x): x is string => typeof x === 'string' && x.trim().length > 0)
+        : []
       out.push({
         sectionId,
         sectionVariant,
@@ -78,6 +87,7 @@ function collectImageSlotRows(content: Record<string, unknown> | undefined): Ima
         sceneDescription: typeof slot.sceneDescription === 'string' ? slot.sceneDescription : undefined,
         resolvedUrl: url,
         resolvedAlt: typeof resolved?.imageAlt === 'string' ? resolved.imageAlt : undefined,
+        ...(promptAlternatives.length > 0 ? { promptAlternatives } : {}),
       })
     }
   }
@@ -117,6 +127,76 @@ function ImageSlotRowBlock(props: {
     setSceneDraft(row.sceneDescription ?? '')
     setAltDraft(row.resolvedAlt ?? '')
   }, [row.sectionId, row.slotId, row.sceneDescription, row.resolvedAlt])
+
+  const [suggestingAlts, setSuggestingAlts] = useState(false)
+  const [applyingScene, setApplyingScene] = useState(false)
+
+  async function suggestAlternatives() {
+    setSuggestingAlts(true)
+    onError('')
+    try {
+      const r = await fetch(
+        `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(versionId)}/suggest-prompt-alternatives`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sectionId: row.sectionId,
+            slotId: row.slotId,
+            count: 6,
+          }),
+        },
+      )
+      const body = (await r.json().catch(() => ({}))) as {
+        message?: string
+        promptAlternativesEn?: string[]
+      }
+      if (!r.ok) {
+        const msg = body?.message
+        throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
+      }
+      const n = Array.isArray(body.promptAlternativesEn) ? body.promptAlternativesEn.length : 0
+      onMessage(`Variantes Grok enregistrées (${n}) — ${row.sectionId} / ${row.slotId}`)
+      onReload()
+    } catch (err) {
+      onError((err as Error).message)
+    } finally {
+      setSuggestingAlts(false)
+    }
+  }
+
+  async function applyAlternativeAsScene(text: string) {
+    const sd = text.trim()
+    if (!sd) return
+    setApplyingScene(true)
+    onError('')
+    try {
+      const r = await fetch(
+        `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(versionId)}/image-slot`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sectionId: row.sectionId,
+            slotId: row.slotId,
+            sceneDescription: sd,
+          }),
+        },
+      )
+      const body = (await r.json().catch(() => ({}))) as { message?: string }
+      if (!r.ok) {
+        const msg = body?.message
+        throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
+      }
+      setSceneDraft(sd)
+      onMessage(`Scène remplacée par la variante — ${row.sectionId} / ${row.slotId}`)
+      onReload()
+    } catch (err) {
+      onError((err as Error).message)
+    } finally {
+      setApplyingScene(false)
+    }
+  }
 
   async function saveScene(e: FormEvent) {
     e.preventDefault()
@@ -213,10 +293,40 @@ function ImageSlotRowBlock(props: {
             onChange={(e) => setSceneDraft(e.target.value)}
           />
         </label>
-        <button type="submit" className="le__btn le__btn--small" disabled={disabled || savingScene}>
-          {savingScene ? '…' : 'Enregistrer la scène'}
-        </button>
+        <div className="le__slot-scene-actions">
+          <button type="submit" className="le__btn le__btn--small" disabled={disabled || savingScene || applyingScene}>
+            {savingScene ? '…' : 'Enregistrer la scène'}
+          </button>
+          <button
+            type="button"
+            className="le__btn le__btn--small le__btn--secondary"
+            disabled={disabled || suggestingAlts || savingScene || applyingScene}
+            onClick={() => void suggestAlternatives()}
+          >
+            {suggestingAlts ? '…' : 'Variantes Grok (6)'}
+          </button>
+        </div>
       </form>
+      {row.promptAlternatives && row.promptAlternatives.length > 0 ? (
+        <div className="le__slot-alt-prompts">
+          <p className="le__muted le__slot-alt-prompts-title">Variantes enregistrées (Mongo)</p>
+          <ol className="le__slot-alt-prompts-list">
+            {row.promptAlternatives.map((p, idx) => (
+              <li key={idx} className="le__slot-alt-prompts-item">
+                <p className="le__slot-alt-prompt-text">{p}</p>
+                <button
+                  type="button"
+                  className="le__btn le__btn--small le__btn--secondary"
+                  disabled={disabled || applyingScene || suggestingAlts}
+                  onClick={() => void applyAlternativeAsScene(p)}
+                >
+                  {applyingScene ? '…' : 'Utiliser comme scène'}
+                </button>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ) : null}
       <div className="le__slot-body">
         {row.resolvedUrl ? (
           <img className="le__slot-thumb" src={row.resolvedUrl} alt={row.resolvedAlt || ''} />
@@ -1025,8 +1135,9 @@ export function LandingEditorProjectPage() {
                     <div className="le__image-slots">
                       <h3 className="le__h3">Slots image</h3>
                       <p className="le__muted">
-                        Liste dérivée de <code>imageSlots</code> (après remplissage). Upload : stockage S3 puis liaison au slot (
-                        <code>PATCH …/image-slot</code>).
+                        Liste dérivée de <code>imageSlots</code> (après remplissage). <strong>Variantes Grok</strong> enregistre
+                        des prompts EN dans Mongo ; « Utiliser comme scène » met à jour <code>sceneDescription</code> (
+                        <code>media</code> inclus). Upload : S3 puis <code>PATCH …/image-slot</code>.
                       </p>
                       <ul className="le__slot-list">
                         {imageSlotRows.map((row) => {

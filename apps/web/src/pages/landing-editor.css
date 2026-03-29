@@ -458,6 +458,48 @@
   margin: 0.5rem 0 0.65rem;
 }
 
+.le__slot-scene-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.le__slot-alt-prompts {
+  margin: 0 0 0.75rem;
+  padding: 0.5rem 0.55rem;
+  background: #f8f9fc;
+  border: 1px solid #e8eaf2;
+  border-radius: 6px;
+}
+
+.le__slot-alt-prompts-title {
+  margin: 0 0 0.4rem;
+  font-size: 0.78rem;
+}
+
+.le__slot-alt-prompts-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.78rem;
+}
+
+.le__slot-alt-prompts-item {
+  margin-bottom: 0.55rem;
+}
+
+.le__slot-alt-prompts-item:last-child {
+  margin-bottom: 0;
+}
+
+.le__slot-alt-prompt-text {
+  margin: 0 0 0.35rem;
+  color: #333;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 .le__slot-side {
   display: flex;
   flex-direction: column;

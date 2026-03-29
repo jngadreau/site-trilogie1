@@ -460,4 +460,16 @@ export class DeckLandingStorageService {
     await v.save();
     return v.toJSON() as unknown;
   }
+
+  /** Remplace entièrement `content` (objet déjà cloné / muté côté appelant). */
+  async persistVersionContent(versionId: string, content: Record<string, unknown>): Promise<unknown> {
+    if (!Types.ObjectId.isValid(versionId)) {
+      throw new NotFoundException('Identifiant version invalide');
+    }
+    const v = await this.versionModel.findById(versionId).exec();
+    if (!v) throw new NotFoundException('Version introuvable');
+    v.content = content;
+    await v.save();
+    return v.toJSON() as unknown;
+  }
 }
