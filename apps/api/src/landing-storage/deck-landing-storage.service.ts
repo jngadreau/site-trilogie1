@@ -4,12 +4,18 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { randomUUID } from 'crypto';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model, Types } from 'mongoose';
 import type { CreateDeckLandingProjectDto } from './dto/create-deck-landing-project.dto';
 import type { CreateDeckLandingVersionDto } from './dto/create-deck-landing-version.dto';
 import type { UpdateDeckLandingProjectDto } from './dto/update-deck-landing-project.dto';
 import type { UpdateDeckLandingVersionDto } from './dto/update-deck-landing-version.dto';
+import type { PatchDeckLandingContentGlobalsDto } from './dto/patch-deck-landing-content-globals.dto';
+import type { PatchDeckLandingImageSlotDto } from './dto/patch-deck-landing-image-slot.dto';
+import { applySlotImageUrlToSectionContent } from './deck-landing-mongo-media-slot-patch';
+import { appendLandingImageHistory } from './landing-image-history.util';
+import { normalizeImageSlotsInLandingDoc } from './landing-image-slots-normalize';
 import { LandingStructureWizardService } from './landing-structure-wizard.service';
 import {
   DeckLandingProject,
@@ -19,6 +25,11 @@ import {
   DeckLandingVersion,
   type DeckLandingVersionDocument,
 } from './schemas/deck-landing-version.schema';
+import type { DeckSectionMediaSlotV1 } from '../site/deck-modular-landing.types';
+
+function isRecord(x: unknown): x is Record<string, unknown> {
+  return Boolean(x) && typeof x === 'object' && !Array.isArray(x);
+}
 
 @Injectable()
 export class DeckLandingStorageService {
@@ -237,6 +248,215 @@ export class DeckLandingStorageService {
       merged.imageHistory = prev.imageHistory;
     }
     v.content = merged;
+    await v.save();
+    return v.toJSON() as unknown;
+  }
+
+  /** Fusionne des champs dans `content.globals` (préserve le reste du document). */
+  async patchContentGlobals(
+    versionId: string,
+    dto: PatchDeckLandingContentGlobalsDto,
+  ): Promise<unknown> {
+    if (!Types.ObjectId.isValid(versionId)) {
+      throw new NotFoundException('Identifiant version invalide');
+    }
+    const v = await this.versionModel.findById(versionId).exec();
+    if (!v) throw new NotFoundException('Version introuvable');
+
+    if (dto.visualBrief === undefined && dto.visualBriefMarkdown === undefined) {
+      throw new BadRequestException('Fournis au moins visualBrief ou visualBriefMarkdown');
+    }
+
+    const content = JSON.parse(JSON.stringify(v.content ?? {})) as Record<string, unknown>;
+    const prevG = content.globals && typeof content.globals === 'object' && !Array.isArray(content.globals)
+      ? { ...(content.globals as Record<string, unknown>) }
+      : {};
+
+    if (dto.visualBrief !== undefined) {
+      const t = dto.visualBrief.trim();
+      if (t) {
+        prevG.visualBrief = t;
+      } else {
+        delete prevG.visualBrief;
+      }
+    }
+    if (dto.visualBriefMarkdown !== undefined) {
+      const t = dto.visualBriefMarkdown.trim();
+      if (t) {
+        prevG.visualBriefMarkdown = t;
+      } else {
+        delete prevG.visualBriefMarkdown;
+      }
+    }
+    content.globals = prevG;
+    v.content = content;
+    await v.save();
+    return v.toJSON() as unknown;
+  }
+
+  /**
+   * Met à jour un slot `imageSlots` (et synchronise `media` / `props` pour les URLs).
+   */
+  async patchContentImageSlot(versionId: string, dto: PatchDeckLandingImageSlotDto): Promise<unknown> {
+    if (!Types.ObjectId.isValid(versionId)) {
+      throw new NotFoundException('Identifiant version invalide');
+    }
+    const v = await this.versionModel.findById(versionId).exec();
+    if (!v) throw new NotFoundException('Version introuvable');
+
+    if (dto.resolved === undefined && dto.sceneDescription === undefined && dto.imageAlt === undefined) {
+      throw new BadRequestException('Fournis au moins resolved, sceneDescription ou imageAlt');
+    }
+
+    const content = JSON.parse(JSON.stringify(v.content ?? {})) as Record<string, unknown>;
+    normalizeImageSlotsInLandingDoc(content);
+
+    const sections = content.sections;
+    if (!Array.isArray(sections)) {
+      throw new BadRequestException('content.sections manquant');
+    }
+
+    const sec = sections.find((s) => isRecord(s) && s.id === dto.sectionId);
+    if (!sec || !isRecord(sec)) {
+      throw new BadRequestException(`Section inconnue : ${dto.sectionId}`);
+    }
+
+    const variant = typeof sec.variant === 'string' ? sec.variant : '';
+    const slots = Array.isArray(sec.imageSlots) ? sec.imageSlots : [];
+    const slotIdx = slots.findIndex(
+      (x) => isRecord(x) && (x as { slotId?: string }).slotId === dto.slotId,
+    );
+    if (slotIdx < 0) {
+      throw new BadRequestException(
+        `Slot inconnu : ${dto.sectionId} / ${dto.slotId} (remplis le contenu ou vérifie les ids)`,
+      );
+    }
+
+    const slotDef = slots[slotIdx] as Record<string, unknown>;
+
+    if (dto.sceneDescription !== undefined) {
+      const sd = dto.sceneDescription.trim();
+      if (!sd) {
+        throw new BadRequestException('sceneDescription ne peut pas être vide');
+      }
+      slotDef.sceneDescription = sd;
+      const media = Array.isArray(sec.media) ? sec.media : [];
+      for (const m of media) {
+        if (isRecord(m) && m.slotId === dto.slotId) {
+          m.sceneDescription = sd;
+          break;
+        }
+      }
+    }
+
+    if (dto.resolved) {
+      const url = dto.resolved.imageUrl.trim();
+      if (!url) {
+        throw new BadRequestException('resolved.imageUrl vide');
+      }
+
+      const mediaList = Array.isArray(sec.media) ? sec.media : [];
+      const fromMedia = mediaList.find(
+        (m): m is Record<string, unknown> => isRecord(m) && m.slotId === dto.slotId,
+      );
+
+      const scene =
+        typeof slotDef.sceneDescription === 'string' && slotDef.sceneDescription.trim()
+          ? slotDef.sceneDescription.trim()
+          : typeof fromMedia?.sceneDescription === 'string' && String(fromMedia.sceneDescription).trim()
+            ? String(fromMedia.sceneDescription).trim()
+            : ' ';
+
+      const mediaSlot: DeckSectionMediaSlotV1 = {
+        slotId: dto.slotId,
+        aspectRatio:
+          typeof fromMedia?.aspectRatio === 'string' && fromMedia.aspectRatio.trim()
+            ? fromMedia.aspectRatio.trim()
+            : typeof slotDef.aspectRatio === 'string' && String(slotDef.aspectRatio).trim()
+              ? String(slotDef.aspectRatio).trim()
+              : '16:9',
+        sceneDescription: scene,
+        ...(typeof fromMedia?.mood === 'string' ? { mood: fromMedia.mood } : {}),
+        ...(typeof fromMedia?.styleVisual === 'string' ? { styleVisual: fromMedia.styleVisual } : {}),
+        ...(typeof fromMedia?.colorContext === 'string' ? { colorContext: fromMedia.colorContext } : {}),
+        ...(typeof fromMedia?.constraints === 'string' ? { constraints: fromMedia.constraints } : {}),
+        ...(typeof slotDef.altHintFr === 'string'
+          ? { altHintFr: slotDef.altHintFr }
+          : typeof fromMedia?.altHintFr === 'string'
+            ? { altHintFr: fromMedia.altHintFr as string }
+            : {}),
+      };
+
+      const applied = applySlotImageUrlToSectionContent(sec, dto.sectionId, variant, mediaSlot, url);
+      if (!applied) {
+        throw new BadRequestException(
+          `Impossible d’appliquer l’image pour ${dto.sectionId}/${dto.slotId} (variante ou emplacement JSON non pris en charge)`,
+        );
+      }
+
+      const alt = dto.resolved.imageAlt?.trim();
+      slotDef.resolved = {
+        imageUrl: url,
+        ...(alt ? { imageAlt: alt } : {}),
+        source: dto.resolved.source ?? 'upload',
+      };
+
+      appendLandingImageHistory(content, dto.sectionId, dto.slotId, {
+        id: randomUUID(),
+        imageUrl: url,
+        prompt: '(assignation manuelle)',
+        model: dto.resolved.source === 'external' ? 'external' : 'upload',
+        createdAt: new Date().toISOString(),
+      });
+    }
+
+    if (dto.imageAlt !== undefined) {
+      const alt = dto.imageAlt.trim();
+      const prevRes =
+        slotDef.resolved && typeof slotDef.resolved === 'object' && !Array.isArray(slotDef.resolved)
+          ? (slotDef.resolved as Record<string, unknown>)
+          : {};
+      const existingUrl = typeof prevRes.imageUrl === 'string' ? prevRes.imageUrl.trim() : '';
+      slotDef.resolved = { ...prevRes, ...(alt ? { imageAlt: alt } : {}) };
+      if (!alt) {
+        delete (slotDef.resolved as Record<string, unknown>).imageAlt;
+      }
+      if (existingUrl) {
+        const mediaList = Array.isArray(sec.media) ? sec.media : [];
+        const fromMedia = mediaList.find(
+          (m): m is Record<string, unknown> => isRecord(m) && m.slotId === dto.slotId,
+        );
+        const scene =
+          typeof slotDef.sceneDescription === 'string' && slotDef.sceneDescription.trim()
+            ? slotDef.sceneDescription.trim()
+            : typeof fromMedia?.sceneDescription === 'string' && String(fromMedia.sceneDescription).trim()
+              ? String(fromMedia.sceneDescription).trim()
+              : ' ';
+        const mediaSlot: DeckSectionMediaSlotV1 = {
+          slotId: dto.slotId,
+          aspectRatio:
+            typeof fromMedia?.aspectRatio === 'string' && fromMedia.aspectRatio.trim()
+              ? fromMedia.aspectRatio.trim()
+              : typeof slotDef.aspectRatio === 'string' && String(slotDef.aspectRatio).trim()
+                ? String(slotDef.aspectRatio).trim()
+                : '16:9',
+          sceneDescription: scene,
+          ...(alt ? { altHintFr: alt } : {}),
+          ...(typeof fromMedia?.mood === 'string' ? { mood: fromMedia.mood } : {}),
+          ...(typeof fromMedia?.styleVisual === 'string' ? { styleVisual: fromMedia.styleVisual } : {}),
+          ...(typeof fromMedia?.colorContext === 'string' ? { colorContext: fromMedia.colorContext } : {}),
+          ...(typeof fromMedia?.constraints === 'string' ? { constraints: fromMedia.constraints } : {}),
+        };
+        const applied = applySlotImageUrlToSectionContent(sec, dto.sectionId, variant, mediaSlot, existingUrl);
+        if (!applied) {
+          throw new BadRequestException(
+            `Impossible d’appliquer le texte alternatif pour ${dto.sectionId}/${dto.slotId}`,
+          );
+        }
+      }
+    }
+
+    v.content = content;
     await v.save();
     return v.toJSON() as unknown;
   }

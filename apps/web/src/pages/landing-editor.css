@@ -333,3 +333,141 @@
   gap: 0.5rem;
   align-items: center;
 }
+
+.le__image-slots {
+  margin-top: 1.15rem;
+  padding-top: 1rem;
+  border-top: 1px dashed #c5c5c5;
+}
+
+.le__slot-list {
+  list-style: none;
+  margin: 0.65rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.le__slot-item {
+  padding: 0.65rem 0.75rem;
+  background: #fff;
+  border: 1px solid #e4e4e4;
+  border-radius: 6px;
+}
+
+.le__slot-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  font-size: 0.82rem;
+}
+
+.le__slot-purpose {
+  font-size: 0.75rem;
+  color: #666;
+  background: #f0f0f0;
+  padding: 0.12rem 0.4rem;
+  border-radius: 4px;
+}
+
+.le__slot-scene {
+  margin: 0.4rem 0 0.5rem;
+  font-size: 0.8rem;
+  color: #444;
+  line-height: 1.45;
+}
+
+.le__slot-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem 1rem;
+}
+
+.le__slot-thumb {
+  width: 120px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background: #f7f7f7;
+}
+
+.le__slot-thumb--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  color: #999;
+}
+
+.le__slot-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+}
+
+.le__slot-upload input[type='file'] {
+  max-width: 100%;
+  font-size: 0.75rem;
+}
+
+.le__visual-brief {
+  margin: 0.85rem 0 1rem;
+  padding: 0.85rem 0 1rem;
+  border-top: 1px dashed #ddd;
+  border-bottom: 1px dashed #ddd;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.le__visual-brief-hint {
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.le__label--compact {
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.le__textarea--compact {
+  font-size: 0.82rem;
+  padding: 0.35rem 0.45rem;
+}
+
+.le__input--compact {
+  font-size: 0.82rem;
+  padding: 0.35rem 0.45rem;
+}
+
+.le__btn--small {
+  font-size: 0.78rem;
+  padding: 0.3rem 0.65rem;
+  margin-bottom: 0;
+}
+
+.le__slot-scene-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0.5rem 0 0.65rem;
+}
+
+.le__slot-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  flex: 1;
+  min-width: 160px;
+}
+
+.le__slot-alt-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}

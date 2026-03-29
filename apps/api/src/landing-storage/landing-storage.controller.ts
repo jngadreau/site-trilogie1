@@ -21,6 +21,8 @@ import { SuggestLandingStructureDto } from './dto/suggest-landing-structure.dto'
 import { UpdateDeckLandingProjectDto } from './dto/update-deck-landing-project.dto';
 import { UpdateDeckLandingVersionDto } from './dto/update-deck-landing-version.dto';
 import { PopulateDeckLandingVersionDto } from './dto/populate-deck-landing-version.dto';
+import { PatchDeckLandingContentGlobalsDto } from './dto/patch-deck-landing-content-globals.dto';
+import { PatchDeckLandingImageSlotDto } from './dto/patch-deck-landing-image-slot.dto';
 import { DeckLandingStorageService } from './deck-landing-storage.service';
 import { LandingContentPopulateService } from './landing-content-populate.service';
 import { LandingStructureWizardService } from './landing-structure-wizard.service';
@@ -146,6 +148,31 @@ export class LandingStorageController {
   }
 
   /**
+   * Met à jour un slot image (`imageSlots` + sync `media` / `props`). Body : `sectionId`, `slotId`, et
+   * `resolved` (après `POST …/assets`) et/ou `sceneDescription`.
+   */
+  @Patch('projects/:projectId/versions/:versionId/image-slot')
+  async patchImageSlot(
+    @Param('projectId') projectId: string,
+    @Param('versionId') versionId: string,
+    @Body() dto: PatchDeckLandingImageSlotDto,
+  ) {
+    await this.storage.assertVersionBelongsToProject(projectId, versionId);
+    return this.storage.patchContentImageSlot(versionId, dto);
+  }
+
+  /** Met à jour `content.globals.visualBrief` (et optionnellement `visualBriefMarkdown`). */
+  @Patch('projects/:projectId/versions/:versionId/content-globals')
+  async patchContentGlobals(
+    @Param('projectId') projectId: string,
+    @Param('versionId') versionId: string,
+    @Body() dto: PatchDeckLandingContentGlobalsDto,
+  ) {
+    await this.storage.assertVersionBelongsToProject(projectId, versionId);
+    return this.storage.patchContentGlobals(versionId, dto);
+  }
+
+  /**
    * Grok : propose sectionOrder + variants (sous-ensemble, ordre libre). Ne persiste pas.
    */
   @Post('projects/:projectId/versions/:versionId/suggest-structure')
@@ -164,18 +191,7 @@ export class LandingStorageController {
   }
 
   /**
-   * Grok Imagine → S3 : uniquement le hero (`imagePrompts.hero` ou slot `media` hero).
-   */
-  @Post('projects/:projectId/versions/:versionId/generate-hero-s3')
-  async generateHeroS3(
-    @Param('projectId') projectId: string,
-    @Param('versionId') versionId: string,
-  ) {
-    return this.mediaS3.generateHeroToS3(projectId, versionId);
-  }
-
-  /**
-   * Tous les slots `media` avec `sceneDescription` : Imagine → S3 → props (hero, creator, témoignage, grille photo, etc.).
+   * Tous les slots `media` avec `sceneDescription` : Imagine → stockage → props (hero = même flux, repli `imagePrompts.hero`).
    */
   @Post('projects/:projectId/versions/:versionId/generate-all-imagine-s3')
   async generateAllImagineS3(

@@ -12,19 +12,13 @@ import { getGeneratedImagesDir, getMirroredDeckCardImagesDir } from '../paths';
 import { DeckLandingImageAssemblyService } from '../site/deck-landing-image-assembly.service';
 import type { DeckLandingGlobals } from '../site/deck-modular-landing.types';
 import type { DeckSectionMediaSlotV1 } from '../site/deck-modular-landing.types';
-import type { LandingImageHistoryEntryV1 } from '../site/deck-modular-landing.types';
 import {
   applySlotImageUrlToSectionContent,
   HERO_VARIANTS_WITH_IMAGINE_BANNER,
 } from './deck-landing-mongo-media-slot-patch';
 import { DeckLandingStorageService } from './deck-landing-storage.service';
+import { appendLandingImageHistory } from './landing-image-history.util';
 import { S3AssetsService } from './s3-assets.service';
-
-const HISTORY_MAX = 24;
-
-function positionKey(sectionId: string, slotId: string): string {
-  return `${sectionId}:${slotId}`;
-}
 
 function isRecord(x: unknown): x is Record<string, unknown> {
   return Boolean(x) && typeof x === 'object' && !Array.isArray(x);
@@ -41,105 +35,9 @@ export class LandingVersionMediaS3Service {
     private readonly assembly: DeckLandingImageAssemblyService,
   ) {}
 
-  /** Hero seul (rétrocompat) — slot `hero` ou repli `imagePrompts.hero`. */
-  async generateHeroToS3(projectId: string, versionId: string): Promise<{
-    publicUrl: string;
-    model: string;
-    prompt: string;
-  }> {
-    await this.storage.assertVersionBelongsToProject(projectId, versionId);
-    if (!this.s3.isReady()) {
-      throw new BadRequestException('S3 non configuré');
-    }
-
-    const v = await this.storage.getVersion(versionId);
-    const content = JSON.parse(JSON.stringify(v.content ?? {})) as Record<string, unknown>;
-    const sections = content.sections;
-    if (!Array.isArray(sections)) {
-      throw new BadRequestException('content.sections manquant ou invalide');
-    }
-
-    const hero = sections.find(
-      (s): s is Record<string, unknown> => isRecord(s) && s.id === 'hero',
-    );
-    if (!hero) {
-      throw new BadRequestException('Aucune section hero dans le JSON');
-    }
-
-    const variant = typeof hero.variant === 'string' ? hero.variant : '';
-    if (!HERO_VARIANTS_WITH_IMAGINE_BANNER.has(variant)) {
-      throw new BadRequestException(
-        `La variante hero « ${variant} » n’utilise pas une bannière Imagine (voir HeroSplitImageRight, HeroFullBleed, HeroGlowVault, HeroParallaxLayers).`,
-      );
-    }
-
-    const globals = content.globals;
-    if (!globals || typeof globals !== 'object') {
-      throw new BadRequestException('content.globals manquant');
-    }
-    const g = globals as DeckLandingGlobals;
-
-    const media = Array.isArray(hero.media) ? hero.media : [];
-    const slotFromMedia = media.find((m): m is DeckSectionMediaSlotV1 => {
-      if (!isRecord(m)) return false;
-      const s = m as unknown as DeckSectionMediaSlotV1;
-      return s.slotId === 'hero' && typeof s.sceneDescription === 'string';
-    });
-
-    const imagePrompts = content.imagePrompts as Record<string, unknown> | undefined;
-    const heroPromptFallback =
-      typeof imagePrompts?.hero === 'string' && imagePrompts.hero.trim()
-        ? imagePrompts.hero.trim()
-        : '';
-
-    let slot: DeckSectionMediaSlotV1;
-    if (slotFromMedia?.sceneDescription?.trim()) {
-      slot = slotFromMedia;
-    } else if (heroPromptFallback) {
-      slot = {
-        slotId: 'hero',
-        aspectRatio: '16:9',
-        sceneDescription: heroPromptFallback,
-      };
-    } else {
-      throw new BadRequestException(
-        'Slot média hero (`media` avec slotId hero + sceneDescription) ou `imagePrompts.hero` requis.',
-      );
-    }
-
-    const slug = typeof content.slug === 'string' && content.slug ? content.slug : 'deck';
-    const result = await this.imagineSlotToS3(projectId, versionId, slug, g, slot, 'hero');
-
-    const appliedHero = applySlotImageUrlToSectionContent(hero, 'hero', variant, slot, result.publicUrl);
-    if (!appliedHero) {
-      throw new InternalServerErrorException('Impossible d’appliquer l’image hero sur props');
-    }
-
-    const prevPrompts =
-      content.imagePrompts && typeof content.imagePrompts === 'object'
-        ? (content.imagePrompts as Record<string, unknown>)
-        : {};
-    content.imagePrompts = { ...prevPrompts, hero: result.prompt };
-
-    this.appendHistory(content, 'hero', 'hero', {
-      id: randomUUID(),
-      imageUrl: result.publicUrl,
-      prompt: result.prompt,
-      model: result.model,
-      createdAt: new Date().toISOString(),
-    });
-
-    await this.storage.mergePopulatedLandingDocument(versionId, content);
-
-    return {
-      publicUrl: result.publicUrl,
-      model: result.model,
-      prompt: result.prompt,
-    };
-  }
-
   /**
-   * Pour chaque entrée `media` avec `sceneDescription`, Imagine → S3 → props si le couple section/slot est supporté.
+   * Pour chaque entrée `media` avec `sceneDescription`, Imagine → stockage → props si mappé.
+   * Hero bannière : si aucun slot `hero` utilisable dans `media`, repli sur `imagePrompts.hero` (comme tout slot).
    */
   async generateAllImagineMediaToS3(
     projectId: string,
@@ -204,58 +102,54 @@ export class LandingVersionMediaS3Service {
       for (const raw of slots) {
         if (!isRecord(raw)) continue;
         const slot = raw as unknown as DeckSectionMediaSlotV1;
-        const slotId = slot.slotId?.trim() || '';
-        if (!slotId) {
-          skipped.push({ sectionId, slotId: '', reason: 'slotId manquant' });
-          continue;
-        }
-        if (!slot.sceneDescription?.trim()) {
-          skipped.push({ sectionId, slotId, reason: 'sceneDescription vide' });
-          continue;
-        }
+        await this.tryProcessMediaSlot(
+          projectId,
+          versionId,
+          slug,
+          g,
+          content,
+          sec,
+          sectionId,
+          variant,
+          slot,
+          generated,
+          skipped,
+        );
+      }
 
-        const secProbe = JSON.parse(JSON.stringify(sec)) as Record<string, unknown>;
-        if (!applySlotImageUrlToSectionContent(secProbe, sectionId, variant, slot, '__probe__')) {
-          skipped.push({
-            sectionId,
-            slotId,
-            reason: 'emplacement JSON non mappé pour ce slot',
+      if (sectionId === 'hero' && HERO_VARIANTS_WITH_IMAGINE_BANNER.has(variant)) {
+        const heroDone = generated.some((x) => x.sectionId === 'hero' && x.slotId === 'hero');
+        if (!heroDone) {
+          const mediaList = Array.isArray(sec.media) ? sec.media : [];
+          const hasHeroScene = mediaList.some((raw) => {
+            if (!isRecord(raw)) return false;
+            const s = raw as unknown as DeckSectionMediaSlotV1;
+            return s.slotId === 'hero' && Boolean(s.sceneDescription?.trim());
           });
-          continue;
-        }
-
-        try {
-          const r = await this.imagineSlotToS3(projectId, versionId, slug, g, slot, sectionId);
-          const applied = applySlotImageUrlToSectionContent(
-            sec,
-            sectionId,
-            variant,
-            slot,
-            r.publicUrl,
-          );
-          if (!applied) {
-            skipped.push({ sectionId, slotId, reason: 'application props refusée après génération' });
-            continue;
+          if (!hasHeroScene) {
+            const ip = content.imagePrompts as Record<string, unknown> | undefined;
+            const fb = typeof ip?.hero === 'string' && ip.hero.trim() ? ip.hero.trim() : '';
+            if (fb) {
+              const synthetic: DeckSectionMediaSlotV1 = {
+                slotId: 'hero',
+                aspectRatio: '16:9',
+                sceneDescription: fb,
+              };
+              await this.tryProcessMediaSlot(
+                projectId,
+                versionId,
+                slug,
+                g,
+                content,
+                sec,
+                sectionId,
+                variant,
+                synthetic,
+                generated,
+                skipped,
+              );
+            }
           }
-
-          this.appendHistory(content, sectionId, slotId, {
-            id: randomUUID(),
-            imageUrl: r.publicUrl,
-            prompt: r.prompt,
-            model: r.model,
-            createdAt: new Date().toISOString(),
-          });
-
-          generated.push({
-            sectionId,
-            slotId,
-            publicUrl: r.publicUrl,
-            model: r.model,
-          });
-        } catch (e) {
-          const msg = e instanceof Error ? e.message : String(e);
-          this.logger.warn(`Imagine échoué ${sectionId}/${slotId}: ${msg}`);
-          skipped.push({ sectionId, slotId, reason: msg });
         }
       }
     }
@@ -469,20 +363,71 @@ export class LandingVersionMediaS3Service {
     return null;
   }
 
-  private appendHistory(
+  private async tryProcessMediaSlot(
+    projectId: string,
+    versionId: string,
+    slug: string,
+    g: DeckLandingGlobals,
     content: Record<string, unknown>,
+    sec: Record<string, unknown>,
     sectionId: string,
-    slotId: string,
-    entry: LandingImageHistoryEntryV1,
-  ): void {
-    const key = positionKey(sectionId, slotId);
-    const prevHistory =
-      content.imageHistory && typeof content.imageHistory === 'object'
-        ? (content.imageHistory as Record<string, LandingImageHistoryEntryV1[]>)
-        : {};
-    const list = Array.isArray(prevHistory[key]) ? [...prevHistory[key]] : [];
-    list.push(entry);
-    content.imageHistory = { ...prevHistory, [key]: list.slice(-HISTORY_MAX) };
+    variant: string,
+    slot: DeckSectionMediaSlotV1,
+    generated: Array<{
+      sectionId: string;
+      slotId: string;
+      publicUrl: string;
+      model: string;
+    }>,
+    skipped: Array<{ sectionId: string; slotId: string; reason: string }>,
+  ): Promise<void> {
+    const slotId = slot.slotId?.trim() || '';
+    if (!slotId) {
+      skipped.push({ sectionId, slotId: '', reason: 'slotId manquant' });
+      return;
+    }
+    if (!slot.sceneDescription?.trim()) {
+      skipped.push({ sectionId, slotId, reason: 'sceneDescription vide' });
+      return;
+    }
+
+    const secProbe = JSON.parse(JSON.stringify(sec)) as Record<string, unknown>;
+    if (!applySlotImageUrlToSectionContent(secProbe, sectionId, variant, slot, '__probe__')) {
+      skipped.push({
+        sectionId,
+        slotId,
+        reason: 'emplacement JSON non mappé pour ce slot',
+      });
+      return;
+    }
+
+    try {
+      const r = await this.imagineSlotToS3(projectId, versionId, slug, g, slot, sectionId);
+      const applied = applySlotImageUrlToSectionContent(sec, sectionId, variant, slot, r.publicUrl);
+      if (!applied) {
+        skipped.push({ sectionId, slotId, reason: 'application props refusée après génération' });
+        return;
+      }
+      if (sectionId === 'hero' && slotId === 'hero') {
+        const prevPrompts =
+          content.imagePrompts && typeof content.imagePrompts === 'object'
+            ? (content.imagePrompts as Record<string, unknown>)
+            : {};
+        content.imagePrompts = { ...prevPrompts, hero: r.prompt };
+      }
+      appendLandingImageHistory(content, sectionId, slotId, {
+        id: randomUUID(),
+        imageUrl: r.publicUrl,
+        prompt: r.prompt,
+        model: r.model,
+        createdAt: new Date().toISOString(),
+      });
+      generated.push({ sectionId, slotId, publicUrl: r.publicUrl, model: r.model });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      this.logger.warn(`Imagine échoué ${sectionId}/${slotId}: ${msg}`);
+      skipped.push({ sectionId, slotId, reason: msg });
+    }
   }
 
   private async imagineSlotToS3(

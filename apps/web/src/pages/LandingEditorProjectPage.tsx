@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   DECK_SECTION_ORDER,
@@ -39,6 +39,230 @@ type SuggestStructureResult = {
   model: string
 }
 
+type ImageSlotRow = {
+  sectionId: string
+  sectionVariant: string
+  slotId: string
+  purpose?: string
+  sceneDescription?: string
+  resolvedUrl?: string
+  resolvedAlt?: string
+}
+
+function collectImageSlotRows(content: Record<string, unknown> | undefined): ImageSlotRow[] {
+  if (!content) return []
+  const sections = content.sections
+  if (!Array.isArray(sections)) return []
+  const out: ImageSlotRow[] = []
+  for (const s of sections) {
+    if (!s || typeof s !== 'object') continue
+    const sec = s as Record<string, unknown>
+    const sectionId = typeof sec.id === 'string' ? sec.id : ''
+    const sectionVariant = typeof sec.variant === 'string' ? sec.variant : ''
+    const imageSlots = Array.isArray(sec.imageSlots) ? sec.imageSlots : []
+    for (const sl of imageSlots) {
+      if (!sl || typeof sl !== 'object') continue
+      const slot = sl as Record<string, unknown>
+      const slotId = typeof slot.slotId === 'string' ? slot.slotId : ''
+      if (!sectionId || !slotId) continue
+      const resolved =
+        slot.resolved && typeof slot.resolved === 'object'
+          ? (slot.resolved as Record<string, unknown>)
+          : null
+      const url = typeof resolved?.imageUrl === 'string' ? resolved.imageUrl : undefined
+      out.push({
+        sectionId,
+        sectionVariant,
+        slotId,
+        purpose: typeof slot.purpose === 'string' ? slot.purpose : undefined,
+        sceneDescription: typeof slot.sceneDescription === 'string' ? slot.sceneDescription : undefined,
+        resolvedUrl: url,
+        resolvedAlt: typeof resolved?.imageAlt === 'string' ? resolved.imageAlt : undefined,
+      })
+    }
+  }
+  return out
+}
+
+function ImageSlotRowBlock(props: {
+  row: ImageSlotRow
+  projectId: string
+  versionId: string
+  storageReady: boolean
+  disabled: boolean
+  uploading: boolean
+  onUpload: (file: File) => void
+  onReload: () => void
+  onMessage: (s: string) => void
+  onError: (s: string) => void
+}) {
+  const {
+    row,
+    projectId,
+    versionId,
+    storageReady,
+    disabled,
+    uploading,
+    onUpload,
+    onReload,
+    onMessage,
+    onError,
+  } = props
+  const [sceneDraft, setSceneDraft] = useState(row.sceneDescription ?? '')
+  const [altDraft, setAltDraft] = useState(row.resolvedAlt ?? '')
+  const [savingScene, setSavingScene] = useState(false)
+  const [savingAlt, setSavingAlt] = useState(false)
+
+  useEffect(() => {
+    setSceneDraft(row.sceneDescription ?? '')
+    setAltDraft(row.resolvedAlt ?? '')
+  }, [row.sectionId, row.slotId, row.sceneDescription, row.resolvedAlt])
+
+  async function saveScene(e: FormEvent) {
+    e.preventDefault()
+    const sd = sceneDraft.trim()
+    if (!sd) {
+      onError('La description de scène ne peut pas être vide.')
+      return
+    }
+    setSavingScene(true)
+    onError('')
+    try {
+      const r = await fetch(
+        `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(versionId)}/image-slot`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sectionId: row.sectionId,
+            slotId: row.slotId,
+            sceneDescription: sd,
+          }),
+        },
+      )
+      const body = (await r.json().catch(() => ({}))) as { message?: string }
+      if (!r.ok) {
+        const msg = body?.message
+        throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
+      }
+      onMessage(`Scène enregistrée — ${row.sectionId} / ${row.slotId}`)
+      onReload()
+    } catch (err) {
+      onError((err as Error).message)
+    } finally {
+      setSavingScene(false)
+    }
+  }
+
+  async function saveAlt(e: FormEvent) {
+    e.preventDefault()
+    const a = altDraft.trim()
+    if (!a) {
+      onError('Le texte alternatif ne peut pas être vide (utilise un espace significatif si besoin).')
+      return
+    }
+    if (!row.resolvedUrl) {
+      onError('Aucune image liée : texte alternatif non applicable.')
+      return
+    }
+    setSavingAlt(true)
+    onError('')
+    try {
+      const r = await fetch(
+        `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(versionId)}/image-slot`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sectionId: row.sectionId,
+            slotId: row.slotId,
+            imageAlt: a,
+          }),
+        },
+      )
+      const body = (await r.json().catch(() => ({}))) as { message?: string }
+      if (!r.ok) {
+        const msg = body?.message
+        throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
+      }
+      onMessage(`Texte alternatif enregistré — ${row.sectionId} / ${row.slotId}`)
+      onReload()
+    } catch (err) {
+      onError((err as Error).message)
+    } finally {
+      setSavingAlt(false)
+    }
+  }
+
+  return (
+    <li className="le__slot-item">
+      <div className="le__slot-head">
+        <code className="le__mono">{row.sectionId}</code>
+        <span className="le__muted">/</span>
+        <code className="le__mono">{row.slotId}</code>
+        {row.purpose ? <span className="le__slot-purpose">{row.purpose}</span> : null}
+      </div>
+      <form className="le__slot-scene-form" onSubmit={saveScene}>
+        <label className="le__label le__label--compact">
+          Description de scène (Imagine / prompt)
+          <textarea
+            className="le__textarea le__textarea--compact"
+            rows={3}
+            value={sceneDraft}
+            disabled={disabled || savingScene}
+            onChange={(e) => setSceneDraft(e.target.value)}
+          />
+        </label>
+        <button type="submit" className="le__btn le__btn--small" disabled={disabled || savingScene}>
+          {savingScene ? '…' : 'Enregistrer la scène'}
+        </button>
+      </form>
+      <div className="le__slot-body">
+        {row.resolvedUrl ? (
+          <img className="le__slot-thumb" src={row.resolvedUrl} alt={row.resolvedAlt || ''} />
+        ) : (
+          <div className="le__slot-thumb le__slot-thumb--empty">Aperçu</div>
+        )}
+        <div className="le__slot-side">
+          <label className="le__slot-upload">
+            <span className="le__muted le__slot-upload-label">
+              {storageReady ? 'Remplacer (fichier image)' : 'Upload indisponible (S3)'}
+            </span>
+            <input
+              type="file"
+              accept="image/png,image/jpeg,image/webp,.webp,.jpg,.jpeg,.png"
+              disabled={!storageReady || uploading || disabled}
+              onChange={(e) => {
+                const f = e.target.files?.[0]
+                e.target.value = ''
+                if (f) onUpload(f)
+              }}
+            />
+            {uploading ? <span className="le__muted">Envoi…</span> : null}
+          </label>
+          {row.resolvedUrl ? (
+            <form className="le__slot-alt-form" onSubmit={saveAlt}>
+              <label className="le__label le__label--compact">
+                Texte alternatif (accessibilité)
+                <input
+                  type="text"
+                  className="le__input le__input--compact"
+                  value={altDraft}
+                  disabled={disabled || savingAlt}
+                  onChange={(e) => setAltDraft(e.target.value)}
+                />
+              </label>
+              <button type="submit" className="le__btn le__btn--small le__btn--secondary" disabled={disabled || savingAlt}>
+                {savingAlt ? '…' : 'Enregistrer l’alt'}
+              </button>
+            </form>
+          ) : null}
+        </div>
+      </div>
+    </li>
+  )
+}
+
 const EMPTY_LANDING_STUB = (slug: string) => ({
   version: 1,
   slug,
@@ -75,9 +299,31 @@ export function LandingEditorProjectPage() {
   const [skipAutoImagineOnce, setSkipAutoImagineOnce] = useState(false)
 
   const [storageStatus, setStorageStatus] = useState<{ storageReady: boolean } | null>(null)
+  /** `sectionId:slotId` pendant upload S3 + PATCH slot */
+  const [slotUploadingKey, setSlotUploadingKey] = useState<string | null>(null)
 
   const [manualSelected, setManualSelected] = useState<Record<string, boolean>>({})
   const [manualVariants, setManualVariants] = useState<Record<string, string>>({})
+
+  const imageSlotRows = useMemo(() => {
+    const c = versionDetail?.content
+    if (!c || typeof c !== 'object') return []
+    return collectImageSlotRows(c as Record<string, unknown>)
+  }, [versionDetail?.content])
+
+  const visualBriefFromContent = useMemo(() => {
+    const c = versionDetail?.content
+    if (!c || typeof c !== 'object') return ''
+    const g = (c as Record<string, unknown>).globals
+    if (!g || typeof g !== 'object') return ''
+    const vb = (g as Record<string, unknown>).visualBrief
+    return typeof vb === 'string' ? vb : ''
+  }, [versionDetail?.content])
+
+  const [visualBriefDraft, setVisualBriefDraft] = useState('')
+  useEffect(() => {
+    setVisualBriefDraft(visualBriefFromContent)
+  }, [visualBriefFromContent])
 
   const load = useCallback(() => {
     if (!projectId) return
@@ -257,33 +503,6 @@ export function LandingEditorProjectPage() {
     setManualVariants((prev) => ({ ...prev, [id]: variant }))
   }
 
-  async function runGenerateHeroS3() {
-    if (!projectId || !selectedVersionId) return
-    setBusy(true)
-    setErr(null)
-    setMessage(null)
-    try {
-      const r = await fetch(
-        `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(selectedVersionId)}/generate-hero-s3`,
-        { method: 'POST' },
-      )
-      const body = (await r.json().catch(() => ({}))) as Record<string, unknown>
-      if (!r.ok) {
-        const msg = body?.message
-        throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
-      }
-      setMessage(
-        `Image hero générée — modèle ${String(body.model ?? '')}. URL API enregistrée : ${String(body.publicUrl ?? '')}`,
-      )
-      load()
-      loadVersionDetail(selectedVersionId)
-    } catch (e) {
-      setErr((e as Error).message)
-    } finally {
-      setBusy(false)
-    }
-  }
-
   async function runGenerateAllImagineS3() {
     if (!projectId || !selectedVersionId) return
     setBusy(true)
@@ -387,6 +606,84 @@ export function LandingEditorProjectPage() {
       setErr((e as Error).message)
     } finally {
       setBusy(false)
+    }
+  }
+
+  async function saveVisualBrief() {
+    if (!projectId || !selectedVersionId) return
+    setBusy(true)
+    setErr(null)
+    setMessage(null)
+    try {
+      const r = await fetch(
+        `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(selectedVersionId)}/content-globals`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ visualBrief: visualBriefDraft.trim() || '' }),
+        },
+      )
+      const body = (await r.json().catch(() => ({}))) as { message?: string }
+      if (!r.ok) {
+        const msg = body?.message
+        throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
+      }
+      setMessage('Brief visuel enregistré dans content.globals.')
+      load()
+      loadVersionDetail(selectedVersionId)
+    } catch (e) {
+      setErr((e as Error).message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function uploadAndAssignSlot(sectionId: string, slotId: string, file: File) {
+    if (!projectId || !selectedVersionId) return
+    const key = `${sectionId}:${slotId}`
+    setSlotUploadingKey(key)
+    setErr(null)
+    setMessage(null)
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      const up = await fetch(
+        `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(selectedVersionId)}/assets`,
+        { method: 'POST', body: fd },
+      )
+      const upBody = (await up.json().catch(() => ({}))) as { publicUrl?: string; message?: string }
+      if (!up.ok) {
+        const msg = upBody?.message
+        throw new Error(typeof msg === 'string' ? msg : `upload ${up.status}`)
+      }
+      const publicUrl = typeof upBody.publicUrl === 'string' ? upBody.publicUrl : ''
+      if (!publicUrl) {
+        throw new Error('Réponse upload sans publicUrl')
+      }
+      const patch = await fetch(
+        `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(selectedVersionId)}/image-slot`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sectionId,
+            slotId,
+            resolved: { imageUrl: publicUrl, source: 'upload' },
+          }),
+        },
+      )
+      const patchBody = (await patch.json().catch(() => ({}))) as { message?: string }
+      if (!patch.ok) {
+        const msg = patchBody?.message
+        throw new Error(typeof msg === 'string' ? msg : `patch ${patch.status}`)
+      }
+      setMessage(`Image liée — ${sectionId} / ${slotId}`)
+      load()
+      loadVersionDetail(selectedVersionId)
+    } catch (e) {
+      setErr((e as Error).message)
+    } finally {
+      setSlotUploadingKey(null)
     }
   }
 
@@ -624,6 +921,30 @@ export function LandingEditorProjectPage() {
                     <code>props</code> / <code>media</code>, puis dérive <code>imageSlots</code> (purpose, génération). Nécessite
                     une structure déjà appliquée.
                   </p>
+                  <div className="le__visual-brief">
+                    <label className="le__label">
+                      Brief visuel global (<code>globals.visualBrief</code>)
+                      <textarea
+                        className="le__textarea"
+                        rows={4}
+                        value={visualBriefDraft}
+                        disabled={busy}
+                        onChange={(e) => setVisualBriefDraft(e.target.value)}
+                        placeholder="Ton, ambiance, cohérence avec le jeu — utilisé pour assembler les prompts image."
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      className="le__btn le__btn--secondary"
+                      disabled={busy}
+                      onClick={() => void saveVisualBrief()}
+                    >
+                      {busy ? '…' : 'Enregistrer le brief visuel'}
+                    </button>
+                    <p className="le__muted le__visual-brief-hint">
+                      Enregistre dans Mongo sans relancer Grok. Laisser vide puis enregistrer retire le champ.
+                    </p>
+                  </div>
                   <div className="le__populate-flags">
                     <label className="le__check-label le__check-label--block">
                       <input
@@ -693,14 +1014,6 @@ export function LandingEditorProjectPage() {
                         >
                           {busy ? '…' : 'Pousser les imageUrl existantes vers S3'}
                         </button>
-                        <button
-                          type="button"
-                          className="le__btn le__btn--secondary"
-                          disabled={busy}
-                          onClick={() => runGenerateHeroS3()}
-                        >
-                          {busy ? '…' : 'Hero seul (Imagine → S3)'}
-                        </button>
                       </div>
                     </div>
                   ) : (
@@ -708,6 +1021,45 @@ export function LandingEditorProjectPage() {
                       S3 non configuré : configure les variables dans l’API pour activer Imagine → S3.
                     </p>
                   )}
+                  {imageSlotRows.length > 0 ? (
+                    <div className="le__image-slots">
+                      <h3 className="le__h3">Slots image</h3>
+                      <p className="le__muted">
+                        Liste dérivée de <code>imageSlots</code> (après remplissage). Upload : stockage S3 puis liaison au slot (
+                        <code>PATCH …/image-slot</code>).
+                      </p>
+                      <ul className="le__slot-list">
+                        {imageSlotRows.map((row) => {
+                          const rowKey = `${row.sectionId}:${row.slotId}`
+                          const uploading = slotUploadingKey === rowKey
+                          return (
+                            <ImageSlotRowBlock
+                              key={rowKey}
+                              row={row}
+                              projectId={projectId!}
+                              versionId={selectedVersionId!}
+                              storageReady={!!storageStatus?.storageReady}
+                              disabled={busy}
+                              uploading={uploading}
+                              onUpload={(file) => void uploadAndAssignSlot(row.sectionId, row.slotId, file)}
+                              onReload={() => {
+                                load()
+                                loadVersionDetail(selectedVersionId!)
+                              }}
+                              onMessage={(s) => {
+                                setMessage(s)
+                                setErr(null)
+                              }}
+                              onError={(s) => {
+                                setErr(s)
+                                setMessage(null)
+                              }}
+                            />
+                          )
+                        })}
+                      </ul>
+                    </div>
+                  ) : null}
                   {Array.isArray(versionDetail.content?.sections) &&
                   (versionDetail.content?.sections as unknown[]).length > 0 ? (
                     <p className="le__muted le__populate-meta">
