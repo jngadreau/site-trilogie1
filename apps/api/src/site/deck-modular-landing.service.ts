@@ -25,6 +25,7 @@ import { readDeckSectionSpecsBundle } from './deck-section-specs.util';
 import { extractFirstJsonObject } from './json-extract.util';
 import { DECK_LANDING_SECTION_ORDER, type DeckLandingSectionId } from './deck-landing-section-order';
 import { DECK_SECTION_CATALOG_FR } from './deck-section-catalog-fr';
+import { DECK_VARIANT_CHOICES } from './deck-landing-variant-choices';
 
 /** Slugs deck « Arbre de vie » : préfixe + segment(s) alphanumériques tiretés. */
 const ARBRE_DE_VIE_SLUG_RE = /^arbre-de-vie-[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -33,30 +34,7 @@ const SECTION_KEYS = DECK_LANDING_SECTION_ORDER;
 
 type SectionKey = (typeof DECK_LANDING_SECTION_ORDER)[number];
 
-const VARIANT_CHOICES: Record<SectionKey, readonly string[]> = {
-  hero: [
-    'HeroSplitImageRight',
-    'HeroFullBleed',
-    'HeroGlowVault',
-    'HeroParallaxLayers',
-    'HeroCardsFan',
-    'HeroCardsStrip',
-    'HeroCardsMosaic',
-  ],
-  deck_identity: ['IdentityPanel', 'IdentityMinimal'],
-  for_who: ['ForWhoTwoColumns', 'ForWhoPillars'],
-  outcomes: ['OutcomesBentoGrid', 'OutcomesSignalStrip'],
-  how_to_use: ['HowToNumbered', 'HowToTimeline'],
-  in_the_box: ['IncludedChecklist', 'IncludedHighlightGrid'],
-  card_gallery: ['CardGalleryGrid', 'CardGalleryScroll'],
-  photo_gallery: ['PhotoSpotlightGrid', 'PhotoFilmstripRow'],
-  faq: ['FaqAccordion', 'FaqTwoColumn'],
-  creator: ['CreatorSpotlight', 'CreatorQuoteBand'],
-  testimonials: ['TestimonialStrip', 'TestimonialSpotlight'],
-  newsletter_cta: ['NewsletterInline', 'NewsletterSplit'],
-  related_decks: ['RelatedDecksGrid', 'RelatedDecksInline'],
-  cta_band: ['CtaMarqueeRibbon', 'CtaSplitAction'],
-};
+const VARIANT_CHOICES = DECK_VARIANT_CHOICES;
 
 @Injectable()
 export class DeckModularLandingService {

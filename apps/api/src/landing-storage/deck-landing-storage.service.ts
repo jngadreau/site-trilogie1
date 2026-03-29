@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -8,6 +9,8 @@ import { Connection, Model, Types } from 'mongoose';
 import type { CreateDeckLandingProjectDto } from './dto/create-deck-landing-project.dto';
 import type { CreateDeckLandingVersionDto } from './dto/create-deck-landing-version.dto';
 import type { UpdateDeckLandingProjectDto } from './dto/update-deck-landing-project.dto';
+import type { UpdateDeckLandingVersionDto } from './dto/update-deck-landing-version.dto';
+import { LandingStructureWizardService } from './landing-structure-wizard.service';
 import {
   DeckLandingProject,
   type DeckLandingProjectDocument,
@@ -25,6 +28,7 @@ export class DeckLandingStorageService {
     private readonly projectModel: Model<DeckLandingProjectDocument>,
     @InjectModel(DeckLandingVersion.name)
     private readonly versionModel: Model<DeckLandingVersionDocument>,
+    private readonly structureWizard: LandingStructureWizardService,
   ) {}
 
   mongoConnected(): boolean {
@@ -151,5 +155,64 @@ export class DeckLandingStorageService {
     const v = await this.versionModel.findById(versionId).lean().exec();
     if (!v) throw new NotFoundException('Version introuvable');
     return v;
+  }
+
+  /** Vérifie que la version appartient au projet. */
+  async assertVersionBelongsToProject(projectId: string, versionId: string) {
+    const v = await this.getVersion(versionId);
+    const pid = String(v.projectId);
+    if (pid !== projectId) {
+      throw new BadRequestException('Cette version n’appartient pas à ce projet');
+    }
+    return v;
+  }
+
+  async updateVersion(versionId: string, dto: UpdateDeckLandingVersionDto) {
+    if (!Types.ObjectId.isValid(versionId)) {
+      throw new NotFoundException('Identifiant version invalide');
+    }
+    const v = await this.versionModel.findById(versionId).exec();
+    if (!v) throw new NotFoundException('Version introuvable');
+
+    const proj = await this.projectModel.findById(v.projectId).lean().exec();
+    if (!proj) throw new NotFoundException('Projet introuvable');
+
+    if (dto.label !== undefined) {
+      v.label = dto.label;
+    }
+    if (dto.sectionOrder !== undefined) {
+      v.sectionOrder = dto.sectionOrder;
+    }
+    if (dto.variantsBySection !== undefined) {
+      v.variantsBySection = dto.variantsBySection;
+    }
+
+    const order = v.sectionOrder;
+    const variants = v.variantsBySection as Record<string, string>;
+    const complete =
+      order.length > 0 && order.every((id) => typeof variants[id] === 'string' && variants[id].length > 0);
+
+    const rebuild =
+      complete &&
+      (dto.rebuildContentSections !== false) &&
+      (dto.sectionOrder !== undefined || dto.variantsBySection !== undefined);
+
+    if (complete) {
+      this.structureWizard.validateStructure(order, variants);
+    }
+
+    if (rebuild) {
+      const prev = v.content as Record<string, unknown>;
+      const slug = typeof prev.slug === 'string' && prev.slug ? prev.slug : proj.slug;
+      v.content = {
+        ...prev,
+        version: typeof prev.version === 'number' ? prev.version : 1,
+        slug,
+        sections: this.structureWizard.buildContentSections(order, variants, slug),
+      } as Record<string, unknown>;
+    }
+
+    await v.save();
+    return v.toJSON();
   }
 }

@@ -13,8 +13,11 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateDeckLandingProjectDto } from './dto/create-deck-landing-project.dto';
 import { CreateDeckLandingVersionDto } from './dto/create-deck-landing-version.dto';
+import { SuggestLandingStructureDto } from './dto/suggest-landing-structure.dto';
 import { UpdateDeckLandingProjectDto } from './dto/update-deck-landing-project.dto';
+import { UpdateDeckLandingVersionDto } from './dto/update-deck-landing-version.dto';
 import { DeckLandingStorageService } from './deck-landing-storage.service';
+import { LandingStructureWizardService } from './landing-structure-wizard.service';
 import { S3AssetsService } from './s3-assets.service';
 
 const MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
@@ -24,6 +27,7 @@ export class LandingStorageController {
   constructor(
     private readonly storage: DeckLandingStorageService,
     private readonly s3: S3AssetsService,
+    private readonly structureWizard: LandingStructureWizardService,
   ) {}
 
   /** Santé connexion Mongo + présence config S3 (clés présentes). */
@@ -77,6 +81,34 @@ export class LandingStorageController {
   @Get('versions/:versionId')
   async getVersion(@Param('versionId') versionId: string) {
     return this.storage.getVersion(versionId);
+  }
+
+  @Patch('projects/:projectId/versions/:versionId')
+  async patchVersion(
+    @Param('projectId') projectId: string,
+    @Param('versionId') versionId: string,
+    @Body() dto: UpdateDeckLandingVersionDto,
+  ) {
+    await this.storage.assertVersionBelongsToProject(projectId, versionId);
+    return this.storage.updateVersion(versionId, dto);
+  }
+
+  /**
+   * Grok : propose sectionOrder + variants (sous-ensemble, ordre libre). Ne persiste pas.
+   */
+  @Post('projects/:projectId/versions/:versionId/suggest-structure')
+  async suggestStructure(
+    @Param('projectId') projectId: string,
+    @Param('versionId') versionId: string,
+    @Body() dto: SuggestLandingStructureDto,
+  ) {
+    await this.storage.assertVersionBelongsToProject(projectId, versionId);
+    const proj = await this.storage.getProject(projectId);
+    return this.structureWizard.suggestStructureAuto({
+      gameKey: proj.gameKey,
+      projectSlug: proj.slug,
+      brief: dto?.brief,
+    });
   }
 
   @Post('projects/:projectId/versions/:versionId/assets')

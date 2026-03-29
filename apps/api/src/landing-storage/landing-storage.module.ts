@@ -12,6 +12,7 @@ import {
   DeckLandingVersionSchema,
 } from './schemas/deck-landing-version.schema';
 import { S3AssetsService } from './s3-assets.service';
+import { LandingStructureWizardService } from './landing-structure-wizard.service';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { S3AssetsService } from './s3-assets.service';
     ]),
   ],
   controllers: [LandingStorageController],
-  providers: [DeckLandingStorageService, S3AssetsService],
-  exports: [DeckLandingStorageService, S3AssetsService],
+  providers: [DeckLandingStorageService, S3AssetsService, LandingStructureWizardService],
+  exports: [DeckLandingStorageService, S3AssetsService, LandingStructureWizardService],
 })
 export class LandingStorageModule {}
