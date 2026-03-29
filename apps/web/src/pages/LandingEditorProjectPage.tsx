@@ -136,6 +136,26 @@ function ImageSlotRowBlock(props: {
   const [applyingScene, setApplyingScene] = useState(false)
   const [patchingModel, setPatchingModel] = useState(false)
   const [copyingPrompt, setCopyingPrompt] = useState(false)
+  const [generatingImagine, setGeneratingImagine] = useState(false)
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null)
+  const [applyingLanding, setApplyingLanding] = useState(false)
+  /** URL juste renvoyée par Imagine — jusqu’à ce que le rechargement aligne `row.resolvedUrl`. */
+  const [freshGeneratedUrl, setFreshGeneratedUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (freshGeneratedUrl && row.resolvedUrl === freshGeneratedUrl) {
+      setFreshGeneratedUrl(null)
+    }
+  }, [row.resolvedUrl, freshGeneratedUrl])
+
+  useEffect(() => {
+    if (!lightboxUrl) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightboxUrl(null)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [lightboxUrl])
 
   async function savePrimaryModel(m: 'grok_imagine' | 'midjourney' | 'none') {
     setPatchingModel(true)
@@ -312,6 +332,85 @@ function ImageSlotRowBlock(props: {
     }
   }
 
+  async function generateImagineToS3() {
+    const sd = sceneDraft.trim()
+    if (!sd) {
+      onError('Saisis une description de scène avant de générer.')
+      return
+    }
+    setGeneratingImagine(true)
+    onError('')
+    try {
+      const r = await fetch(
+        `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(versionId)}/generate-image-slot-imagine-s3`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sectionId: row.sectionId,
+            slotId: row.slotId,
+            sceneDescription: sd,
+          }),
+        },
+      )
+      const body = (await r.json().catch(() => ({}))) as {
+        message?: string
+        publicUrl?: string
+        model?: string
+      }
+      if (!r.ok) {
+        const msg = body?.message
+        throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
+      }
+      const url = typeof body.publicUrl === 'string' ? body.publicUrl : ''
+      if (!url) {
+        throw new Error('Réponse sans publicUrl')
+      }
+      setFreshGeneratedUrl(url)
+      onMessage(
+        `Image générée (${typeof body.model === 'string' ? body.model : 'Imagine'}) — enregistrée pour ce slot.`,
+      )
+      onReload()
+    } catch (err) {
+      onError((err as Error).message)
+    } finally {
+      setGeneratingImagine(false)
+    }
+  }
+
+  async function applyImageToLanding(imageUrl: string) {
+    const u = imageUrl.trim()
+    if (!u) return
+    setApplyingLanding(true)
+    onError('')
+    try {
+      const r = await fetch(
+        `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(versionId)}/image-slot`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sectionId: row.sectionId,
+            slotId: row.slotId,
+            resolved: { imageUrl: u, source: 'grok_imagine' },
+          }),
+        },
+      )
+      const body = (await r.json().catch(() => ({}))) as { message?: string }
+      if (!r.ok) {
+        const msg = body?.message
+        throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
+      }
+      onMessage('Image appliquée sur la landing (sections + slot).')
+      setFreshGeneratedUrl(null)
+      onReload()
+    } catch (err) {
+      onError((err as Error).message)
+    } finally {
+      setApplyingLanding(false)
+    }
+  }
+
   async function saveAlt(e: FormEvent) {
     e.preventDefault()
     const a = altDraft.trim()
@@ -413,6 +512,33 @@ function ImageSlotRowBlock(props: {
           </button>
         </div>
       </form>
+      <div className="le__slot-imagine-block">
+        <button
+          type="button"
+          className="le__btn le__btn--small"
+          disabled={
+            disabled ||
+            generatingImagine ||
+            !storageReady ||
+            (row.primaryModel ?? 'grok_imagine') === 'none' ||
+            !sceneDraft.trim()
+          }
+          title={
+            !storageReady
+              ? 'Configure S3 côté API pour générer vers le stockage.'
+              : (row.primaryModel ?? 'grok_imagine') === 'none'
+                ? 'Modèle « Aucun » : choisis Grok Imagine pour activer la génération ici.'
+                : undefined
+          }
+          onClick={() => void generateImagineToS3()}
+        >
+          {generatingImagine ? 'Génération…' : 'Générer l’image (Imagine → S3)'}
+        </button>
+        <p className="le__muted le__slot-imagine-hint">
+          Utilise le texte ci-dessus comme scène (enregistré dans la version avec l’image). Nécessite S3 et le service
+          Imagine côté API.
+        </p>
+      </div>
       {row.promptAlternatives && row.promptAlternatives.length > 0 ? (
         <div className="le__slot-alt-prompts">
           <p className="le__muted le__slot-alt-prompts-title">Variantes enregistrées (Mongo)</p>
@@ -443,9 +569,54 @@ function ImageSlotRowBlock(props: {
           </ol>
         </div>
       ) : null}
+      {freshGeneratedUrl || row.resolvedUrl ? (
+        <div className="le__slot-result">
+          <p className="le__muted le__slot-result-label">Image du slot</p>
+          <div className="le__slot-result-preview">
+            <button
+              type="button"
+              className="le__slot-result-img-btn"
+              onClick={() => setLightboxUrl(freshGeneratedUrl || row.resolvedUrl || null)}
+              title="Voir en grand"
+            >
+              <img
+                src={freshGeneratedUrl || row.resolvedUrl}
+                alt={row.resolvedAlt || 'Image du slot'}
+                className="le__slot-result-img"
+              />
+            </button>
+            <div className="le__slot-result-actions">
+              <button
+                type="button"
+                className="le__btn le__btn--small le__btn--secondary"
+                onClick={() => setLightboxUrl(freshGeneratedUrl || row.resolvedUrl || null)}
+              >
+                Voir en grand
+              </button>
+              <button
+                type="button"
+                className="le__btn le__btn--small le__btn--secondary"
+                disabled={disabled || applyingLanding}
+                onClick={() => void onReload()}
+              >
+                Actualiser l’aperçu
+              </button>
+              <button
+                type="button"
+                className="le__btn le__btn--small"
+                disabled={disabled || applyingLanding || !(freshGeneratedUrl || row.resolvedUrl)}
+                title="Réécrit l’URL dans les sections et le slot (utile si l’aperçu ne suit pas)."
+                onClick={() => void applyImageToLanding(freshGeneratedUrl || row.resolvedUrl || '')}
+              >
+                {applyingLanding ? '…' : 'Utiliser sur la landing'}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
       <div className="le__slot-body">
-        {row.resolvedUrl ? (
-          <img className="le__slot-thumb" src={row.resolvedUrl} alt={row.resolvedAlt || ''} />
+        {freshGeneratedUrl || row.resolvedUrl ? (
+          <div className="le__slot-thumb le__slot-thumb--empty le__slot-thumb--note">Aperçu ci-dessus</div>
         ) : (
           <div className="le__slot-thumb le__slot-thumb--empty">Aperçu</div>
         )}
@@ -485,6 +656,24 @@ function ImageSlotRowBlock(props: {
           ) : null}
         </div>
       </div>
+      {lightboxUrl ? (
+        <div
+          className="le__lightbox-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Image en grand"
+          onClick={() => setLightboxUrl(null)}
+        >
+          <div className="le__lightbox-inner" onClick={(e) => e.stopPropagation()}>
+            <div className="le__lightbox-bar">
+              <button type="button" className="le__btn le__btn--small le__btn--secondary" onClick={() => setLightboxUrl(null)}>
+                Fermer
+              </button>
+            </div>
+            <img src={lightboxUrl} alt={row.resolvedAlt || 'Image'} className="le__lightbox-img" />
+          </div>
+        </div>
+      ) : null}
     </li>
   )
 }
@@ -1057,11 +1246,99 @@ export function LandingEditorProjectPage() {
   const showPreviewPane = Boolean(selectedVersionId && (editorLayout === 'split' || editorLayout === 'preview'))
   const showEditorPane =
     !selectedVersionId || editorLayout !== 'preview' || !previewLanding
+  const chromeInSidePanel = Boolean(
+    selectedVersionId && (editorLayout === 'split' || editorLayout === 'panel'),
+  )
+  const chromeAbovePreviewOnly = Boolean(selectedVersionId && editorLayout === 'preview')
+
+  const layoutToggleEl = showLayoutToggle ? (
+    <div className="le__layout-toggle" role="group" aria-label="Mode d’affichage éditeur">
+      <span className="le__layout-toggle-label">Aperçu</span>
+      <label className="le__radio le__radio--inline">
+        <input
+          type="radio"
+          name="le-editor-layout"
+          checked={editorLayout === 'split'}
+          onChange={() => setEditorLayout('split')}
+        />
+        Split
+      </label>
+      <label className="le__radio le__radio--inline">
+        <input
+          type="radio"
+          name="le-editor-layout"
+          checked={editorLayout === 'panel'}
+          onChange={() => setEditorLayout('panel')}
+        />
+        Panneau
+      </label>
+      <label className="le__radio le__radio--inline">
+        <input
+          type="radio"
+          name="le-editor-layout"
+          checked={editorLayout === 'preview'}
+          onChange={() => setEditorLayout('preview')}
+        />
+        Aperçu seul
+      </label>
+    </div>
+  ) : null
+
+  const newVersionButton = (
+    <button type="button" className="le__btn le__btn--secondary" disabled={busy} onClick={() => addDraftVersion()}>
+      {busy ? '…' : 'Nouvelle version'}
+    </button>
+  )
+
+  const versionList = (
+    <>
+      {newVersionButton}
+      {versions.length === 0 ? (
+        <p className="le__muted">Aucune version.</p>
+      ) : (
+        <ul className="le__list">
+          {versions.map((v) => {
+            const active = selectedVersionId === v._id
+            return (
+              <li key={v._id} className="le__list-item">
+                <button
+                  type="button"
+                  className={active ? 'le__version-pick le__version-pick--on' : 'le__version-pick'}
+                  onClick={() => setSelectedVersionId(v._id)}
+                >
+                  <span className="le__pill">{v.status}</span> v{v.versionNumber}
+                  {v.label ? <span className="le__muted"> — {v.label}</span> : null}
+                  {v.createdAt ? (
+                    <span className="le__muted le__list-meta"> · {new Date(v.createdAt).toLocaleString()}</span>
+                  ) : null}
+                </button>
+                <code className="le__mono"> {v._id}</code>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </>
+  )
+
+  const panelMeta = project ? (
+    <p className="le__panel-meta">
+      <code className="le__mono">{project.slug}</code>
+      <span className="le__muted"> · jeu </span>
+      <code className="le__mono">{project.gameKey}</code>
+      {project.title ? (
+        <>
+          <span className="le__muted"> — </span>
+          {project.title}
+        </>
+      ) : null}
+    </p>
+  ) : null
 
   return (
     <div className={`le${selectedVersionId ? ' le--fluid' : ''}`}>
-      <header className="le__head">
-        <h1 className="le__title">Projet landing</h1>
+      <header className={`le__head${selectedVersionId ? ' le__head--tight' : ''}`}>
+        <h1 className={`le__title${selectedVersionId ? ' le__title--sm' : ''}`}>Projet landing</h1>
         <nav className="le__nav">
           <Link to="/admin/landing-editor">← Liste</Link>
           <Link to="/admin">Admin</Link>
@@ -1075,83 +1352,35 @@ export function LandingEditorProjectPage() {
 
       {project ? (
         <>
-          <section className="le__section">
-            <h2>
-              <code>{project.slug}</code>
-            </h2>
-            <p className="le__muted">
-              Jeu : <code>{project.gameKey}</code>
-            </p>
-            {project.title ? <p>{project.title}</p> : null}
-            {project.description ? <p className="le__desc">{project.description}</p> : null}
-          </section>
+          {!selectedVersionId ? (
+            <>
+              <section className="le__section">
+                <h2>
+                  <code>{project.slug}</code>
+                </h2>
+                <p className="le__muted">
+                  Jeu : <code>{project.gameKey}</code>
+                </p>
+                {project.title ? <p>{project.title}</p> : null}
+                {project.description ? <p className="le__desc">{project.description}</p> : null}
+              </section>
 
-          <section className="le__section">
-            <h2>Versions</h2>
-            <p className="le__muted">
-              Sélectionne une version pour l’étape <strong>Structure</strong> (Grok automatique ou cases à cocher). Les
-              sections ne sont pas obligatoirement toutes présentes ni dans l’ordre catalogue.
-            </p>
-            <button type="button" className="le__btn le__btn--secondary" disabled={busy} onClick={() => addDraftVersion()}>
-              {busy ? '…' : 'Nouvelle version (JSON vide)'}
-            </button>
-            {versions.length === 0 ? (
-              <p className="le__muted">Aucune version.</p>
-            ) : (
-              <ul className="le__list">
-                {versions.map((v) => {
-                  const active = selectedVersionId === v._id
-                  return (
-                    <li key={v._id} className="le__list-item">
-                      <button
-                        type="button"
-                        className={active ? 'le__version-pick le__version-pick--on' : 'le__version-pick'}
-                        onClick={() => setSelectedVersionId(v._id)}
-                      >
-                        <span className="le__pill">{v.status}</span> v{v.versionNumber}
-                        {v.label ? <span className="le__muted"> — {v.label}</span> : null}
-                        {v.createdAt ? (
-                          <span className="le__muted le__list-meta"> · {new Date(v.createdAt).toLocaleString()}</span>
-                        ) : null}
-                      </button>
-                      <code className="le__mono"> {v._id}</code>
-                    </li>
-                  )
-                })}
-              </ul>
-            )}
-          </section>
+              <section className="le__section">
+                <h2>Versions</h2>
+                <p className="le__muted">
+                  Sélectionne une version pour l’étape <strong>Structure</strong> (Grok automatique ou cases à cocher). Les
+                  sections ne sont pas obligatoirement toutes présentes ni dans l’ordre catalogue.
+                </p>
+                {versionList}
+              </section>
+            </>
+          ) : null}
 
-          {showLayoutToggle ? (
-            <div className="le__layout-toggle" role="group" aria-label="Mode d’affichage éditeur">
-              <span className="le__layout-toggle-label">Aperçu intégré</span>
-              <label className="le__radio le__radio--inline">
-                <input
-                  type="radio"
-                  name="le-editor-layout"
-                  checked={editorLayout === 'split'}
-                  onChange={() => setEditorLayout('split')}
-                />
-                Split (aperçu + panneau)
-              </label>
-              <label className="le__radio le__radio--inline">
-                <input
-                  type="radio"
-                  name="le-editor-layout"
-                  checked={editorLayout === 'panel'}
-                  onChange={() => setEditorLayout('panel')}
-                />
-                Panneau seul
-              </label>
-              <label className="le__radio le__radio--inline">
-                <input
-                  type="radio"
-                  name="le-editor-layout"
-                  checked={editorLayout === 'preview'}
-                  onChange={() => setEditorLayout('preview')}
-                />
-                Aperçu seul
-              </label>
+          {chromeAbovePreviewOnly ? (
+            <div className="le__preview-chrome">
+              {panelMeta}
+              <div className="le__preview-chrome-versions">{versionList}</div>
+              {layoutToggleEl}
             </div>
           ) : null}
 
@@ -1173,6 +1402,7 @@ export function LandingEditorProjectPage() {
                 {previewLanding ? (
                   <DeckLandingView
                     data={previewLanding}
+                    fillViewport={false}
                     header={
                       <nav className="dl-topbar__nav" aria-label="Aperçu">
                         <Link
@@ -1201,8 +1431,17 @@ export function LandingEditorProjectPage() {
                     : 'le__editor-single-inner'
               }
             >
+              {chromeInSidePanel ? (
+                <div className="le__panel-top">
+                  {panelMeta}
+                  {versionList}
+                  {layoutToggleEl}
+                </div>
+              ) : null}
           {selectedVersionId && versionDetail ? (
-            <section className="le__section le__section--wizard">
+            <section
+              className={`le__section le__section--wizard${chromeInSidePanel ? ' le__section--after-panel-top' : ''}`}
+            >
               <h2>Étape structure — version v{versionDetail.versionNumber}</h2>
 
               <fieldset className="le__fieldset">

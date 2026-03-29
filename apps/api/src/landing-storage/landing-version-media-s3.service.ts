@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { readFile, unlink } from 'node:fs/promises';
@@ -18,6 +19,7 @@ import {
 } from './deck-landing-mongo-media-slot-patch';
 import { DeckLandingStorageService } from './deck-landing-storage.service';
 import { appendLandingImageHistory } from './landing-image-history.util';
+import { normalizeImageSlotsInLandingDoc } from './landing-image-slots-normalize';
 import { S3AssetsService } from './s3-assets.service';
 
 function isRecord(x: unknown): x is Record<string, unknown> {
@@ -39,6 +41,127 @@ export class LandingVersionMediaS3Service {
    * Pour chaque entrée `media` avec `sceneDescription`, Imagine → stockage → props si mappé.
    * Hero bannière : si aucun slot `hero` utilisable dans `media`, repli sur `imagePrompts.hero` (comme tout slot).
    */
+  /**
+   * Imagine → S3 pour un seul slot (corps : sectionId, slotId, sceneDescription optionnelle).
+   * Met à jour props, `imageSlots[].resolved`, historique ; fusionne le document version.
+   */
+  async generateSingleImagineMediaToS3(
+    projectId: string,
+    versionId: string,
+    dto: { sectionId: string; slotId: string; sceneDescription?: string },
+  ): Promise<{ publicUrl: string; model: string; prompt: string }> {
+    await this.storage.assertVersionBelongsToProject(projectId, versionId);
+    if (!this.s3.isReady()) {
+      throw new BadRequestException('S3 non configuré');
+    }
+
+    const v = await this.storage.getVersion(versionId);
+    const content = JSON.parse(JSON.stringify(v.content ?? {})) as Record<string, unknown>;
+    normalizeImageSlotsInLandingDoc(content);
+
+    const sections = content.sections;
+    if (!Array.isArray(sections)) {
+      throw new BadRequestException('content.sections manquant ou invalide');
+    }
+
+    const globals = content.globals;
+    if (!globals || typeof globals !== 'object') {
+      throw new BadRequestException('content.globals manquant');
+    }
+    const g = globals as DeckLandingGlobals;
+
+    const slug = typeof content.slug === 'string' && content.slug ? content.slug : 'deck';
+    const sectionId = dto.sectionId.trim();
+    const slotId = dto.slotId.trim();
+
+    const sec = sections.find((s) => isRecord(s) && s.id === sectionId);
+    if (!sec || !isRecord(sec)) {
+      throw new NotFoundException(`Section absente : ${sectionId}`);
+    }
+
+    const variant = typeof sec.variant === 'string' ? sec.variant : '';
+
+    if (sectionId === 'hero' && !HERO_VARIANTS_WITH_IMAGINE_BANNER.has(variant)) {
+      throw new BadRequestException(`Variante hero « ${variant} » sans bannière Imagine`);
+    }
+
+    const mediaList = Array.isArray(sec.media) ? sec.media : [];
+    const rawSlot = mediaList.find((m) => {
+      if (!isRecord(m)) return false
+      const sid = typeof m.slotId === 'string' ? m.slotId.trim() : ''
+      return sid === slotId
+    })
+    if (!rawSlot || !isRecord(rawSlot)) {
+      throw new BadRequestException(`Slot média absent : ${sectionId} / ${slotId}`);
+    }
+
+    const slot: DeckSectionMediaSlotV1 = { ...(rawSlot as unknown as DeckSectionMediaSlotV1) };
+    const override = dto.sceneDescription?.trim();
+    if (override) {
+      slot.sceneDescription = override;
+      rawSlot.sceneDescription = override;
+    }
+
+    if (!slot.sceneDescription?.trim()) {
+      throw new BadRequestException('Description de scène vide — saisis un texte ou enregistre la scène.');
+    }
+
+    const secProbe = JSON.parse(JSON.stringify(sec)) as Record<string, unknown>;
+    if (
+      !applySlotImageUrlToSectionContent(
+        secProbe,
+        sectionId,
+        variant,
+        slot,
+        '__probe__',
+      )
+    ) {
+      throw new BadRequestException(
+        'Emplacement JSON non mappé pour ce slot (variante ou slotId) — pas de génération Imagine.',
+      );
+    }
+
+    const r = await this.imagineSlotToS3(projectId, versionId, slug, g, slot, sectionId);
+    const applied = applySlotImageUrlToSectionContent(sec, sectionId, variant, slot, r.publicUrl);
+    if (!applied) {
+      throw new InternalServerErrorException('Application image refusée après génération');
+    }
+
+    const imageSlots = Array.isArray(sec.imageSlots) ? sec.imageSlots : [];
+    const slotDef = imageSlots.find(
+      (x) => isRecord(x) && (x as { slotId?: string }).slotId === slotId,
+    );
+    if (slotDef && isRecord(slotDef)) {
+      slotDef.resolved = {
+        imageUrl: r.publicUrl,
+        source: 'grok_imagine',
+      };
+      if (override) {
+        slotDef.sceneDescription = override;
+      }
+    }
+
+    if (sectionId === 'hero' && slotId === 'hero') {
+      const prevPrompts =
+        content.imagePrompts && typeof content.imagePrompts === 'object'
+          ? (content.imagePrompts as Record<string, unknown>)
+          : {};
+      content.imagePrompts = { ...prevPrompts, hero: r.prompt };
+    }
+
+    appendLandingImageHistory(content, sectionId, slotId, {
+      id: randomUUID(),
+      imageUrl: r.publicUrl,
+      prompt: r.prompt,
+      model: r.model,
+      createdAt: new Date().toISOString(),
+    });
+
+    await this.storage.mergePopulatedLandingDocument(versionId, content);
+
+    return { publicUrl: r.publicUrl, model: r.model, prompt: r.prompt };
+  }
+
   async generateAllImagineMediaToS3(
     projectId: string,
     versionId: string,
@@ -407,6 +530,16 @@ export class LandingVersionMediaS3Service {
       if (!applied) {
         skipped.push({ sectionId, slotId, reason: 'application props refusée après génération' });
         return;
+      }
+      const imageSlots = Array.isArray(sec.imageSlots) ? sec.imageSlots : [];
+      const slotDef = imageSlots.find(
+        (x) => isRecord(x) && (x as { slotId?: string }).slotId === slotId,
+      );
+      if (slotDef && isRecord(slotDef)) {
+        slotDef.resolved = {
+          imageUrl: r.publicUrl,
+          source: 'grok_imagine',
+        };
       }
       if (sectionId === 'hero' && slotId === 'hero') {
         const prevPrompts =

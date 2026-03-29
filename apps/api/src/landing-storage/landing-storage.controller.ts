@@ -23,6 +23,7 @@ import { UpdateDeckLandingVersionDto } from './dto/update-deck-landing-version.d
 import { PopulateDeckLandingVersionDto } from './dto/populate-deck-landing-version.dto';
 import { PatchDeckLandingContentGlobalsDto } from './dto/patch-deck-landing-content-globals.dto';
 import { PatchDeckLandingImageSlotDto } from './dto/patch-deck-landing-image-slot.dto';
+import { GenerateImageSlotImagineS3Dto } from './dto/generate-image-slot-imagine-s3.dto';
 import { SuggestPromptAlternativesDto } from './dto/suggest-prompt-alternatives.dto';
 import { DeckLandingStorageService } from './deck-landing-storage.service';
 import { LandingContentPopulateService } from './landing-content-populate.service';
@@ -239,6 +240,21 @@ export class LandingStorageController {
     @Param('versionId') versionId: string,
   ) {
     return this.mediaS3.generateAllImagineMediaToS3(projectId, versionId);
+  }
+
+  /** Un slot : Imagine → S3 → props + `imageSlots.resolved` (body : sectionId, slotId, sceneDescription?). */
+  @Post('projects/:projectId/versions/:versionId/generate-image-slot-imagine-s3')
+  async generateImageSlotImagineS3(
+    @Param('projectId') projectId: string,
+    @Param('versionId') versionId: string,
+    @Body() dto: GenerateImageSlotImagineS3Dto,
+  ) {
+    await this.storage.assertVersionBelongsToProject(projectId, versionId);
+    return this.mediaS3.generateSingleImagineMediaToS3(projectId, versionId, {
+      sectionId: dto.sectionId,
+      slotId: dto.slotId,
+      sceneDescription: dto.sceneDescription,
+    });
   }
 
   /**

@@ -52,7 +52,7 @@ export function SectionDemoPage() {
   const label = SECTION_LABELS_FR[sectionType]
 
   return (
-    <div className="deck-landing section-demo" style={style}>
+    <div className="deck-landing-root deck-landing-root--fill-viewport section-demo" style={style}>
       <header className="section-demo__top">
         <h1>Démos sections</h1>
         <nav className="section-demo__nav" aria-label="Navigation site">

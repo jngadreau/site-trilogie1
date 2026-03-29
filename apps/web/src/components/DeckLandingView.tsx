@@ -7,9 +7,14 @@ type Props = {
   data: DeckModularLandingV1
   /** Barre du haut (navigation, slug, etc.) */
   header?: ReactNode
+  /**
+   * `true` : `min-height: 100vh` sur la racine (routes `/deck/…`, aperçu plein écran).
+   * `false` : hauteur suivant le contenu (split éditeur, iframe, embed sans héritage body).
+   */
+  fillViewport?: boolean
 }
 
-export function DeckLandingView({ data, header }: Props) {
+export function DeckLandingView({ data, header, fillViewport = true }: Props) {
   useEffect(() => {
     if (!data?.globals.fontImportHref) return
     const id = `deck-fonts-${data.slug}`
@@ -37,11 +42,24 @@ export function DeckLandingView({ data, header }: Props) {
     ['--dl-radius' as string]: g.radius ?? '12px',
   }
 
+  const rootClass = [
+    'deck-landing-root',
+    pageBgUrl ? 'deck-landing-root--has-page-bg' : '',
+    fillViewport ? 'deck-landing-root--fill-viewport' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
   return (
-    <div className={`deck-landing${pageBgUrl ? ' deck-landing--has-page-bg' : ''}`} style={style}>
+    <div
+      className={rootClass}
+      data-deck-landing-root=""
+      data-deck-slug={data.slug}
+      style={style}
+    >
       {pageBgUrl ? (
         <div
-          className="deck-landing__page-bg"
+          className="deck-landing-root__page-bg"
           aria-hidden
           style={{ backgroundImage: `url(${pageBgUrl})` }}
         />
