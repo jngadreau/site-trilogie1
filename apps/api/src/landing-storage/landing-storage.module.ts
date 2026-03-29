@@ -16,7 +16,7 @@ import {
 import { S3AssetsService } from './s3-assets.service';
 import { LandingStructureWizardService } from './landing-structure-wizard.service';
 import { LandingContentPopulateService } from './landing-content-populate.service';
-import { LandingVersionHeroS3Service } from './landing-version-hero-s3.service';
+import { LandingVersionMediaS3Service } from './landing-version-media-s3.service';
 
 @Module({
   imports: [
@@ -41,14 +41,14 @@ import { LandingVersionHeroS3Service } from './landing-version-hero-s3.service';
     S3AssetsService,
     LandingStructureWizardService,
     LandingContentPopulateService,
-    LandingVersionHeroS3Service,
+    LandingVersionMediaS3Service,
   ],
   exports: [
     DeckLandingStorageService,
     S3AssetsService,
     LandingStructureWizardService,
     LandingContentPopulateService,
-    LandingVersionHeroS3Service,
+    LandingVersionMediaS3Service,
   ],
 })
 export class LandingStorageModule {}

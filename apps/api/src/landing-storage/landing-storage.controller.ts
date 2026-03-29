@@ -21,7 +21,7 @@ import { DeckLandingStorageService } from './deck-landing-storage.service';
 import { LandingContentPopulateService } from './landing-content-populate.service';
 import { LandingStructureWizardService } from './landing-structure-wizard.service';
 import { S3AssetsService } from './s3-assets.service';
-import { LandingVersionHeroS3Service } from './landing-version-hero-s3.service';
+import { LandingVersionMediaS3Service } from './landing-version-media-s3.service';
 
 const MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
 
@@ -32,7 +32,7 @@ export class LandingStorageController {
     private readonly s3: S3AssetsService,
     private readonly structureWizard: LandingStructureWizardService,
     private readonly contentPopulate: LandingContentPopulateService,
-    private readonly heroS3: LandingVersionHeroS3Service,
+    private readonly mediaS3: LandingVersionMediaS3Service,
   ) {}
 
   /** Santé connexion Mongo + présence config S3 (clés présentes). */
@@ -117,19 +117,41 @@ export class LandingStorageController {
   }
 
   /**
-   * Grok : remplit `globals`, `imagePrompts`, `sections` (props + media) selon la structure déjà enregistrée sur la version.
-   */
-  /**
-   * Grok Imagine → fichier local → upload S3 → mise à jour `hero.props.imageUrl`, `imagePrompts.hero`, `imageHistory.hero`.
+   * Grok Imagine → S3 : uniquement le hero (`imagePrompts.hero` ou slot `media` hero).
    */
   @Post('projects/:projectId/versions/:versionId/generate-hero-s3')
   async generateHeroS3(
     @Param('projectId') projectId: string,
     @Param('versionId') versionId: string,
   ) {
-    return this.heroS3.generateHeroToS3(projectId, versionId);
+    return this.mediaS3.generateHeroToS3(projectId, versionId);
   }
 
+  /**
+   * Tous les slots `media` avec `sceneDescription` : Imagine → S3 → props (hero, creator, témoignage, grille photo, etc.).
+   */
+  @Post('projects/:projectId/versions/:versionId/generate-all-imagine-s3')
+  async generateAllImagineS3(
+    @Param('projectId') projectId: string,
+    @Param('versionId') versionId: string,
+  ) {
+    return this.mediaS3.generateAllImagineMediaToS3(projectId, versionId);
+  }
+
+  /**
+   * Remplace les `imageUrl` déjà présents (chemins API locaux, `/images/`, http(s)) par des objets S3 + URL signée.
+   */
+  @Post('projects/:projectId/versions/:versionId/hydrate-image-urls-s3')
+  async hydrateImageUrlsS3(
+    @Param('projectId') projectId: string,
+    @Param('versionId') versionId: string,
+  ) {
+    return this.mediaS3.hydrateImageUrlsToS3(projectId, versionId);
+  }
+
+  /**
+   * Grok : remplit `globals`, `imagePrompts`, `sections` (props + media) selon la structure déjà enregistrée sur la version.
+   */
   @Post('projects/:projectId/versions/:versionId/populate-content')
   async populateContent(
     @Param('projectId') projectId: string,

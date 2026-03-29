@@ -308,9 +308,16 @@
   color: #2563eb;
 }
 
-.le__hero-s3 {
+.le__media-s3 {
   margin-top: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.le__media-s3-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
 }

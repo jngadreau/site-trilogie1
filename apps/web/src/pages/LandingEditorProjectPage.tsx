@@ -281,6 +281,70 @@ export function LandingEditorProjectPage() {
     }
   }
 
+  async function runGenerateAllImagineS3() {
+    if (!projectId || !selectedVersionId) return
+    setBusy(true)
+    setErr(null)
+    setMessage(null)
+    try {
+      const r = await fetch(
+        `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(selectedVersionId)}/generate-all-imagine-s3`,
+        { method: 'POST' },
+      )
+      const body = (await r.json().catch(() => ({}))) as {
+        generated?: unknown[]
+        skipped?: { sectionId: string; slotId: string; reason: string }[]
+      }
+      if (!r.ok) {
+        const msg = (body as Record<string, unknown>)?.message
+        throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
+      }
+      const n = Array.isArray(body.generated) ? body.generated.length : 0
+      const sk = Array.isArray(body.skipped) ? body.skipped.length : 0
+      setMessage(
+        `Imagine → S3 : ${n} image(s) générée(s)${sk > 0 ? `, ${sk} slot(s) ignorée(s) ou en échec (voir réponse API).` : '.'}`,
+      )
+      load()
+      loadVersionDetail(selectedVersionId)
+    } catch (e) {
+      setErr((e as Error).message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function runHydrateImageUrlsS3() {
+    if (!projectId || !selectedVersionId) return
+    setBusy(true)
+    setErr(null)
+    setMessage(null)
+    try {
+      const r = await fetch(
+        `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(selectedVersionId)}/hydrate-image-urls-s3`,
+        { method: 'POST' },
+      )
+      const body = (await r.json().catch(() => ({}))) as {
+        replaced?: unknown[]
+        skipped?: unknown[]
+      }
+      if (!r.ok) {
+        const msg = (body as Record<string, unknown>)?.message
+        throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
+      }
+      const n = Array.isArray(body.replaced) ? body.replaced.length : 0
+      const sk = Array.isArray(body.skipped) ? body.skipped.length : 0
+      setMessage(
+        `Hydratation S3 : ${n} URL remplacée(s) dans le JSON${sk > 0 ? `, ${sk} ignorée(s).` : '.'}`,
+      )
+      load()
+      loadVersionDetail(selectedVersionId)
+    } catch (e) {
+      setErr((e as Error).message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
   async function runPopulateContent() {
     if (!projectId || !selectedVersionId) return
     setBusy(true)
@@ -534,19 +598,39 @@ export function LandingEditorProjectPage() {
                     </Link>
                   </p>
                   {storageStatus?.s3 ? (
-                    <div className="le__hero-s3">
+                    <div className="le__media-s3">
                       <p className="le__muted">
-                        Hero <strong>HeroSplitImageRight</strong> ou <strong>HeroFullBleed</strong> : Grok Imagine → upload S3
-                        → <code>props.imageUrl</code> + historique.
+                        Tous les slots <code>media</code> avec <code>sceneDescription</code> : Grok Imagine → S3 → champs{' '}
+                        <code>imageUrl</code> (hero, créateur, galerie, etc.). Les fichiers uploadés passent déjà par S3 (
+                        <code>POST …/assets</code>) ; pour les placeholders <code>/ai/generated-images/…</code>, cartes
+                        miroir ou URLs externes, utilise l’hydratation.
                       </p>
-                      <button
-                        type="button"
-                        className="le__btn le__btn--secondary"
-                        disabled={busy}
-                        onClick={() => runGenerateHeroS3()}
-                      >
-                        {busy ? '…' : 'Générer l’image hero (Imagine → S3)'}
-                      </button>
+                      <div className="le__media-s3-row">
+                        <button
+                          type="button"
+                          className="le__btn le__btn--secondary"
+                          disabled={busy}
+                          onClick={() => runGenerateAllImagineS3()}
+                        >
+                          {busy ? '…' : 'Générer toutes les images IA (Imagine → S3)'}
+                        </button>
+                        <button
+                          type="button"
+                          className="le__btn le__btn--secondary"
+                          disabled={busy}
+                          onClick={() => runHydrateImageUrlsS3()}
+                        >
+                          {busy ? '…' : 'Pousser les imageUrl existantes vers S3'}
+                        </button>
+                        <button
+                          type="button"
+                          className="le__btn le__btn--secondary"
+                          disabled={busy}
+                          onClick={() => runGenerateHeroS3()}
+                        >
+                          {busy ? '…' : 'Hero seul (Imagine → S3)'}
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     <p className="le__muted le__populate-meta">
