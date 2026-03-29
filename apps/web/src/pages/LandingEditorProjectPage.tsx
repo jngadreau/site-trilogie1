@@ -74,7 +74,7 @@ export function LandingEditorProjectPage() {
   /** Un seul prochain appel populate : n’envoie pas `skipAutoImagine` si false. */
   const [skipAutoImagineOnce, setSkipAutoImagineOnce] = useState(false)
 
-  const [storageStatus, setStorageStatus] = useState<{ s3: boolean } | null>(null)
+  const [storageStatus, setStorageStatus] = useState<{ storageReady: boolean } | null>(null)
 
   const [manualSelected, setManualSelected] = useState<Record<string, boolean>>({})
   const [manualVariants, setManualVariants] = useState<Record<string, string>>({})
@@ -129,8 +129,8 @@ export function LandingEditorProjectPage() {
     fetch('/site/landing-storage/status')
       .then((r) => (r.ok ? r.json() : null))
       .then((j) => {
-        if (j && typeof j === 'object' && 's3' in j) {
-          setStorageStatus({ s3: Boolean((j as { s3?: boolean }).s3) })
+        if (j && typeof j === 'object' && 'storageReady' in j) {
+          setStorageStatus({ storageReady: Boolean((j as { storageReady?: boolean }).storageReady) })
         }
       })
       .catch(() => setStorageStatus(null))
@@ -273,7 +273,7 @@ export function LandingEditorProjectPage() {
         throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
       }
       setMessage(
-        `Image hero générée (S3) — modèle ${String(body.model ?? '')}. URL signée enregistrée dans le JSON (7 j).`,
+        `Image hero générée — modèle ${String(body.model ?? '')}. URL API enregistrée : ${String(body.publicUrl ?? '')}`,
       )
       load()
       loadVersionDetail(selectedVersionId)
@@ -634,7 +634,7 @@ export function LandingEditorProjectPage() {
                       />
                       <span>
                         Après remplissage : lancer <strong>Imagine → S3</strong> pour les slots mappés
-                        {storageStatus?.s3 ? '' : ' (S3 indisponible : étape ignorée)'}.
+                        {storageStatus?.storageReady ? '' : ' (stockage fichiers indisponible : étape ignorée)'}.
                       </span>
                     </label>
                     <label className="le__check-label le__check-label--block">
@@ -668,7 +668,7 @@ export function LandingEditorProjectPage() {
                       Prévisualiser cette version
                     </Link>
                   </p>
-                  {storageStatus?.s3 ? (
+                  {storageStatus?.storageReady ? (
                     <div className="le__media-s3">
                       <p className="le__muted">
                         Tous les slots <code>media</code> avec <code>sceneDescription</code> : Grok Imagine → S3 → champs{' '}

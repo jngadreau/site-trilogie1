@@ -43,8 +43,7 @@ export class LandingVersionMediaS3Service {
 
   /** Hero seul (rétrocompat) — slot `hero` ou repli `imagePrompts.hero`. */
   async generateHeroToS3(projectId: string, versionId: string): Promise<{
-    key: string;
-    signedUrl: string;
+    publicUrl: string;
     model: string;
     prompt: string;
   }> {
@@ -111,7 +110,7 @@ export class LandingVersionMediaS3Service {
     const slug = typeof content.slug === 'string' && content.slug ? content.slug : 'deck';
     const result = await this.imagineSlotToS3(projectId, versionId, slug, g, slot, 'hero');
 
-    const appliedHero = applySlotImageUrlToSectionContent(hero, 'hero', variant, slot, result.signedUrl);
+    const appliedHero = applySlotImageUrlToSectionContent(hero, 'hero', variant, slot, result.publicUrl);
     if (!appliedHero) {
       throw new InternalServerErrorException('Impossible d’appliquer l’image hero sur props');
     }
@@ -124,7 +123,7 @@ export class LandingVersionMediaS3Service {
 
     this.appendHistory(content, 'hero', 'hero', {
       id: randomUUID(),
-      imageUrl: result.signedUrl,
+      imageUrl: result.publicUrl,
       prompt: result.prompt,
       model: result.model,
       createdAt: new Date().toISOString(),
@@ -133,8 +132,7 @@ export class LandingVersionMediaS3Service {
     await this.storage.mergePopulatedLandingDocument(versionId, content);
 
     return {
-      key: result.key,
-      signedUrl: result.signedUrl,
+      publicUrl: result.publicUrl,
       model: result.model,
       prompt: result.prompt,
     };
@@ -150,8 +148,7 @@ export class LandingVersionMediaS3Service {
     generated: Array<{
       sectionId: string;
       slotId: string;
-      key: string;
-      signedUrl: string;
+      publicUrl: string;
       model: string;
     }>;
     skipped: Array<{ sectionId: string; slotId: string; reason: string }>;
@@ -178,8 +175,7 @@ export class LandingVersionMediaS3Service {
     const generated: Array<{
       sectionId: string;
       slotId: string;
-      key: string;
-      signedUrl: string;
+      publicUrl: string;
       model: string;
     }> = [];
     const skipped: Array<{ sectionId: string; slotId: string; reason: string }> = [];
@@ -235,7 +231,7 @@ export class LandingVersionMediaS3Service {
             sectionId,
             variant,
             slot,
-            r.signedUrl,
+            r.publicUrl,
           );
           if (!applied) {
             skipped.push({ sectionId, slotId, reason: 'application props refusée après génération' });
@@ -244,7 +240,7 @@ export class LandingVersionMediaS3Service {
 
           this.appendHistory(content, sectionId, slotId, {
             id: randomUUID(),
-            imageUrl: r.signedUrl,
+            imageUrl: r.publicUrl,
             prompt: r.prompt,
             model: r.model,
             createdAt: new Date().toISOString(),
@@ -253,8 +249,7 @@ export class LandingVersionMediaS3Service {
           generated.push({
             sectionId,
             slotId,
-            key: r.key,
-            signedUrl: r.signedUrl,
+            publicUrl: r.publicUrl,
             model: r.model,
           });
         } catch (e) {
@@ -274,10 +269,10 @@ export class LandingVersionMediaS3Service {
 
   /**
    * Parcourt les champs `imageUrl` dans `content` : chemins `/ai/generated-images/…`,
-   * chemins `/images/…` (public web), et URLs http(s) → upload S3 → remplace par URL signée.
+   * `/images/…`, http(s) → upload stockage objet → remplace par chemin API public (`/site/landing-storage/…/assets/file/…`).
    */
   async hydrateImageUrlsToS3(projectId: string, versionId: string): Promise<{
-    replaced: Array<{ path: string; key: string; signedUrl: string }>;
+    replaced: Array<{ path: string; publicUrl: string }>;
     skipped: Array<{ path: string; reason: string }>;
   }> {
     await this.storage.assertVersionBelongsToProject(projectId, versionId);
@@ -289,7 +284,7 @@ export class LandingVersionMediaS3Service {
     const content = JSON.parse(JSON.stringify(v.content ?? {})) as Record<string, unknown>;
 
     const urlCache = new Map<string, string>();
-    const replaced: Array<{ path: string; key: string; signedUrl: string }> = [];
+    const replaced: Array<{ path: string; publicUrl: string }> = [];
     const skipped: Array<{ path: string; reason: string }> = [];
 
     const targets = this.collectImageUrlTargets(content);
@@ -326,11 +321,12 @@ export class LandingVersionMediaS3Service {
                   ? '.jpg'
                   : '.bin');
           const fileName = `hydrate-${randomUUID().slice(0, 8)}${ext}`;
-          const key = this.s3.buildDeckLandingAssetKey(projectId, versionId, fileName);
-          await this.s3.putObject(key, bufAndType.buffer, bufAndType.contentType);
-          cached = await this.s3.getSignedGetUrl(key, 604_800);
+          const objectKey = this.s3.buildDeckLandingAssetKey(projectId, versionId, fileName);
+          await this.s3.putObject(objectKey, bufAndType.buffer, bufAndType.contentType);
+          const assetName = objectKey.split('/').pop() ?? fileName;
+          cached = this.s3.buildPublicAssetUrlPath(projectId, versionId, assetName);
           urlCache.set(url, cached);
-          replaced.push({ path: t.path, key, signedUrl: cached });
+          replaced.push({ path: t.path, publicUrl: cached });
         }
         t.set(cached);
       } catch (e) {
@@ -351,6 +347,9 @@ export class LandingVersionMediaS3Service {
       return true;
     }
     if (u.includes('/deck-landings/') && u.startsWith('http')) {
+      return true;
+    }
+    if (u.startsWith('/site/landing-storage/') && u.includes('/assets/file/')) {
       return true;
     }
     return false;
@@ -493,7 +492,7 @@ export class LandingVersionMediaS3Service {
     globals: DeckLandingGlobals,
     slot: DeckSectionMediaSlotV1,
     sectionIdForSlug: string,
-  ): Promise<{ key: string; signedUrl: string; model: string; prompt: string }> {
+  ): Promise<{ publicUrl: string; model: string; prompt: string }> {
     const prompt = this.assembly.buildImaginePrompt(slot, globals);
     const aspectRatio = this.assembly.resolveAspectRatio(slot);
     const outputSlug = `${this.assembly.resolveOutputSlug(slug, sectionIdForSlug, slot.slotId)}-t${Date.now()}`;
@@ -517,11 +516,12 @@ export class LandingVersionMediaS3Service {
       /* ignore */
     }
 
-    const fileName = path.basename(localPath);
-    const key = this.s3.buildDeckLandingAssetKey(projectId, versionId, fileName);
+    const localBase = path.basename(localPath);
+    const key = this.s3.buildDeckLandingAssetKey(projectId, versionId, localBase);
     await this.s3.putObject(key, buf, 'image/png');
-    const signedUrl = await this.s3.getSignedGetUrl(key, 604_800);
+    const assetFileName = key.split('/').pop() ?? localBase;
+    const publicUrl = this.s3.buildPublicAssetUrlPath(projectId, versionId, assetFileName);
 
-    return { key, signedUrl, model, prompt };
+    return { publicUrl, model, prompt };
   }
 }

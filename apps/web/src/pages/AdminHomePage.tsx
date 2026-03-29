@@ -5,9 +5,8 @@ import './admin-home.css'
 type StorageStatus = {
   mongo?: boolean
   mongoReadyState?: number
-  s3?: boolean
-  s3Bucket?: string | null
-  storageEnvId?: string
+  /** Fichiers landing (S3 côté serveur, jamais exposé au navigateur). */
+  storageReady?: boolean
 }
 
 export function AdminHomePage() {
@@ -77,11 +76,11 @@ export function AdminHomePage() {
       {message ? <p className="admin-home__ok">{message}</p> : null}
 
       <section className="admin-home__section">
-        <h2>Stockage (MongoDB + S3)</h2>
+        <h2>Stockage (MongoDB + fichiers)</h2>
         <p className="admin-home__muted">
-          Même schéma d’environnement que gnova-cv-app : <code>MONGODB_URI</code>,{' '}
-          <code>S3_BUCKET_NAME</code>, <code>S3_REGION</code>, <code>S3_ENDPOINT</code>,{' '}
-          <code>S3_FORCE_PATH_STYLE</code>, clés d’accès, <code>ENV_ID_FOR_STORAGE</code>.
+          Côté API : <code>MONGODB_URI</code> et variables S3 (bucket, endpoint, clés,{' '}
+          <code>ENV_ID_FOR_STORAGE</code>, <code>S3_STORAGE_KEY_PREFIX</code> optionnel). La webapp ne reçoit que des
+          chemins <code>/site/landing-storage/…/assets/file/…</code>, pas d’URL de bucket.
         </p>
         <p className="admin-home__muted">
           <button type="button" className="admin-home__btn-ghost" onClick={() => refreshStatus()}>
@@ -103,26 +102,20 @@ export function AdminHomePage() {
               ) : null}
             </li>
             <li>
-              <strong>S3</strong> :{' '}
-              {status.s3 ? (
-                <span className="admin-home__ok-inline">configuré</span>
+              <strong>Fichiers landings</strong> (stockage objet, servi via l’API) :{' '}
+              {status.storageReady ? (
+                <span className="admin-home__ok-inline">prêt</span>
               ) : (
                 <span className="admin-home__warn">non configuré</span>
               )}
-              {status.s3Bucket ? (
-                <span className="admin-home__muted"> — bucket {status.s3Bucket}</span>
-              ) : null}
-            </li>
-            <li>
-              <strong>ENV_ID_FOR_STORAGE</strong> : <code>{status.storageEnvId ?? '—'}</code>
             </li>
           </ul>
         ) : !statusErr ? (
           <p className="admin-home__muted">Chargement…</p>
         ) : null}
         <p className="admin-home__muted">
-          API : <code>GET/POST /site/landing-storage/…</code> (projets, versions, upload multipart{' '}
-          <code>file</code>).
+          API : <code>GET/POST /site/landing-storage/…</code> (projets, versions, upload{' '}
+          <code>file</code>, lecture <code>GET …/assets/file/:fileName</code>).
         </p>
       </section>
 

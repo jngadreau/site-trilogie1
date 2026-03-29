@@ -3,11 +3,13 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomBytes } from 'crypto';
+import type { Readable } from 'node:stream';
 import * as path from 'path';
 
 /**
  * Stockage objet aligné sur gnova-cv-app : même bucket, endpoint OVH, ENV_ID_FOR_STORAGE.
- * Préfixe : `cvapp/<ENV_ID_FOR_STORAGE>/deck-landings/...`
+ * Préfixe objet : `<S3_STORAGE_KEY_PREFIX ou "cvapp">/<ENV_ID_FOR_STORAGE>/deck-landings/...`
+ * La webapp ne voit que des URLs relatives API (`buildPublicAssetUrlPath`), pas S3.
  */
 @Injectable()
 export class S3AssetsService {
@@ -52,16 +54,46 @@ export class S3AssetsService {
     return this.config.get<string>('ENV_ID_FOR_STORAGE')?.trim() || 'dev';
   }
 
+  /** Premier segment de la clé S3 (défaut `cvapp`, surchargé par `S3_STORAGE_KEY_PREFIX`). */
+  storageKeyPrefix(): string {
+    return this.config.get<string>('S3_STORAGE_KEY_PREFIX')?.trim() || 'cvapp';
+  }
+
   /**
-   * Clé objet complète (à stocker en base si besoin).
+   * URL **path** servie par l’API (proxy Vite `/site/...`) — à persister dans le JSON landing à la place des URLs S3.
+   */
+  buildPublicAssetUrlPath(projectId: string, versionId: string, assetFileName: string): string {
+    return `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(versionId)}/assets/file/${encodeURIComponent(assetFileName)}`;
+  }
+
+  /**
+   * Reconstruit la clé S3 à partir du nom de fichier (basename) déjà stocké sous `.../assets/`.
+   */
+  buildDeckLandingAssetKeyFromFileName(
+    projectId: string,
+    versionId: string,
+    assetFileName: string,
+  ): string {
+    const safe = path.basename(assetFileName);
+    if (!/^[\w.-]+\.(png|jpe?g|webp|gif|bin)$/i.test(safe)) {
+      throw new Error(`Nom de fichier asset invalide: ${safe}`);
+    }
+    const envId = this.storageEnvId();
+    const prefix = this.storageKeyPrefix();
+    return `${prefix}/${envId}/deck-landings/${projectId}/${versionId}/assets/${safe}`;
+  }
+
+  /**
+   * Clé objet complète (interne).
    */
   buildDeckLandingAssetKey(projectId: string, versionId: string, originalName: string): string {
     const envId = this.storageEnvId();
+    const prefix = this.storageKeyPrefix();
     const ext = path.extname(originalName) || '.bin';
     const base = path.basename(originalName, ext).replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 80);
     const unique = randomBytes(6).toString('hex');
     const fileName = `${base}-${unique}${ext}`;
-    return `cvapp/${envId}/deck-landings/${projectId}/${versionId}/assets/${fileName}`;
+    return `${prefix}/${envId}/deck-landings/${projectId}/${versionId}/assets/${fileName}`;
   }
 
   async putObject(key: string, body: Buffer, contentType: string): Promise<void> {
@@ -84,5 +116,28 @@ export class S3AssetsService {
     }
     const cmd = new GetObjectCommand({ Bucket: this.bucket, Key: key });
     return getSignedUrl(this.client, cmd, { expiresIn: expiresInSeconds });
+  }
+
+  /** Stream objet (pour GET API sans exposer S3 au client). */
+  async getObjectStream(
+    key: string,
+  ): Promise<{ stream: Readable; contentType: string; contentLength?: number }> {
+    if (!this.client) {
+      throw new Error('S3 non configuré');
+    }
+    const out = await this.client.send(
+      new GetObjectCommand({ Bucket: this.bucket, Key: key }),
+    );
+    const body = out.Body;
+    if (!body) {
+      throw new Error('S3 GetObject : corps vide');
+    }
+    const contentType = out.ContentType?.split(';')[0]?.trim() || 'application/octet-stream';
+    const len = out.ContentLength;
+    return {
+      stream: body as Readable,
+      contentType,
+      ...(typeof len === 'number' ? { contentLength: len } : {}),
+    };
   }
 }

@@ -3,10 +3,14 @@ import {
   Body,
   Controller,
   Get,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
   Param,
   Patch,
   Post,
   Query,
+  StreamableFile,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -22,11 +26,14 @@ import { LandingContentPopulateService } from './landing-content-populate.servic
 import { LandingStructureWizardService } from './landing-structure-wizard.service';
 import { S3AssetsService } from './s3-assets.service';
 import { LandingVersionMediaS3Service } from './landing-version-media-s3.service';
+import * as path from 'path';
 
 const MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
 
 @Controller('site/landing-storage')
 export class LandingStorageController {
+  private readonly logger = new Logger(LandingStorageController.name);
+
   constructor(
     private readonly storage: DeckLandingStorageService,
     private readonly s3: S3AssetsService,
@@ -35,15 +42,13 @@ export class LandingStorageController {
     private readonly mediaS3: LandingVersionMediaS3Service,
   ) {}
 
-  /** Santé connexion Mongo + présence config S3 (clés présentes). */
+  /** Santé connexion Mongo + présence config stockage (sans exposer le bucket ni les clés S3). */
   @Get('status')
   status() {
     return {
       mongo: this.storage.mongoConnected(),
       mongoReadyState: this.storage.getMongoReadyState(),
-      s3: this.s3.isReady(),
-      s3Bucket: this.s3.isReady() ? this.s3.getBucket() : null,
-      storageEnvId: this.s3.storageEnvId(),
+      storageReady: this.s3.isReady(),
     };
   }
 
@@ -86,6 +91,48 @@ export class LandingStorageController {
   @Get('versions/:versionId')
   async getVersion(@Param('versionId') versionId: string) {
     return this.storage.getVersion(versionId);
+  }
+
+  /**
+   * Sert un fichier binaire stocké pour la version — **seule** URL que la webapp met dans `imageUrl`
+   * (pas d’URL S3 ni de signature exposées au client).
+   */
+  @Get('projects/:projectId/versions/:versionId/assets/file/:fileName')
+  async getVersionAssetFile(
+    @Param('projectId') projectId: string,
+    @Param('versionId') versionId: string,
+    @Param('fileName') fileName: string,
+  ): Promise<StreamableFile> {
+    await this.storage.assertVersionBelongsToProject(projectId, versionId);
+    if (!this.s3.isReady()) {
+      throw new BadRequestException('Stockage fichiers non configuré');
+    }
+    const base = path.basename(fileName);
+    if (!/^[\w.-]+\.(png|jpe?g|webp|gif|bin)$/i.test(base)) {
+      throw new BadRequestException('Nom de fichier non autorisé');
+    }
+    let key: string;
+    try {
+      key = this.s3.buildDeckLandingAssetKeyFromFileName(projectId, versionId, base);
+    } catch {
+      throw new BadRequestException('Nom de fichier invalide');
+    }
+    try {
+      const { stream, contentType, contentLength } = await this.s3.getObjectStream(key);
+      return new StreamableFile(stream, {
+        type: contentType,
+        disposition: `inline; filename="${base.replace(/"/g, '')}"`,
+        ...(typeof contentLength === 'number' ? { length: contentLength } : {}),
+      });
+    } catch (e: unknown) {
+      const code = (e as { Code?: string; name?: string }).Code ?? (e as { name?: string }).name;
+      const status = (e as { $metadata?: { httpStatusCode?: number } }).$metadata?.httpStatusCode;
+      if (code === 'NoSuchKey' || status === 404) {
+        throw new NotFoundException('Fichier introuvable');
+      }
+      this.logger.warn(`getVersionAssetFile ${key}: ${e instanceof Error ? e.message : String(e)}`);
+      throw new InternalServerErrorException('Lecture du fichier impossible');
+    }
   }
 
   @Patch('projects/:projectId/versions/:versionId')
@@ -183,7 +230,8 @@ export class LandingStorageController {
     const key = this.s3.buildDeckLandingAssetKey(projectId, versionId, file.originalname);
     const contentType = file.mimetype || 'application/octet-stream';
     await this.s3.putObject(key, file.buffer, contentType);
-    const signedUrl = await this.s3.getSignedGetUrl(key, 3600);
-    return { key, contentType, signedGetUrl: signedUrl, expiresInSeconds: 3600 };
+    const assetFileName = key.split('/').pop() ?? path.basename(file.originalname);
+    const publicUrl = this.s3.buildPublicAssetUrlPath(projectId, versionId, assetFileName);
+    return { publicUrl, contentType, fileName: assetFileName };
   }
 }

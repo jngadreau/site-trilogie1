@@ -211,5 +211,5 @@ Les specs et le prompt Grok doivent autoriser explicitement `purpose: section_ba
 
 ## 10. Notes
 
-- Les **URLs signées S3** expirent : à terme, stocker `s3Key` dans `resolved` et un endpoint de **resign** pour l’éditeur / la preview.
+- Les chemins **`/site/landing-storage/…/assets/file/…`** ne expirent pas côté client ; le serveur lit toujours l’objet S3 à la volée. Pour `resolved.s3Key` réservé au backend si besoin de migrations.
 - **Midjourney** : documenter clairement la limite « export prompt » tant que l’API n’est pas branchée, pour ne pas promettre un bouton identique à Grok.

@@ -23,13 +23,13 @@ Variables alignées sur **gnova-cv-app** :
 - `S3_BUCKET_NAME`, `S3_REGION`, `S3_ENDPOINT`, `S3_FORCE_PATH_STYLE`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`
 - `ENV_ID_FOR_STORAGE` (ex. `dev`) — préfixe d’isolation multi-env.
 
-**Préfixe des clés objets** (même logique que les assets CV : `cvapp/<ENV_ID_FOR_STORAGE>/…`) :
+**Préfixe des clés objets** (configurable via `S3_STORAGE_KEY_PREFIX`, défaut `cvapp`) :
 
 ```text
-cvapp/<ENV_ID_FOR_STORAGE>/deck-landings/<projectId>/<versionId>/assets/<filename>
+<S3_STORAGE_KEY_PREFIX>/<ENV_ID_FOR_STORAGE>/deck-landings/<projectId>/<versionId>/assets/<filename>
 ```
 
-Images générées par l’IA et autres fichiers binaires y sont déposés ; le document Mongo référence les clés ou URLs signées selon les besoins du front.
+Les fichiers sont servis au navigateur via **`GET /site/landing-storage/projects/:projectId/versions/:versionId/assets/file/:fileName`** (stream API) ; le JSON Mongo ne contient **pas** d’URL S3 ni de liens présignés visibles par la webapp.
 
 ---
 
