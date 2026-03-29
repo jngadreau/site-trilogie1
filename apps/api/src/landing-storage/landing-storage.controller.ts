@@ -1,0 +1,103 @@
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { CreateDeckLandingProjectDto } from './dto/create-deck-landing-project.dto';
+import { CreateDeckLandingVersionDto } from './dto/create-deck-landing-version.dto';
+import { UpdateDeckLandingProjectDto } from './dto/update-deck-landing-project.dto';
+import { DeckLandingStorageService } from './deck-landing-storage.service';
+import { S3AssetsService } from './s3-assets.service';
+
+const MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
+
+@Controller('site/landing-storage')
+export class LandingStorageController {
+  constructor(
+    private readonly storage: DeckLandingStorageService,
+    private readonly s3: S3AssetsService,
+  ) {}
+
+  /** Santé connexion Mongo + présence config S3 (clés présentes). */
+  @Get('status')
+  status() {
+    return {
+      mongo: this.storage.mongoConnected(),
+      mongoReadyState: this.storage.getMongoReadyState(),
+      s3: this.s3.isReady(),
+      s3Bucket: this.s3.isReady() ? this.s3.getBucket() : null,
+      storageEnvId: this.s3.storageEnvId(),
+    };
+  }
+
+  @Post('projects')
+  async createProject(@Body() dto: CreateDeckLandingProjectDto) {
+    return this.storage.createProject(dto);
+  }
+
+  @Get('projects')
+  async listProjects(@Query('gameKey') gameKey?: string) {
+    return this.storage.listProjects(gameKey?.trim() || undefined);
+  }
+
+  @Get('projects/:projectId')
+  async getProject(@Param('projectId') projectId: string) {
+    return this.storage.getProject(projectId);
+  }
+
+  @Patch('projects/:projectId')
+  async updateProject(
+    @Param('projectId') projectId: string,
+    @Body() dto: UpdateDeckLandingProjectDto,
+  ) {
+    return this.storage.updateProject(projectId, dto);
+  }
+
+  @Post('projects/:projectId/versions')
+  async createVersion(
+    @Param('projectId') projectId: string,
+    @Body() dto: CreateDeckLandingVersionDto,
+  ) {
+    return this.storage.createVersion(projectId, dto);
+  }
+
+  @Get('projects/:projectId/versions')
+  async listVersions(@Param('projectId') projectId: string) {
+    return this.storage.listVersions(projectId);
+  }
+
+  @Get('versions/:versionId')
+  async getVersion(@Param('versionId') versionId: string) {
+    return this.storage.getVersion(versionId);
+  }
+
+  @Post('projects/:projectId/versions/:versionId/assets')
+  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: MAX_UPLOAD_BYTES } }))
+  async uploadAsset(
+    @Param('projectId') projectId: string,
+    @Param('versionId') versionId: string,
+    @UploadedFile() file: Express.Multer.File | undefined,
+  ) {
+    if (!this.s3.isReady()) {
+      throw new BadRequestException('S3 non configuré');
+    }
+    if (!file?.buffer?.length) {
+      throw new BadRequestException('Fichier manquant (champ form `file`)');
+    }
+    await this.storage.getProject(projectId);
+    await this.storage.getVersion(versionId);
+    const key = this.s3.buildDeckLandingAssetKey(projectId, versionId, file.originalname);
+    const contentType = file.mimetype || 'application/octet-stream';
+    await this.s3.putObject(key, file.buffer, contentType);
+    const signedUrl = await this.s3.getSignedGetUrl(key, 3600);
+    return { key, contentType, signedGetUrl: signedUrl, expiresInSeconds: 3600 };
+  }
+}

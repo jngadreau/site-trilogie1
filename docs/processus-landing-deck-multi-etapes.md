@@ -2,6 +2,8 @@
 
 Ce document décrit le **processus de création** visé pour les sites vitrine de **jeux de cartes** (oracles, tarots, jeux d’accompagnement, etc.), au-delà du prototype actuel (monolithique `landing-spec.json`). Il complète [processus-prototype-arbre-de-vie.md](./processus-prototype-arbre-de-vie.md) et [projet-sites-jeux-cartes.md](./projet-sites-jeux-cartes.md).
 
+**Voir aussi** : [landing-editor-vision.md](./landing-editor-vision.md) (éditeur cible, MongoDB, S3, wizard IA).
+
 ---
 
 ## 1. Vocabulaire : *deck* vs *jeu*

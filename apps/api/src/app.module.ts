@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AiModule } from './ai/ai.module';
 import { SiteModule } from './site/site.module';
 import { CardsModule } from './cards/cards.module';
+import { LandingStorageModule } from './landing-storage/landing-storage.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { CardsModule } from './cards/cards.module';
     AiModule,
     CardsModule,
     SiteModule,
+    LandingStorageModule,
   ],
   controllers: [AppController],
 })

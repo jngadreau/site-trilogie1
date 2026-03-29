@@ -67,7 +67,7 @@ type ImageStudioState = {
   }>
 }
 
-export function AdminDeckLandingPage() {
+export function AdminDeckLandingLegacyPage() {
   const [dashboard, setDashboard] = useState<Dashboard | null>(null)
   const [err, setErr] = useState<string | null>(null)
   const [busy, setBusy] = useState<string | null>(null)
@@ -451,11 +451,11 @@ export function AdminDeckLandingPage() {
   return (
     <div className="admin-dl">
       <header className="admin-dl__head">
-        <h1 className="admin-dl__title">Admin — landings deck modulaires</h1>
+        <h1 className="admin-dl__title">Legacy — landings deck (fichiers JSON)</h1>
         <nav className="admin-dl__nav">
           <Link to="/">Accueil</Link>
           <Link to="/demo/sections">Démos sections</Link>
-          <Link to="/admin">Admin</Link>
+          <Link to="/admin">Admin général</Link>
         </nav>
       </header>
 
