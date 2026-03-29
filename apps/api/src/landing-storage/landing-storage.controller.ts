@@ -16,7 +16,9 @@ import { CreateDeckLandingVersionDto } from './dto/create-deck-landing-version.d
 import { SuggestLandingStructureDto } from './dto/suggest-landing-structure.dto';
 import { UpdateDeckLandingProjectDto } from './dto/update-deck-landing-project.dto';
 import { UpdateDeckLandingVersionDto } from './dto/update-deck-landing-version.dto';
+import { PopulateDeckLandingVersionDto } from './dto/populate-deck-landing-version.dto';
 import { DeckLandingStorageService } from './deck-landing-storage.service';
+import { LandingContentPopulateService } from './landing-content-populate.service';
 import { LandingStructureWizardService } from './landing-structure-wizard.service';
 import { S3AssetsService } from './s3-assets.service';
 
@@ -28,6 +30,7 @@ export class LandingStorageController {
     private readonly storage: DeckLandingStorageService,
     private readonly s3: S3AssetsService,
     private readonly structureWizard: LandingStructureWizardService,
+    private readonly contentPopulate: LandingContentPopulateService,
   ) {}
 
   /** Santé connexion Mongo + présence config S3 (clés présentes). */
@@ -109,6 +112,19 @@ export class LandingStorageController {
       projectSlug: proj.slug,
       brief: dto?.brief,
     });
+  }
+
+  /**
+   * Grok : remplit `globals`, `imagePrompts`, `sections` (props + media) selon la structure déjà enregistrée sur la version.
+   */
+  @Post('projects/:projectId/versions/:versionId/populate-content')
+  async populateContent(
+    @Param('projectId') projectId: string,
+    @Param('versionId') versionId: string,
+    @Body() dto: PopulateDeckLandingVersionDto,
+  ) {
+    await this.storage.assertVersionBelongsToProject(projectId, versionId);
+    return this.contentPopulate.populateVersionContent(projectId, versionId, dto?.brief);
   }
 
   @Post('projects/:projectId/versions/:versionId/assets')

@@ -27,6 +27,7 @@ type VersionRow = {
   label?: string
   sectionOrder?: string[]
   variantsBySection?: Record<string, string>
+  content?: Record<string, unknown>
   createdAt?: string
 }
 
@@ -67,6 +68,8 @@ export function LandingEditorProjectPage() {
   const [structureMode, setStructureMode] = useState<'auto' | 'manual'>('auto')
   const [brief, setBrief] = useState('')
   const [suggestResult, setSuggestResult] = useState<SuggestStructureResult | null>(null)
+
+  const [populateBrief, setPopulateBrief] = useState('')
 
   const [manualSelected, setManualSelected] = useState<Record<string, boolean>>({})
   const [manualVariants, setManualVariants] = useState<Record<string, string>>({})
@@ -236,6 +239,37 @@ export function LandingEditorProjectPage() {
 
   function setManualVariant(id: DeckSectionKey, variant: string) {
     setManualVariants((prev) => ({ ...prev, [id]: variant }))
+  }
+
+  async function runPopulateContent() {
+    if (!projectId || !selectedVersionId) return
+    setBusy(true)
+    setErr(null)
+    setMessage(null)
+    try {
+      const r = await fetch(
+        `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(selectedVersionId)}/populate-content`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ brief: populateBrief.trim() || undefined }),
+        },
+      )
+      const body = (await r.json().catch(() => ({}))) as Record<string, unknown>
+      if (!r.ok) {
+        const msg = body?.message
+        throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
+      }
+      setMessage(
+        `Contenu généré — ${String(body.sectionCount ?? '?')} sections (modèle ${String(body.model ?? '')}).`,
+      )
+      load()
+      loadVersionDetail(selectedVersionId)
+    } catch (e) {
+      setErr((e as Error).message)
+    } finally {
+      setBusy(false)
+    }
   }
 
   function applyManualStructure() {
@@ -428,6 +462,46 @@ export function LandingEditorProjectPage() {
                   <h3 className="le__h3">Structure actuelle en base</h3>
                   <pre className="le__pre le__pre--small">{JSON.stringify(versionDetail.sectionOrder, null, 2)}</pre>
                   <pre className="le__pre le__pre--tiny">{JSON.stringify(versionDetail.variantsBySection, null, 2)}</pre>
+                </div>
+              ) : null}
+
+              {versionDetail.sectionOrder && versionDetail.sectionOrder.length > 0 ? (
+                <div className="le__populate">
+                  <h3 className="le__h3">Étape contenu (Grok)</h3>
+                  <p className="le__muted">
+                    Remplit <code>globals</code>, <code>imagePrompts</code> et les <code>props</code> / <code>media</code> de
+                    chaque section selon les specs. Nécessite une structure déjà appliquée. Les images restent en URLs
+                    preview ; l’upload S3 pourra suivre.
+                  </p>
+                  <label className="le__label">
+                    Brief (optionnel)
+                    <textarea
+                      className="le__textarea"
+                      rows={2}
+                      value={populateBrief}
+                      onChange={(e) => setPopulateBrief(e.target.value)}
+                      placeholder="Ex. ton plus intime, mettre l’accent sur le livret…"
+                    />
+                  </label>
+                  <button type="button" className="le__btn" disabled={busy} onClick={() => runPopulateContent()}>
+                    {busy ? '…' : 'Générer le contenu avec Grok'}
+                  </button>
+                  {Array.isArray(versionDetail.content?.sections) &&
+                  (versionDetail.content?.sections as unknown[]).length > 0 ? (
+                    <p className="le__muted le__populate-meta">
+                      JSON actuel :{' '}
+                      <strong>{(versionDetail.content?.sections as unknown[]).length}</strong> section(s) dans{' '}
+                      <code>content.sections</code>
+                      {(versionDetail.content?.sections as unknown[]).some(
+                        (s) =>
+                          s &&
+                          typeof s === 'object' &&
+                          Object.keys((s as Record<string, unknown>).props ?? {}).length > 0,
+                      )
+                        ? ' (certaines props non vides)'
+                        : ' (squelettes vides si pas encore lancé)'}
+                    </p>
+                  ) : null}
                 </div>
               ) : null}
             </section>

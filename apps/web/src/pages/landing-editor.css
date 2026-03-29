@@ -293,3 +293,13 @@
   border-radius: 8px;
   border: 1px solid #eee;
 }
+
+.le__populate {
+  margin-top: 1.35rem;
+  padding-top: 1.1rem;
+  border-top: 1px dashed #ccc;
+}
+
+.le__populate-meta {
+  margin-top: 0.65rem;
+}

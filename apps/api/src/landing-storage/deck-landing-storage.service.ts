@@ -215,4 +215,26 @@ export class DeckLandingStorageService {
     await v.save();
     return v.toJSON();
   }
+
+  /** Fusionne le document landing généré par Grok dans la version (conserve `imageHistory` si présent). */
+  async mergePopulatedLandingDocument(
+    versionId: string,
+    doc: Record<string, unknown>,
+  ): Promise<unknown> {
+    if (!Types.ObjectId.isValid(versionId)) {
+      throw new NotFoundException('Identifiant version invalide');
+    }
+    const v = await this.versionModel.findById(versionId).exec();
+    if (!v) throw new NotFoundException('Version introuvable');
+
+    const prev = v.content as Record<string, unknown>;
+    const imageHistory = prev.imageHistory;
+    const merged: Record<string, unknown> = { ...doc };
+    if (imageHistory !== undefined) {
+      merged.imageHistory = imageHistory;
+    }
+    v.content = merged;
+    await v.save();
+    return v.toJSON() as unknown;
+  }
 }
