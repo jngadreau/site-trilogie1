@@ -1,9 +1,11 @@
+import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { SECTION_LABELS_FR } from '../lib/deckSectionCatalog'
 import { DeckLandingView } from '../components/DeckLandingView'
 import { isDeckModularLandingV1 } from '../lib/deckLandingGuards'
 import type { DeckModularLandingV1 } from '../types/deckLanding'
+import { ImageSlotRowBlock, collectImageSlotRowsForSection } from './landing-editor/ImageSlotRowBlock'
 import './landing-editor.css'
 
 type ProjectDoc = {
@@ -46,9 +48,12 @@ export function LandingEditorVersionPage() {
   const [project, setProject] = useState<ProjectDoc | null>(null)
   const [version, setVersion] = useState<VersionRow | null>(null)
   const [err, setErr] = useState<string | null>(null)
+  const [message, setMessage] = useState<string | null>(null)
   const [reordering, setReordering] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(0)
   const afterLoadSelectId = useRef<string | null>(null)
+  const [storageStatus, setStorageStatus] = useState<{ storageReady: boolean } | null>(null)
+  const [slotUploadingKey, setSlotUploadingKey] = useState<string | null>(null)
 
   const load = useCallback(() => {
     if (!projectId || !versionId) return
@@ -86,6 +91,17 @@ export function LandingEditorVersionPage() {
     load()
   }, [load])
 
+  useEffect(() => {
+    fetch('/site/landing-storage/status')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (j && typeof j === 'object' && 'storageReady' in j) {
+          setStorageStatus({ storageReady: Boolean((j as { storageReady?: boolean }).storageReady) })
+        }
+      })
+      .catch(() => setStorageStatus(null))
+  }, [])
+
   const sectionEntries = useMemo(() => parseSections(version?.content), [version?.content])
 
   const previewLanding = useMemo((): DeckModularLandingV1 | null => {
@@ -100,6 +116,17 @@ export function LandingEditorVersionPage() {
     }
   }, [sectionEntries.length, selectedIndex])
 
+  const selectedSectionId = sectionEntries[selectedIndex]?.id ?? ''
+
+  const selectedSectionSlots = useMemo(
+    () =>
+      collectImageSlotRowsForSection(
+        version?.content as Record<string, unknown> | undefined,
+        selectedSectionId,
+      ),
+    [version?.content, selectedSectionId],
+  )
+
   const selectedSectionJson = useMemo(() => {
     const s = sectionEntries[selectedIndex]
     if (!s) return '— Aucune section —\n'
@@ -109,6 +136,54 @@ export function LandingEditorVersionPage() {
       return String(s.raw)
     }
   }, [sectionEntries, selectedIndex])
+
+  async function uploadAndAssignSlot(sectionId: string, slotId: string, file: File) {
+    if (!projectId || !versionId) return
+    const key = `${sectionId}:${slotId}`
+    setSlotUploadingKey(key)
+    setErr(null)
+    setMessage(null)
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      const up = await fetch(
+        `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(versionId)}/assets`,
+        { method: 'POST', body: fd },
+      )
+      const upBody = (await up.json().catch(() => ({}))) as { publicUrl?: string; message?: string }
+      if (!up.ok) {
+        const msg = upBody?.message
+        throw new Error(typeof msg === 'string' ? msg : `upload ${up.status}`)
+      }
+      const publicUrl = typeof upBody.publicUrl === 'string' ? upBody.publicUrl : ''
+      if (!publicUrl) {
+        throw new Error('Réponse upload sans publicUrl')
+      }
+      const patch = await fetch(
+        `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(versionId)}/image-slot`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sectionId,
+            slotId,
+            resolved: { imageUrl: publicUrl, source: 'upload' },
+          }),
+        },
+      )
+      const patchBody = (await patch.json().catch(() => ({}))) as { message?: string }
+      if (!patch.ok) {
+        const msg = patchBody?.message
+        throw new Error(typeof msg === 'string' ? msg : `patch ${patch.status}`)
+      }
+      setMessage(`Image liée — ${sectionId} / ${slotId}`)
+      await load()
+    } catch (e) {
+      setErr((e as Error).message)
+    } finally {
+      setSlotUploadingKey(null)
+    }
+  }
 
   async function persistOrder(newIds: string[]) {
     if (!projectId || !versionId) return
@@ -167,6 +242,7 @@ export function LandingEditorVersionPage() {
       </header>
 
       {err ? <p className="le__err">{err}</p> : null}
+      {message ? <p className="le__ok">{message}</p> : null}
 
       {!project || !version ? (
         <p className="le__muted">{err ? null : 'Chargement…'}</p>
@@ -247,34 +323,40 @@ export function LandingEditorVersionPage() {
                           className="le__ve-section-select"
                           onClick={() => setSelectedIndex(index)}
                         >
-                          <span className="le__ve-section-id">
-                            <code>{entry.id}</code>
+                          <code className="le__ve-section-id">{entry.id}</code>
+                          {label ? (
+                            <>
+                              <span className="le__ve-section-sep" aria-hidden>
+                                ·
+                              </span>
+                              <span className="le__muted le__ve-section-label">{label}</span>
+                            </>
+                          ) : null}
+                          <span className="le__ve-section-sep" aria-hidden>
+                            ·
                           </span>
-                          {label ? <span className="le__muted le__ve-section-label">{label}</span> : null}
-                          <span className="le__ve-section-variant">
-                            <code>{entry.variant}</code>
-                          </span>
+                          <code className="le__ve-section-variant">{entry.variant}</code>
                         </button>
                         <div className="le__ve-section-move">
                           <button
                             type="button"
-                            className="le__btn le__btn--small le__btn--secondary"
+                            className="le__ve-icon-btn"
                             disabled={reordering || index === 0}
                             title="Monter"
                             aria-label={`Monter ${entry.id}`}
                             onClick={() => moveSection(index, -1)}
                           >
-                            ↑
+                            <ChevronUp aria-hidden size={16} strokeWidth={2.25} />
                           </button>
                           <button
                             type="button"
-                            className="le__btn le__btn--small le__btn--secondary"
+                            className="le__ve-icon-btn"
                             disabled={reordering || index >= sectionEntries.length - 1}
                             title="Descendre"
                             aria-label={`Descendre ${entry.id}`}
                             onClick={() => moveSection(index, 1)}
                           >
-                            ↓
+                            <ChevronDown aria-hidden size={16} strokeWidth={2.25} />
                           </button>
                         </div>
                       </li>
@@ -282,6 +364,46 @@ export function LandingEditorVersionPage() {
                   })}
                 </ul>
               )}
+              <div className="le__ve-slots-block">
+                <h3 className="le__ve-slots-title">Images (slots)</h3>
+                {selectedSectionId ? (
+                  selectedSectionSlots.length > 0 ? (
+                    <ul className="le__slot-list">
+                      {selectedSectionSlots.map((row) => {
+                        const rowKey = `${row.sectionId}:${row.slotId}`
+                        const uploading = slotUploadingKey === rowKey
+                        return (
+                          <ImageSlotRowBlock
+                            key={rowKey}
+                            row={row}
+                            projectId={projectId}
+                            versionId={versionId}
+                            storageReady={!!storageStatus?.storageReady}
+                            disabled={reordering}
+                            uploading={uploading}
+                            onUpload={(file) => void uploadAndAssignSlot(row.sectionId, row.slotId, file)}
+                            onReload={() => void load()}
+                            onMessage={(s) => {
+                              setMessage(s)
+                              setErr(null)
+                            }}
+                            onError={(s) => {
+                              setErr(s)
+                              setMessage(null)
+                            }}
+                          />
+                        )
+                      })}
+                    </ul>
+                  ) : (
+                    <p className="le__muted le__ve-slots-empty">
+                      Aucune entrée <code>imageSlots</code> pour <code>{selectedSectionId}</code>.
+                    </p>
+                  )
+                ) : (
+                  <p className="le__muted le__ve-slots-empty">Sélectionne une section.</p>
+                )}
+              </div>
               <div className="le__ve-json-block">
                 <h3 className="le__ve-json-title">JSON section (debug)</h3>
                 <pre className="le__pre le__ve-json-pre" tabIndex={0}>

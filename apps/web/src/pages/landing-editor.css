@@ -200,19 +200,19 @@
 
 .le__ve-section-list {
   list-style: none;
-  margin: 0 0 1rem;
+  margin: 0 0 0.75rem;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.25rem;
 }
 
 .le__ve-section-row {
   display: flex;
-  flex-wrap: wrap;
-  align-items: stretch;
-  gap: 0.35rem 0.5rem;
-  padding: 0.35rem 0.45rem;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.35rem;
   border-radius: 6px;
   border: 1px solid #e4e4e4;
   background: #fff;
@@ -224,43 +224,102 @@
 }
 
 .le__ve-section-select {
-  flex: 1 1 160px;
+  flex: 1 1 auto;
   min-width: 0;
   text-align: left;
-  padding: 0.25rem 0.35rem;
+  padding: 0.12rem 0.2rem;
   border: none;
   background: transparent;
   cursor: pointer;
   font: inherit;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.15rem;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.35rem;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
-.le__ve-section-id code {
-  font-size: 0.82rem;
+.le__ve-section-id {
+  font-size: 0.72rem;
+  flex-shrink: 0;
+}
+
+.le__ve-section-sep {
+  color: #c4c4c4;
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 300;
 }
 
 .le__ve-section-label {
-  font-size: 0.76rem;
+  font-size: 0.72rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
-.le__ve-section-variant code {
-  font-size: 0.72rem;
-  color: #444;
+.le__ve-section-variant {
+  font-size: 0.7rem;
+  color: #555;
+  flex-shrink: 0;
+  max-width: 42%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .le__ve-section-move {
   display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
+  flex-direction: row;
+  flex-shrink: 0;
+  gap: 0.15rem;
+  align-items: center;
+}
+
+.le__ve-icon-btn {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  padding: 0;
+  border: 1px solid #c8c8c8;
+  border-radius: 5px;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+}
+
+.le__ve-icon-btn:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.le__ve-icon-btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.le__ve-slots-block {
+  margin-top: 0.5rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed #c8c8c8;
+}
+
+.le__ve-slots-title {
+  font-size: 0.88rem;
+  margin: 0 0 0.4rem;
+}
+
+.le__ve-slots-empty {
+  margin: 0;
+  font-size: 0.76rem;
 }
 
 .le__ve-json-block {
-  margin-top: 0.5rem;
-  padding-top: 0.65rem;
+  margin-top: 0.55rem;
+  padding-top: 0.6rem;
   border-top: 1px dashed #ccc;
 }
 
