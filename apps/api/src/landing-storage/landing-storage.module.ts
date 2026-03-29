@@ -43,6 +43,7 @@ import { LandingImageSlotPromptsService } from './landing-image-slot-prompts.ser
     LandingStructureWizardService,
     LandingContentPopulateService,
     LandingVersionMediaS3Service,
+    LandingImageSlotPromptsService,
   ],
   exports: [
     DeckLandingStorageService,
