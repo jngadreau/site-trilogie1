@@ -3,6 +3,7 @@ import { AdminHomePage } from './pages/AdminHomePage'
 import { AdminDeckLandingLegacyPage } from './pages/AdminDeckLandingLegacyPage'
 import { LandingEditorHubPage } from './pages/LandingEditorHubPage'
 import { LandingEditorProjectPage } from './pages/LandingEditorProjectPage'
+import { LandingMongoPreviewPage } from './pages/LandingMongoPreviewPage'
 import { HomePage } from './pages/HomePage'
 import { LandingDeckPage } from './pages/LandingDeckPage'
 import { SectionDemoPage } from './pages/SectionDemoPage'
@@ -14,6 +15,10 @@ export default function App() {
       <Route path="/admin" element={<AdminHomePage />} />
       <Route path="/admin/landing-editor" element={<LandingEditorHubPage />} />
       <Route path="/admin/landing-editor/:projectId" element={<LandingEditorProjectPage />} />
+      <Route
+        path="/admin/landing-editor/:projectId/preview/:versionId"
+        element={<LandingMongoPreviewPage />}
+      />
       <Route path="/admin/deck-landing-legacy" element={<AdminDeckLandingLegacyPage />} />
       <Route path="/demo/sections" element={<SectionDemoPage />} />
       <Route path="/demo/sections/:sectionType" element={<SectionDemoPage />} />

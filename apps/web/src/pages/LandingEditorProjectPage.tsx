@@ -71,6 +71,8 @@ export function LandingEditorProjectPage() {
 
   const [populateBrief, setPopulateBrief] = useState('')
 
+  const [storageStatus, setStorageStatus] = useState<{ s3: boolean } | null>(null)
+
   const [manualSelected, setManualSelected] = useState<Record<string, boolean>>({})
   const [manualVariants, setManualVariants] = useState<Record<string, string>>({})
 
@@ -119,6 +121,17 @@ export function LandingEditorProjectPage() {
   useEffect(() => {
     load()
   }, [load])
+
+  useEffect(() => {
+    fetch('/site/landing-storage/status')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (j && typeof j === 'object' && 's3' in j) {
+          setStorageStatus({ s3: Boolean((j as { s3?: boolean }).s3) })
+        }
+      })
+      .catch(() => setStorageStatus(null))
+  }, [])
 
   useEffect(() => {
     if (selectedVersionId) loadVersionDetail(selectedVersionId)
@@ -239,6 +252,33 @@ export function LandingEditorProjectPage() {
 
   function setManualVariant(id: DeckSectionKey, variant: string) {
     setManualVariants((prev) => ({ ...prev, [id]: variant }))
+  }
+
+  async function runGenerateHeroS3() {
+    if (!projectId || !selectedVersionId) return
+    setBusy(true)
+    setErr(null)
+    setMessage(null)
+    try {
+      const r = await fetch(
+        `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(selectedVersionId)}/generate-hero-s3`,
+        { method: 'POST' },
+      )
+      const body = (await r.json().catch(() => ({}))) as Record<string, unknown>
+      if (!r.ok) {
+        const msg = body?.message
+        throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
+      }
+      setMessage(
+        `Image hero générée (S3) — modèle ${String(body.model ?? '')}. URL signée enregistrée dans le JSON (7 j).`,
+      )
+      load()
+      loadVersionDetail(selectedVersionId)
+    } catch (e) {
+      setErr((e as Error).message)
+    } finally {
+      setBusy(false)
+    }
   }
 
   async function runPopulateContent() {
@@ -470,8 +510,7 @@ export function LandingEditorProjectPage() {
                   <h3 className="le__h3">Étape contenu (Grok)</h3>
                   <p className="le__muted">
                     Remplit <code>globals</code>, <code>imagePrompts</code> et les <code>props</code> / <code>media</code> de
-                    chaque section selon les specs. Nécessite une structure déjà appliquée. Les images restent en URLs
-                    preview ; l’upload S3 pourra suivre.
+                    chaque section selon les specs. Nécessite une structure déjà appliquée.
                   </p>
                   <label className="le__label">
                     Brief (optionnel)
@@ -486,6 +525,34 @@ export function LandingEditorProjectPage() {
                   <button type="button" className="le__btn" disabled={busy} onClick={() => runPopulateContent()}>
                     {busy ? '…' : 'Générer le contenu avec Grok'}
                   </button>
+                  <p className="le__muted le__populate-meta">
+                    <Link
+                      className="le__link"
+                      to={`/admin/landing-editor/${encodeURIComponent(projectId!)}/preview/${encodeURIComponent(selectedVersionId)}`}
+                    >
+                      Prévisualiser cette version
+                    </Link>
+                  </p>
+                  {storageStatus?.s3 ? (
+                    <div className="le__hero-s3">
+                      <p className="le__muted">
+                        Hero <strong>HeroSplitImageRight</strong> ou <strong>HeroFullBleed</strong> : Grok Imagine → upload S3
+                        → <code>props.imageUrl</code> + historique.
+                      </p>
+                      <button
+                        type="button"
+                        className="le__btn le__btn--secondary"
+                        disabled={busy}
+                        onClick={() => runGenerateHeroS3()}
+                      >
+                        {busy ? '…' : 'Générer l’image hero (Imagine → S3)'}
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="le__muted le__populate-meta">
+                      S3 non configuré : configure les variables dans l’API pour activer Imagine → S3.
+                    </p>
+                  )}
                   {Array.isArray(versionDetail.content?.sections) &&
                   (versionDetail.content?.sections as unknown[]).length > 0 ? (
                     <p className="le__muted le__populate-meta">

@@ -228,10 +228,9 @@ export class DeckLandingStorageService {
     if (!v) throw new NotFoundException('Version introuvable');
 
     const prev = v.content as Record<string, unknown>;
-    const imageHistory = prev.imageHistory;
     const merged: Record<string, unknown> = { ...doc };
-    if (imageHistory !== undefined) {
-      merged.imageHistory = imageHistory;
+    if (merged.imageHistory === undefined && prev.imageHistory !== undefined) {
+      merged.imageHistory = prev.imageHistory;
     }
     v.content = merged;
     await v.save();

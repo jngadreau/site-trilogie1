@@ -1,8 +1,7 @@
-import { useEffect, useState, type CSSProperties } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { renderDeckSection } from '../sections/sectionRegistry'
+import { DeckLandingView } from '../components/DeckLandingView'
 import type { DeckModularLandingV1 } from '../types/deckLanding'
-import '../styles/deck-landing.css'
 
 export function LandingDeckPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -29,17 +28,6 @@ export function LandingDeckPage() {
     }
   }, [slug])
 
-  useEffect(() => {
-    if (!data?.globals.fontImportHref) return
-    const id = `deck-fonts-${data.slug}`
-    if (document.getElementById(id)) return
-    const link = document.createElement('link')
-    link.id = id
-    link.rel = 'stylesheet'
-    link.href = data.globals.fontImportHref
-    document.head.appendChild(link)
-  }, [data])
-
   if (!slug) {
     return <p className="dl-page-msg">Slug manquant.</p>
   }
@@ -54,28 +42,18 @@ export function LandingDeckPage() {
     return <p className="dl-page-msg">Chargement…</p>
   }
 
-  const g = data.globals
-  const style: CSSProperties = {
-    ['--dl-accent' as string]: g.accent,
-    ['--dl-bg' as string]: g.background,
-    ['--dl-surface' as string]: g.surface,
-    ['--dl-text' as string]: g.text,
-    ['--dl-muted' as string]: g.textMuted ?? 'color-mix(in srgb, var(--dl-text) 55%, transparent)',
-    ['--dl-font-heading' as string]: g.fontHeading,
-    ['--dl-font-body' as string]: g.fontBody,
-    ['--dl-radius' as string]: g.radius ?? '12px',
-  }
-
   return (
-    <div className="deck-landing" style={style}>
-      <header className="dl-topbar">
-        <span className="dl-topbar__slug">{data.slug}</span>
-        <nav className="dl-topbar__nav" aria-label="Navigation">
-          <Link to="/">Accueil</Link>
-          <Link to="/admin">Admin</Link>
-        </nav>
-      </header>
-      <main className="dl-main">{data.sections.map((s) => renderDeckSection(s))}</main>
-    </div>
+    <DeckLandingView
+      data={data}
+      header={
+        <>
+          <span className="dl-topbar__slug">{data.slug}</span>
+          <nav className="dl-topbar__nav" aria-label="Navigation">
+            <Link to="/">Accueil</Link>
+            <Link to="/admin">Admin</Link>
+          </nav>
+        </>
+      }
+    />
   )
 }

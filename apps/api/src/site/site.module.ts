@@ -46,5 +46,6 @@ import { DeckLandingImageProcessor } from './deck-landing-image.processor';
     CardFanService,
     DeckCardMirrorService,
   ],
+  exports: [DeckLandingImageAssemblyService],
 })
 export class SiteModule {}

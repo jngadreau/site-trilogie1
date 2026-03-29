@@ -303,3 +303,14 @@
 .le__populate-meta {
   margin-top: 0.65rem;
 }
+
+.le__link {
+  color: #2563eb;
+}
+
+.le__hero-s3 {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
