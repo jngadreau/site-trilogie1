@@ -12,7 +12,16 @@ import { getDeckModularLandingPromptsDir, getGameContextPath, getWebAppSectionsD
 import { readDeckSectionSpecByVariant } from '../site/deck-section-specs.util';
 import { extractFirstJsonObject } from '../site/json-extract.util';
 import { DeckLandingStorageService } from './deck-landing-storage.service';
+import { normalizeImageSlotsInLandingDoc } from './landing-image-slots-normalize';
 import { LandingStructureWizardService } from './landing-structure-wizard.service';
+import { LandingVersionMediaS3Service } from './landing-version-media-s3.service';
+import { S3AssetsService } from './s3-assets.service';
+
+function versionWantsAutoImagine(v: { buildOptions?: unknown }): boolean {
+  const o = v.buildOptions as { autoGenerateImages?: boolean } | undefined;
+  if (o && o.autoGenerateImages === false) return false;
+  return true;
+}
 
 @Injectable()
 export class LandingContentPopulateService {
@@ -22,13 +31,22 @@ export class LandingContentPopulateService {
     private readonly config: ConfigService,
     private readonly storage: DeckLandingStorageService,
     private readonly structureWizard: LandingStructureWizardService,
+    private readonly mediaS3: LandingVersionMediaS3Service,
+    private readonly s3: S3AssetsService,
   ) {}
 
   async populateVersionContent(
     projectId: string,
     versionId: string,
-    brief?: string,
-  ): Promise<{ model: string; sectionCount: number }> {
+    opts?: { brief?: string; skipAutoImagine?: boolean },
+  ): Promise<{
+    model: string;
+    sectionCount: number;
+    autoImagine?: { generated: number; skipped: number };
+  }> {
+    const brief = opts?.brief;
+    const skipAutoImagine = opts?.skipAutoImagine === true;
+
     await this.storage.assertVersionBelongsToProject(projectId, versionId);
     const proj = await this.storage.getProject(projectId);
     const v = await this.storage.getVersion(versionId);
@@ -145,6 +163,7 @@ ${specsBundle}
     "fontHeading": "string",
     "fontBody": "string",
     "radius": "12px",
+    "visualBrief": "obligatoire — 2 à 6 phrases FR : ton, ambiance visuelle, cohérence avec le jeu (sert aux prompts image)",
     "fontImportNote": "optionnel",
     "fontImportHref": "optionnel"
   },
@@ -221,8 +240,34 @@ Remplis \`props\` et \`media\` conformément aux specs. Réponds **uniquement** 
       }
     }
 
+    normalizeImageSlotsInLandingDoc(doc);
+
     await this.storage.mergePopulatedLandingDocument(versionId, doc);
 
-    return { model, sectionCount: sectionOrder.length };
+    let autoImagine: { generated: number; skipped: number } | undefined;
+    if (
+      !skipAutoImagine &&
+      versionWantsAutoImagine(v as { buildOptions?: unknown }) &&
+      this.s3.isReady()
+    ) {
+      try {
+        const r = await this.mediaS3.generateAllImagineMediaToS3(projectId, versionId);
+        autoImagine = {
+          generated: r.generated.length,
+          skipped: r.skipped.length,
+        };
+        this.logger.log(
+          `populate auto-imagine version=${versionId} generated=${autoImagine.generated} skipped=${autoImagine.skipped}`,
+        );
+      } catch (e) {
+        this.logger.warn(
+          `populate auto-imagine ignoré version=${versionId}: ${e instanceof Error ? e.message : String(e)}`,
+        );
+      }
+    } else if (!skipAutoImagine && versionWantsAutoImagine(v as { buildOptions?: unknown })) {
+      this.logger.warn('populate auto-imagine sauté : S3 non configuré');
+    }
+
+    return { model, sectionCount: sectionOrder.length, ...(autoImagine ? { autoImagine } : {}) };
   }
 }

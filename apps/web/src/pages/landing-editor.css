@@ -304,6 +304,18 @@
   margin-top: 0.65rem;
 }
 
+.le__populate-flags {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0.65rem 0 0.85rem;
+}
+
+.le__check-label--block {
+  min-width: unset;
+  align-items: flex-start;
+}
+
 .le__link {
   color: #2563eb;
 }

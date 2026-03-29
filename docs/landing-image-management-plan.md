@@ -191,8 +191,8 @@ Les specs et le prompt Grok doivent autoriser explicitement `purpose: section_ba
 
 | Phase | Livrables |
 |-------|------------|
-| **P0** | Types TS + schéma JSON documenté ; `visualBrief` dans prompt `07-editor-subset-system.md` et populate ; champ `buildOptions.autoGenerateImages` sur version. |
-| **P1** | `imageSlots[]` minimal en parallèle de `media[]` ; normaliseur API ; assembly prompt avec `visualBrief` ; éditeur liste lecture seule + upload-assign. |
+| **P0** | Types TS + schéma JSON documenté ; `visualBrief` dans prompt `07-editor-subset-system.md` et populate ; champ `buildOptions.autoGenerateImages` sur version ; **normaliseur `media` → `imageSlots`** après populate ; **Imagine→S3 auto** après populate si flag + S3 (sauf `skipAutoImagine`). |
+| **P1** | Éditeur liste `imageSlots` lecture seule + upload-assign ; PATCH slot ciblé. |
 | **P2** | `POST suggest-prompt-alternatives` ; UI 5 prompts + sélection ; toggle Grok / MJ (MJ = copier prompt). |
 | **P1** | Fonds page/section dans JSON + rendu CSS minimal. |
 | **P3** | Sélecteur carte (`deckAssetRef`) ; spécifications variantes ; intégration MJ réelle si disponible. |

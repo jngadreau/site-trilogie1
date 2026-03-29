@@ -159,7 +159,10 @@ export class LandingStorageController {
     @Body() dto: PopulateDeckLandingVersionDto,
   ) {
     await this.storage.assertVersionBelongsToProject(projectId, versionId);
-    return this.contentPopulate.populateVersionContent(projectId, versionId, dto?.brief);
+    return this.contentPopulate.populateVersionContent(projectId, versionId, {
+      brief: dto?.brief,
+      skipAutoImagine: dto?.skipAutoImagine,
+    });
   }
 
   @Post('projects/:projectId/versions/:versionId/assets')

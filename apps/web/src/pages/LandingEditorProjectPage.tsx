@@ -28,6 +28,7 @@ type VersionRow = {
   sectionOrder?: string[]
   variantsBySection?: Record<string, string>
   content?: Record<string, unknown>
+  buildOptions?: Record<string, unknown>
   createdAt?: string
 }
 
@@ -70,6 +71,8 @@ export function LandingEditorProjectPage() {
   const [suggestResult, setSuggestResult] = useState<SuggestStructureResult | null>(null)
 
   const [populateBrief, setPopulateBrief] = useState('')
+  /** Un seul prochain appel populate : n’envoie pas `skipAutoImagine` si false. */
+  const [skipAutoImagineOnce, setSkipAutoImagineOnce] = useState(false)
 
   const [storageStatus, setStorageStatus] = useState<{ s3: boolean } | null>(null)
 
@@ -356,17 +359,61 @@ export function LandingEditorProjectPage() {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ brief: populateBrief.trim() || undefined }),
+          body: JSON.stringify({
+            brief: populateBrief.trim() || undefined,
+            ...(skipAutoImagineOnce ? { skipAutoImagine: true } : {}),
+          }),
         },
       )
-      const body = (await r.json().catch(() => ({}))) as Record<string, unknown>
+      const body = (await r.json().catch(() => ({}))) as Record<string, unknown> & {
+        autoImagine?: { generated?: number; skipped?: number }
+      }
       if (!r.ok) {
         const msg = body?.message
         throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
       }
+      const ai = body.autoImagine
+      const aiLine =
+        ai && typeof ai.generated === 'number'
+          ? ` — Imagine auto (S3) : ${ai.generated} générée(s), ${typeof ai.skipped === 'number' ? ai.skipped : '?'} ignorée(s).`
+          : ''
       setMessage(
-        `Contenu généré — ${String(body.sectionCount ?? '?')} sections (modèle ${String(body.model ?? '')}).`,
+        `Contenu généré — ${String(body.sectionCount ?? '?')} sections (modèle ${String(body.model ?? '')}).${aiLine}`,
       )
+      setSkipAutoImagineOnce(false)
+      load()
+      loadVersionDetail(selectedVersionId)
+    } catch (e) {
+      setErr((e as Error).message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function saveAutoImagineAfterPopulate(on: boolean) {
+    if (!projectId || !selectedVersionId || !versionDetail) return
+    setBusy(true)
+    setErr(null)
+    setMessage(null)
+    try {
+      const prev =
+        versionDetail.buildOptions && typeof versionDetail.buildOptions === 'object'
+          ? { ...versionDetail.buildOptions }
+          : {}
+      const r = await fetch(
+        `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(selectedVersionId)}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ buildOptions: { ...prev, autoGenerateImages: on } }),
+        },
+      )
+      const res = (await r.json().catch(() => ({}))) as Record<string, unknown>
+      if (!r.ok) {
+        const msg = res?.message
+        throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
+      }
+      setMessage(on ? 'Imagine auto après remplissage : activé.' : 'Imagine auto après remplissage : désactivé.')
       load()
       loadVersionDetail(selectedVersionId)
     } catch (e) {
@@ -573,9 +620,33 @@ export function LandingEditorProjectPage() {
                 <div className="le__populate">
                   <h3 className="le__h3">Étape contenu (Grok)</h3>
                   <p className="le__muted">
-                    Remplit <code>globals</code>, <code>imagePrompts</code> et les <code>props</code> / <code>media</code> de
-                    chaque section selon les specs. Nécessite une structure déjà appliquée.
+                    Remplit <code>globals</code> (dont <code>visualBrief</code>), <code>imagePrompts</code>, les{' '}
+                    <code>props</code> / <code>media</code>, puis dérive <code>imageSlots</code> (purpose, génération). Nécessite
+                    une structure déjà appliquée.
                   </p>
+                  <div className="le__populate-flags">
+                    <label className="le__check-label le__check-label--block">
+                      <input
+                        type="checkbox"
+                        checked={versionDetail.buildOptions?.autoGenerateImages !== false}
+                        disabled={busy}
+                        onChange={(e) => void saveAutoImagineAfterPopulate(e.target.checked)}
+                      />
+                      <span>
+                        Après remplissage : lancer <strong>Imagine → S3</strong> pour les slots mappés
+                        {storageStatus?.s3 ? '' : ' (S3 indisponible : étape ignorée)'}.
+                      </span>
+                    </label>
+                    <label className="le__check-label le__check-label--block">
+                      <input
+                        type="checkbox"
+                        checked={skipAutoImagineOnce}
+                        disabled={busy}
+                        onChange={(e) => setSkipAutoImagineOnce(e.target.checked)}
+                      />
+                      <span>Prochain remplissage seulement : ne pas lancer Imagine (même si l’option ci-dessus est cochée).</span>
+                    </label>
+                  </div>
                   <label className="le__label">
                     Brief (optionnel)
                     <textarea
