@@ -164,7 +164,7 @@ export class LandingStorageController {
     return this.storage.patchContentImageSlot(versionId, dto);
   }
 
-  /** Met à jour `content.globals.visualBrief` (et optionnellement `visualBriefMarkdown`). */
+  /** Met à jour `content.globals` : `visualBrief`, `visualBriefMarkdown`, `backgroundImage`, `clearBackgroundImage`. */
   @Patch('projects/:projectId/versions/:versionId/content-globals')
   async patchContentGlobals(
     @Param('projectId') projectId: string,

@@ -6,7 +6,10 @@ import {
   VARIANTS_BY_SECTION,
   type DeckSectionKey,
 } from '../lib/deckSectionCatalog'
+import { DeckLandingView } from '../components/DeckLandingView'
+import { isDeckModularLandingV1 } from '../lib/deckLandingGuards'
 import { Markdown } from '../lib/Markdown'
+import type { DeckModularLandingV1 } from '../types/deckLanding'
 import './landing-editor.css'
 
 type ProjectDoc = {
@@ -528,6 +531,15 @@ export function LandingEditorProjectPage() {
   const [manualSelected, setManualSelected] = useState<Record<string, boolean>>({})
   const [manualVariants, setManualVariants] = useState<Record<string, string>>({})
 
+  /** Split : aperçu DeckLandingView + panneau ; panel : édition seule ; preview : aperçu seul. */
+  const [editorLayout, setEditorLayout] = useState<'split' | 'panel' | 'preview'>('split')
+
+  const previewLanding = useMemo((): DeckModularLandingV1 | null => {
+    const c = versionDetail?.content
+    if (!c || !isDeckModularLandingV1(c)) return null
+    return c
+  }, [versionDetail?.content])
+
   const imageSlotRows = useMemo(() => {
     const c = versionDetail?.content
     if (!c || typeof c !== 'object') return []
@@ -547,6 +559,35 @@ export function LandingEditorProjectPage() {
   useEffect(() => {
     setVisualBriefDraft(visualBriefFromContent)
   }, [visualBriefFromContent])
+
+  const pageBgUrlFromContent = useMemo(() => {
+    const c = versionDetail?.content
+    if (!c || typeof c !== 'object') return ''
+    const g = (c as Record<string, unknown>).globals
+    if (!g || typeof g !== 'object') return ''
+    const bg = (g as Record<string, unknown>).backgroundImage
+    if (!bg || typeof bg !== 'object') return ''
+    const u = (bg as Record<string, unknown>).imageUrl
+    return typeof u === 'string' ? u : ''
+  }, [versionDetail?.content])
+
+  const pageBgAltFromContent = useMemo(() => {
+    const c = versionDetail?.content
+    if (!c || typeof c !== 'object') return ''
+    const g = (c as Record<string, unknown>).globals
+    if (!g || typeof g !== 'object') return ''
+    const bg = (g as Record<string, unknown>).backgroundImage
+    if (!bg || typeof bg !== 'object') return ''
+    const a = (bg as Record<string, unknown>).imageAlt
+    return typeof a === 'string' ? a : ''
+  }, [versionDetail?.content])
+
+  const [pageBgUrlDraft, setPageBgUrlDraft] = useState('')
+  const [pageBgAltDraft, setPageBgAltDraft] = useState('')
+  useEffect(() => {
+    setPageBgUrlDraft(pageBgUrlFromContent)
+    setPageBgAltDraft(pageBgAltFromContent)
+  }, [pageBgUrlFromContent, pageBgAltFromContent])
 
   const load = useCallback(() => {
     if (!projectId) return
@@ -861,6 +902,44 @@ export function LandingEditorProjectPage() {
     }
   }
 
+  async function savePageBackground() {
+    if (!projectId || !selectedVersionId) return
+    setBusy(true)
+    setErr(null)
+    setMessage(null)
+    try {
+      const url = pageBgUrlDraft.trim()
+      const body: Record<string, unknown> = url
+        ? {
+            backgroundImage: {
+              imageUrl: url,
+              ...(pageBgAltDraft.trim() ? { imageAlt: pageBgAltDraft.trim() } : {}),
+            },
+          }
+        : { clearBackgroundImage: true }
+      const r = await fetch(
+        `/site/landing-storage/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(selectedVersionId)}/content-globals`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        },
+      )
+      const res = (await r.json().catch(() => ({}))) as { message?: string }
+      if (!r.ok) {
+        const msg = res?.message
+        throw new Error(typeof msg === 'string' ? msg : `${r.status}`)
+      }
+      setMessage(url ? 'Fond de page enregistré (globals.backgroundImage).' : 'Fond de page retiré.')
+      load()
+      loadVersionDetail(selectedVersionId)
+    } catch (e) {
+      setErr((e as Error).message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
   async function uploadAndAssignSlot(sectionId: string, slotId: string, file: File) {
     if (!projectId || !selectedVersionId) return
     const key = `${sectionId}:${slotId}`
@@ -974,8 +1053,13 @@ export function LandingEditorProjectPage() {
     )
   }
 
+  const showLayoutToggle = Boolean(selectedVersionId)
+  const showPreviewPane = Boolean(selectedVersionId && (editorLayout === 'split' || editorLayout === 'preview'))
+  const showEditorPane =
+    !selectedVersionId || editorLayout !== 'preview' || !previewLanding
+
   return (
-    <div className="le">
+    <div className={`le${selectedVersionId ? ' le--fluid' : ''}`}>
       <header className="le__head">
         <h1 className="le__title">Projet landing</h1>
         <nav className="le__nav">
@@ -1038,6 +1122,85 @@ export function LandingEditorProjectPage() {
             )}
           </section>
 
+          {showLayoutToggle ? (
+            <div className="le__layout-toggle" role="group" aria-label="Mode d’affichage éditeur">
+              <span className="le__layout-toggle-label">Aperçu intégré</span>
+              <label className="le__radio le__radio--inline">
+                <input
+                  type="radio"
+                  name="le-editor-layout"
+                  checked={editorLayout === 'split'}
+                  onChange={() => setEditorLayout('split')}
+                />
+                Split (aperçu + panneau)
+              </label>
+              <label className="le__radio le__radio--inline">
+                <input
+                  type="radio"
+                  name="le-editor-layout"
+                  checked={editorLayout === 'panel'}
+                  onChange={() => setEditorLayout('panel')}
+                />
+                Panneau seul
+              </label>
+              <label className="le__radio le__radio--inline">
+                <input
+                  type="radio"
+                  name="le-editor-layout"
+                  checked={editorLayout === 'preview'}
+                  onChange={() => setEditorLayout('preview')}
+                />
+                Aperçu seul
+              </label>
+            </div>
+          ) : null}
+
+          <div
+            className={
+              selectedVersionId && (editorLayout === 'split' || editorLayout === 'preview')
+                ? editorLayout === 'preview'
+                  ? 'le__split-root le__split-root--preview-only'
+                  : 'le__split-root'
+                : 'le__editor-single'
+            }
+          >
+            {showPreviewPane ? (
+              <div
+                className={
+                  editorLayout === 'preview' ? 'le__split-preview le__split-preview--solo' : 'le__split-preview'
+                }
+              >
+                {previewLanding ? (
+                  <DeckLandingView
+                    data={previewLanding}
+                    header={
+                      <nav className="dl-topbar__nav" aria-label="Aperçu">
+                        <Link
+                          to={`/admin/landing-editor/${encodeURIComponent(projectId)}/preview/${encodeURIComponent(selectedVersionId!)}`}
+                        >
+                          Plein écran
+                        </Link>
+                        <Link to={`/admin/landing-editor/${encodeURIComponent(projectId)}`}>Projet</Link>
+                      </nav>
+                    }
+                  />
+                ) : (
+                  <p className="le__muted le__split-preview-placeholder">
+                    Aperçu indisponible : structure + contenu requis (<code>DeckModularLandingV1</code>).
+                  </p>
+                )}
+              </div>
+            ) : null}
+
+            <div
+              className={
+                !showEditorPane
+                  ? 'le__split-panel le__split-panel--hidden'
+                  : selectedVersionId && editorLayout === 'split'
+                    ? 'le__split-panel'
+                    : 'le__editor-single-inner'
+              }
+            >
           {selectedVersionId && versionDetail ? (
             <section className="le__section le__section--wizard">
               <h2>Étape structure — version v{versionDetail.versionNumber}</h2>
@@ -1167,6 +1330,43 @@ export function LandingEditorProjectPage() {
                     <p className="le__muted le__visual-brief-hint">
                       Enregistre dans Mongo sans relancer Grok. Laisser vide puis enregistrer retire le champ.
                     </p>
+                    <div className="le__page-bg-editor">
+                      <label className="le__label">
+                        Fond de page (<code>globals.backgroundImage.imageUrl</code>)
+                        <input
+                          type="text"
+                          className="le__input"
+                          value={pageBgUrlDraft}
+                          disabled={busy}
+                          onChange={(e) => setPageBgUrlDraft(e.target.value)}
+                          placeholder="/site/landing-storage/.../assets/file/... ou URL publique"
+                        />
+                      </label>
+                      <label className="le__label">
+                        Texte alternatif du fond (optionnel)
+                        <input
+                          type="text"
+                          className="le__input"
+                          value={pageBgAltDraft}
+                          disabled={busy}
+                          onChange={(e) => setPageBgAltDraft(e.target.value)}
+                        />
+                      </label>
+                      <div className="le__page-bg-actions">
+                        <button
+                          type="button"
+                          className="le__btn le__btn--secondary"
+                          disabled={busy}
+                          onClick={() => void savePageBackground()}
+                        >
+                          {busy ? '…' : 'Enregistrer le fond'}
+                        </button>
+                        <p className="le__muted le__page-bg-hint">
+                          URL vide + enregistrer retire le fond. Les sections peuvent avoir{' '}
+                          <code>backgroundImage</code> dans le JSON (rendu plein cadre + voile surface).
+                        </p>
+                      </div>
+                    </div>
                   </div>
                   <div className="le__populate-flags">
                     <label className="le__check-label le__check-label--block">
@@ -1306,6 +1506,8 @@ export function LandingEditorProjectPage() {
           ) : selectedVersionId ? (
             <p className="le__muted">Chargement de la version…</p>
           ) : null}
+            </div>
+          </div>
         </>
       ) : null}
     </div>

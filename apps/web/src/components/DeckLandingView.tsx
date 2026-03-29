@@ -22,6 +22,10 @@ export function DeckLandingView({ data, header }: Props) {
   }, [data])
 
   const g = data.globals
+  const pageBgUrl =
+    g.backgroundImage && typeof g.backgroundImage.imageUrl === 'string'
+      ? g.backgroundImage.imageUrl.trim()
+      : ''
   const style: CSSProperties = {
     ['--dl-accent' as string]: g.accent,
     ['--dl-bg' as string]: g.background,
@@ -34,7 +38,14 @@ export function DeckLandingView({ data, header }: Props) {
   }
 
   return (
-    <div className="deck-landing" style={style}>
+    <div className={`deck-landing${pageBgUrl ? ' deck-landing--has-page-bg' : ''}`} style={style}>
+      {pageBgUrl ? (
+        <div
+          className="deck-landing__page-bg"
+          aria-hidden
+          style={{ backgroundImage: `url(${pageBgUrl})` }}
+        />
+      ) : null}
       {header ? <header className="dl-topbar">{header}</header> : null}
       <main className="dl-main">{data.sections.map((s) => renderDeckSection(s))}</main>
     </div>

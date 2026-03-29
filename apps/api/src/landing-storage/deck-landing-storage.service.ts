@@ -263,8 +263,15 @@ export class DeckLandingStorageService {
     const v = await this.versionModel.findById(versionId).exec();
     if (!v) throw new NotFoundException('Version introuvable');
 
-    if (dto.visualBrief === undefined && dto.visualBriefMarkdown === undefined) {
-      throw new BadRequestException('Fournis au moins visualBrief ou visualBriefMarkdown');
+    if (
+      dto.visualBrief === undefined &&
+      dto.visualBriefMarkdown === undefined &&
+      dto.backgroundImage === undefined &&
+      dto.clearBackgroundImage !== true
+    ) {
+      throw new BadRequestException(
+        'Fournis au moins visualBrief, visualBriefMarkdown, backgroundImage ou clearBackgroundImage',
+      );
     }
 
     const content = JSON.parse(JSON.stringify(v.content ?? {})) as Record<string, unknown>;
@@ -288,6 +295,23 @@ export class DeckLandingStorageService {
         delete prevG.visualBriefMarkdown;
       }
     }
+
+    if (dto.clearBackgroundImage === true) {
+      delete prevG.backgroundImage;
+    }
+    if (dto.backgroundImage !== undefined) {
+      const u = dto.backgroundImage.imageUrl.trim();
+      if (!u) {
+        delete prevG.backgroundImage;
+      } else {
+        const alt = dto.backgroundImage.imageAlt?.trim();
+        prevG.backgroundImage = {
+          imageUrl: u,
+          ...(alt ? { imageAlt: alt } : {}),
+        };
+      }
+    }
+
     content.globals = prevG;
     v.content = content;
     await v.save();

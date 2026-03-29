@@ -1,4 +1,4 @@
-import type { ComponentType } from 'react'
+import type { ComponentType, CSSProperties } from 'react'
 import type { DeckLandingSection } from '../types/deckLanding'
 import { CtaMarqueeRibbon } from './cta_band/CtaMarqueeRibbon'
 import type { CtaMarqueeRibbonProps } from './cta_band/CtaMarqueeRibbon'
@@ -131,5 +131,26 @@ export function renderDeckSection(section: DeckLandingSection) {
       </section>
     )
   }
-  return <Cmp key={section.id} {...(section.props as AnyProps)} />
+  const bg = section.backgroundImage
+  const url = typeof bg?.imageUrl === 'string' ? bg.imageUrl.trim() : ''
+  const wrapStyle: CSSProperties | undefined = url
+    ? {
+        backgroundImage: `url(${url})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }
+    : undefined
+  if (!url) {
+    return <Cmp key={section.id} {...(section.props as AnyProps)} />
+  }
+  return (
+    <div
+      key={section.id}
+      className="dl-section-outer"
+      style={wrapStyle}
+      {...(bg?.imageAlt ? { title: bg.imageAlt } : {})}
+    >
+      <Cmp {...(section.props as AnyProps)} />
+    </div>
+  )
 }
