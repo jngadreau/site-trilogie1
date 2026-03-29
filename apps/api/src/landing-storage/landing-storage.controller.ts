@@ -24,6 +24,7 @@ import { PopulateDeckLandingVersionDto } from './dto/populate-deck-landing-versi
 import { PatchDeckLandingContentGlobalsDto } from './dto/patch-deck-landing-content-globals.dto';
 import { PatchDeckLandingImageSlotDto } from './dto/patch-deck-landing-image-slot.dto';
 import { GenerateImageSlotImagineS3Dto } from './dto/generate-image-slot-imagine-s3.dto';
+import { ReorderDeckLandingSectionsDto } from './dto/reorder-deck-landing-sections.dto';
 import { SuggestPromptAlternativesDto } from './dto/suggest-prompt-alternatives.dto';
 import { DeckLandingStorageService } from './deck-landing-storage.service';
 import { LandingContentPopulateService } from './landing-content-populate.service';
@@ -149,6 +150,17 @@ export class LandingStorageController {
   ) {
     await this.storage.assertVersionBelongsToProject(projectId, versionId);
     return this.storage.updateVersion(versionId, dto);
+  }
+
+  /** Réordonne `content.sections` + `sectionOrder` (permutation des ids existants, sans rebuild Grok). */
+  @Patch('projects/:projectId/versions/:versionId/reorder-sections')
+  async reorderSections(
+    @Param('projectId') projectId: string,
+    @Param('versionId') versionId: string,
+    @Body() dto: ReorderDeckLandingSectionsDto,
+  ) {
+    await this.storage.assertVersionBelongsToProject(projectId, versionId);
+    return this.storage.reorderVersionContentSections(versionId, dto.sectionOrder);
   }
 
   /**

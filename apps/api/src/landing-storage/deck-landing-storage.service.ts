@@ -231,6 +231,69 @@ export class DeckLandingStorageService {
     return v.toJSON();
   }
 
+  /**
+   * Réordonne `content.sections` et `sectionOrder` sans reconstruire les squelettes (préserve props / media).
+   * `newOrder` doit être une permutation exacte des `id` présents dans `content.sections`.
+   */
+  async reorderVersionContentSections(versionId: string, newOrder: string[]): Promise<unknown> {
+    if (!Types.ObjectId.isValid(versionId)) {
+      throw new NotFoundException('Identifiant version invalide');
+    }
+    const v = await this.versionModel.findById(versionId).exec();
+    if (!v) throw new NotFoundException('Version introuvable');
+
+    const content = JSON.parse(JSON.stringify(v.content ?? {})) as Record<string, unknown>;
+    const sections = content.sections;
+    if (!Array.isArray(sections)) {
+      throw new BadRequestException('content.sections manquant');
+    }
+
+    const byId = new Map<string, Record<string, unknown>>();
+    const ids: string[] = [];
+    for (const raw of sections) {
+      if (!isRecord(raw)) {
+        throw new BadRequestException('Entrée invalide dans content.sections');
+      }
+      const id = typeof raw.id === 'string' ? raw.id.trim() : '';
+      if (!id) {
+        throw new BadRequestException('Section sans id dans content.sections');
+      }
+      if (byId.has(id)) {
+        throw new BadRequestException(`Id de section dupliqué : ${id}`);
+      }
+      byId.set(id, raw);
+      ids.push(id);
+    }
+
+    const order = newOrder.map((x) => (typeof x === 'string' ? x.trim() : '')).filter(Boolean);
+    if (order.length !== byId.size) {
+      throw new BadRequestException(
+        'sectionOrder : nombre d’ids différent de content.sections (ou ids vides)',
+      );
+    }
+    const setOrder = new Set(order);
+    if (setOrder.size !== order.length) {
+      throw new BadRequestException('sectionOrder contient des doublons');
+    }
+    const setIds = new Set(ids);
+    for (const id of order) {
+      if (!setIds.has(id)) {
+        throw new BadRequestException(`sectionOrder contient un id inconnu : ${id}`);
+      }
+    }
+    for (const id of ids) {
+      if (!setOrder.has(id)) {
+        throw new BadRequestException(`sectionOrder omet la section : ${id}`);
+      }
+    }
+
+    content.sections = order.map((id) => byId.get(id)!);
+    v.sectionOrder = order;
+    v.content = content as Record<string, unknown>;
+    await v.save();
+    return v.toJSON() as unknown;
+  }
+
   /** Fusionne le document landing généré par Grok dans la version (conserve `imageHistory` si présent). */
   async mergePopulatedLandingDocument(
     versionId: string,

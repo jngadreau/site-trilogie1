@@ -69,7 +69,12 @@ export function LandingMongoPreviewPage() {
             Prévisualisation Mongo — <code>{data.slug}</code>
           </span>
           <nav className="dl-topbar__nav" aria-label="Navigation">
-            <Link to={`/admin/landing-editor/${encodeURIComponent(projectId)}`}>Éditeur</Link>
+            <Link to={`/admin/landing-editor/${encodeURIComponent(projectId)}`}>Projet</Link>
+            <Link
+              to={`/admin/landing-editor/${encodeURIComponent(projectId)}/version/${encodeURIComponent(versionId)}/edit`}
+            >
+              Éditeur sections
+            </Link>
             <Link to="/admin">Admin</Link>
             <Link to="/">Accueil</Link>
           </nav>

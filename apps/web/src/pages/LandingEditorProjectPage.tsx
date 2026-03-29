@@ -6,10 +6,7 @@ import {
   VARIANTS_BY_SECTION,
   type DeckSectionKey,
 } from '../lib/deckSectionCatalog'
-import { DeckLandingView } from '../components/DeckLandingView'
-import { isDeckModularLandingV1 } from '../lib/deckLandingGuards'
 import { Markdown } from '../lib/Markdown'
-import type { DeckModularLandingV1 } from '../types/deckLanding'
 import './landing-editor.css'
 
 type ProjectDoc = {
@@ -720,15 +717,6 @@ export function LandingEditorProjectPage() {
   const [manualSelected, setManualSelected] = useState<Record<string, boolean>>({})
   const [manualVariants, setManualVariants] = useState<Record<string, string>>({})
 
-  /** Split : aperçu DeckLandingView + panneau ; panel : édition seule ; preview : aperçu seul. */
-  const [editorLayout, setEditorLayout] = useState<'split' | 'panel' | 'preview'>('split')
-
-  const previewLanding = useMemo((): DeckModularLandingV1 | null => {
-    const c = versionDetail?.content
-    if (!c || !isDeckModularLandingV1(c)) return null
-    return c
-  }, [versionDetail?.content])
-
   const imageSlotRows = useMemo(() => {
     const c = versionDetail?.content
     if (!c || typeof c !== 'object') return []
@@ -1242,48 +1230,6 @@ export function LandingEditorProjectPage() {
     )
   }
 
-  const showLayoutToggle = Boolean(selectedVersionId)
-  const showPreviewPane = Boolean(selectedVersionId && (editorLayout === 'split' || editorLayout === 'preview'))
-  const showEditorPane =
-    !selectedVersionId || editorLayout !== 'preview' || !previewLanding
-  const chromeInSidePanel = Boolean(
-    selectedVersionId && (editorLayout === 'split' || editorLayout === 'panel'),
-  )
-  const chromeAbovePreviewOnly = Boolean(selectedVersionId && editorLayout === 'preview')
-
-  const layoutToggleEl = showLayoutToggle ? (
-    <div className="le__layout-toggle" role="group" aria-label="Mode d’affichage éditeur">
-      <span className="le__layout-toggle-label">Aperçu</span>
-      <label className="le__radio le__radio--inline">
-        <input
-          type="radio"
-          name="le-editor-layout"
-          checked={editorLayout === 'split'}
-          onChange={() => setEditorLayout('split')}
-        />
-        Split
-      </label>
-      <label className="le__radio le__radio--inline">
-        <input
-          type="radio"
-          name="le-editor-layout"
-          checked={editorLayout === 'panel'}
-          onChange={() => setEditorLayout('panel')}
-        />
-        Panneau
-      </label>
-      <label className="le__radio le__radio--inline">
-        <input
-          type="radio"
-          name="le-editor-layout"
-          checked={editorLayout === 'preview'}
-          onChange={() => setEditorLayout('preview')}
-        />
-        Aperçu seul
-      </label>
-    </div>
-  ) : null
-
   const newVersionButton = (
     <button type="button" className="le__btn le__btn--secondary" disabled={busy} onClick={() => addDraftVersion()}>
       {busy ? '…' : 'Nouvelle version'}
@@ -1320,20 +1266,6 @@ export function LandingEditorProjectPage() {
       )}
     </>
   )
-
-  const panelMeta = project ? (
-    <p className="le__panel-meta">
-      <code className="le__mono">{project.slug}</code>
-      <span className="le__muted"> · jeu </span>
-      <code className="le__mono">{project.gameKey}</code>
-      {project.title ? (
-        <>
-          <span className="le__muted"> — </span>
-          {project.title}
-        </>
-      ) : null}
-    </p>
-  ) : null
 
   return (
     <div className={`le${selectedVersionId ? ' le--fluid' : ''}`}>
@@ -1376,72 +1308,58 @@ export function LandingEditorProjectPage() {
             </>
           ) : null}
 
-          {chromeAbovePreviewOnly ? (
-            <div className="le__preview-chrome">
-              {panelMeta}
-              <div className="le__preview-chrome-versions">{versionList}</div>
-              {layoutToggleEl}
+          {selectedVersionId && project && versionDetail ? (
+            <div className="le__hub-context">
+              <div className="le__hub-context-inner">
+                <p className="le__hub-context-version">
+                  <span className="le__pill">{versionDetail.status}</span> Version v{versionDetail.versionNumber}
+                  {versionDetail.label ? <span className="le__muted"> — {versionDetail.label}</span> : null}
+                </p>
+                <p className="le__hub-context-meta">
+                  Projet <code className="le__mono">{project.slug}</code>
+                  <span className="le__muted"> · jeu </span>
+                  <code className="le__mono">{project.gameKey}</code>
+                  {project.title ? (
+                    <>
+                      <span className="le__muted"> — </span>
+                      {project.title}
+                    </>
+                  ) : null}
+                </p>
+              </div>
+              <div className="le__hub-context-actions">
+                <Link
+                  className="le__btn le__btn--small le__btn--secondary"
+                  to={`/admin/landing-editor/${encodeURIComponent(projectId)}/preview/${encodeURIComponent(selectedVersionId)}`}
+                >
+                  Prévisualiser
+                </Link>
+                <Link
+                  className="le__btn le__btn--small"
+                  to={`/admin/landing-editor/${encodeURIComponent(projectId)}/version/${encodeURIComponent(selectedVersionId)}/edit`}
+                >
+                  Éditeur (ordre + JSON)
+                </Link>
+              </div>
             </div>
           ) : null}
 
-          <div
-            className={
-              selectedVersionId && (editorLayout === 'split' || editorLayout === 'preview')
-                ? editorLayout === 'preview'
-                  ? 'le__split-root le__split-root--preview-only'
-                  : 'le__split-root'
-                : 'le__editor-single'
-            }
-          >
-            {showPreviewPane ? (
-              <div
-                className={
-                  editorLayout === 'preview' ? 'le__split-preview le__split-preview--solo' : 'le__split-preview'
-                }
-              >
-                {previewLanding ? (
-                  <DeckLandingView
-                    data={previewLanding}
-                    fillViewport={false}
-                    header={
-                      <nav className="dl-topbar__nav" aria-label="Aperçu">
-                        <Link
-                          to={`/admin/landing-editor/${encodeURIComponent(projectId)}/preview/${encodeURIComponent(selectedVersionId!)}`}
-                        >
-                          Plein écran
-                        </Link>
-                        <Link to={`/admin/landing-editor/${encodeURIComponent(projectId)}`}>Projet</Link>
-                      </nav>
-                    }
-                  />
-                ) : (
-                  <p className="le__muted le__split-preview-placeholder">
-                    Aperçu indisponible : structure + contenu requis (<code>DeckModularLandingV1</code>).
-                  </p>
-                )}
-              </div>
-            ) : null}
+          {selectedVersionId ? (
+            <section className="le__section le__hub-version-pick">
+              <h2 className="le__h3">Versions du projet</h2>
+              <p className="le__muted le__hub-version-pick-hint">
+                Choisis une autre version pour la structure et la génération, ou ouvre la prévisualisation / l’éditeur
+                ci-dessus.
+              </p>
+              {versionList}
+            </section>
+          ) : null}
 
-            <div
-              className={
-                !showEditorPane
-                  ? 'le__split-panel le__split-panel--hidden'
-                  : selectedVersionId && editorLayout === 'split'
-                    ? 'le__split-panel'
-                    : 'le__editor-single-inner'
-              }
-            >
-              {chromeInSidePanel ? (
-                <div className="le__panel-top">
-                  {panelMeta}
-                  {versionList}
-                  {layoutToggleEl}
-                </div>
-              ) : null}
-          {selectedVersionId && versionDetail ? (
-            <section
-              className={`le__section le__section--wizard${chromeInSidePanel ? ' le__section--after-panel-top' : ''}`}
-            >
+          {selectedVersionId ? (
+            <div className="le__editor-single">
+              <div className="le__editor-single-inner">
+                {versionDetail ? (
+            <section className="le__section le__section--wizard">
               <h2>Étape structure — version v{versionDetail.versionNumber}</h2>
 
               <fieldset className="le__fieldset">
@@ -1643,12 +1561,19 @@ export function LandingEditorProjectPage() {
                   <button type="button" className="le__btn" disabled={busy} onClick={() => runPopulateContent()}>
                     {busy ? '…' : 'Générer le contenu avec Grok'}
                   </button>
-                  <p className="le__muted le__populate-meta">
+                  <p className="le__muted le__populate-meta le__hub-open-row">
                     <Link
                       className="le__link"
                       to={`/admin/landing-editor/${encodeURIComponent(projectId!)}/preview/${encodeURIComponent(selectedVersionId)}`}
                     >
-                      Prévisualiser cette version
+                      Prévisualiser
+                    </Link>
+                    <span className="le__muted"> · </span>
+                    <Link
+                      className="le__link"
+                      to={`/admin/landing-editor/${encodeURIComponent(projectId!)}/version/${encodeURIComponent(selectedVersionId)}/edit`}
+                    >
+                      Éditeur (ordre des sections + JSON)
                     </Link>
                   </p>
                   {storageStatus?.storageReady ? (
@@ -1742,11 +1667,12 @@ export function LandingEditorProjectPage() {
                 </div>
               ) : null}
             </section>
-          ) : selectedVersionId ? (
-            <p className="le__muted">Chargement de la version…</p>
-          ) : null}
+                ) : (
+                  <p className="le__muted">Chargement de la version…</p>
+                )}
+              </div>
             </div>
-          </div>
+          ) : null}
         </>
       ) : null}
     </div>
