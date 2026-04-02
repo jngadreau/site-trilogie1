@@ -34,7 +34,12 @@ export const VARIANTS_BY_SECTION: Record<DeckSectionKey, readonly string[]> = {
   how_to_use: ['HowToNumbered', 'HowToTimeline'],
   in_the_box: ['IncludedChecklist', 'IncludedHighlightGrid'],
   card_gallery: ['CardGalleryGrid', 'CardGalleryScroll'],
-  photo_gallery: ['PhotoSpotlightGrid', 'PhotoFilmstripRow'],
+  photo_gallery: [
+    'PhotoSpotlightGrid',
+    'PhotoFilmstripRow',
+    'PhotoCinematicCollage',
+    'PhotoMasonryCascade',
+  ],
   faq: ['FaqAccordion', 'FaqTwoColumn'],
   creator: ['CreatorSpotlight', 'CreatorQuoteBand'],
   testimonials: ['TestimonialStrip', 'TestimonialSpotlight'],

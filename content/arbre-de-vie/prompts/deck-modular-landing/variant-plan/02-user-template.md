@@ -33,7 +33,7 @@ Chaque bloc décrit **rôle visuel, données attendues, consignes pour l’IA**.
 | `how_to_use` | `HowToNumbered`, `HowToTimeline` |
 | `in_the_box` | `IncludedChecklist`, `IncludedHighlightGrid` |
 | `card_gallery` | `CardGalleryGrid`, `CardGalleryScroll` |
-| `photo_gallery` | `PhotoSpotlightGrid`, `PhotoFilmstripRow` |
+| `photo_gallery` | `PhotoSpotlightGrid`, `PhotoFilmstripRow`, `PhotoCinematicCollage`, `PhotoMasonryCascade` |
 | `faq` | `FaqAccordion`, `FaqTwoColumn` |
 | `creator` | `CreatorSpotlight`, `CreatorQuoteBand` |
 | `testimonials` | `TestimonialStrip`, `TestimonialSpotlight` |

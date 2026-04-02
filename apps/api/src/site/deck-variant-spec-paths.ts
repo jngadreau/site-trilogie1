@@ -23,6 +23,8 @@ export const VARIANT_TO_SPEC_REL: Record<string, string> = {
   CardGalleryScroll: 'card_gallery/variants/CardGalleryScroll.spec.md',
   PhotoSpotlightGrid: 'photo_gallery/variants/PhotoSpotlightGrid.spec.md',
   PhotoFilmstripRow: 'photo_gallery/variants/PhotoFilmstripRow.spec.md',
+  PhotoCinematicCollage: 'photo_gallery/variants/PhotoCinematicCollage.spec.md',
+  PhotoMasonryCascade: 'photo_gallery/variants/PhotoMasonryCascade.spec.md',
   FaqAccordion: 'faq/variants/FaqAccordion.spec.md',
   FaqTwoColumn: 'faq/variants/FaqTwoColumn.spec.md',
   CreatorSpotlight: 'creator/variants/CreatorSpotlight.spec.md',

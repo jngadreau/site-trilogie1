@@ -496,6 +496,87 @@ export const SECTION_DEMO_FIXTURES: Record<DeckSectionKey, SectionDemoBlock[]> =
         ],
       },
     },
+    {
+      variant: 'PhotoCinematicCollage',
+      label: 'PhotoCinematicCollage',
+      props: {
+        sectionTitle: 'Scènes immersives',
+        introMarkdown:
+          'Une composition **image-first** : une scène principale, une narration courte, puis des détails visuels.',
+        headline: 'Un récit visuel autour de l’Arbre',
+        bodyMarkdown:
+          'Idéal pour mettre en valeur les **ambiances** (lumière, matière, gestes) sans quitter la cohérence éditoriale du deck.',
+        ctaLabel: 'Voir la galerie complète',
+        ctaHref: '#',
+        photos: [
+          {
+            imageUrl: DEMO_HERO_IMAGE,
+            alt: 'Forêt dorée au lever du jour',
+            title: 'Lumière de fond',
+            captionMarkdown: 'Le visuel principal crée une **atmosphère** enveloppante.',
+          },
+          {
+            imageUrl: demoCardUrl(13),
+            alt: 'Carte 13 en gros plan',
+            title: 'Carte vedette',
+            captionMarkdown: 'Texture et finesse des détails sur une face Image.',
+          },
+          {
+            imageUrl: demoCardUrl(28),
+            alt: 'Carte 28',
+            title: 'Palette',
+            captionMarkdown: 'Contraste doux et teintes naturelles.',
+          },
+          {
+            imageUrl: demoCardUrl(47),
+            alt: 'Carte 47',
+            title: 'Rythme',
+            captionMarkdown: 'Complément visuel pour soutenir le récit.',
+          },
+        ],
+      },
+    },
+    {
+      variant: 'PhotoMasonryCascade',
+      label: 'PhotoMasonryCascade',
+      props: {
+        sectionTitle: 'Mosaic d’ambiances',
+        introMarkdown:
+          'Une grille **cascade** pour montrer la variété des visuels : paysages, détails cartes, nuances de couleur.',
+        photos: [
+          {
+            imageUrl: DEMO_HERO_IMAGE,
+            alt: 'Arbres en lumière diffuse',
+            title: 'Ambiance générale',
+            captionMarkdown: 'Point d’entrée poétique du set.',
+          },
+          {
+            imageUrl: demoCardUrl(4),
+            alt: 'Carte 4',
+            title: 'Focus',
+            captionMarkdown: 'Cadrage serré sur une carte.',
+          },
+          {
+            imageUrl: demoCardUrl(19),
+            alt: 'Carte 19',
+            title: 'Symboles',
+            captionMarkdown: 'Iconographie du deck.',
+          },
+          {
+            imageUrl: demoCardUrl(36),
+            alt: 'Carte 36',
+            title: 'Matière',
+            captionMarkdown: 'Rendu et texture en détail.',
+          },
+          {
+            imageUrl: demoCardUrl(58),
+            alt: 'Carte 58',
+            title: 'Finale',
+            captionMarkdown: 'Dernière note visuelle de la série.',
+          },
+        ],
+      },
+    },
   ],
   faq: [
     {

@@ -103,6 +103,30 @@ export function applySlotImageUrlToSectionContent(
     }
   }
 
+  const cinematicIdx = /^cinematic-(\d+)$/i.exec(slot.slotId);
+  if (cinematicIdx && sectionId === 'photo_gallery') {
+    const idx = Number.parseInt(cinematicIdx[1], 10);
+    const arr = props.photos;
+    if (Array.isArray(arr) && arr[idx] && typeof arr[idx] === 'object') {
+      const cell = arr[idx] as Record<string, unknown>;
+      cell.imageUrl = imageUrl;
+      if (alt) cell.imageAlt = alt;
+      return true;
+    }
+  }
+
+  const masonryIdx = /^masonry-(\d+)$/i.exec(slot.slotId);
+  if (masonryIdx && sectionId === 'photo_gallery') {
+    const idx = Number.parseInt(masonryIdx[1], 10);
+    const arr = props.photos;
+    if (Array.isArray(arr) && arr[idx] && typeof arr[idx] === 'object') {
+      const cell = arr[idx] as Record<string, unknown>;
+      cell.imageUrl = imageUrl;
+      if (alt) cell.imageAlt = alt;
+      return true;
+    }
+  }
+
   if (slot.slotId === sectionId) {
     props.imageUrl = imageUrl;
     if (alt) props.imageAlt = alt;

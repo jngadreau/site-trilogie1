@@ -19,7 +19,12 @@ export const DECK_VARIANT_CHOICES: Record<DeckLandingSectionId, readonly string[
   how_to_use: ['HowToNumbered', 'HowToTimeline'],
   in_the_box: ['IncludedChecklist', 'IncludedHighlightGrid'],
   card_gallery: ['CardGalleryGrid', 'CardGalleryScroll'],
-  photo_gallery: ['PhotoSpotlightGrid', 'PhotoFilmstripRow'],
+  photo_gallery: [
+    'PhotoSpotlightGrid',
+    'PhotoFilmstripRow',
+    'PhotoCinematicCollage',
+    'PhotoMasonryCascade',
+  ],
   faq: ['FaqAccordion', 'FaqTwoColumn'],
   creator: ['CreatorSpotlight', 'CreatorQuoteBand'],
   testimonials: ['TestimonialStrip', 'TestimonialSpotlight'],

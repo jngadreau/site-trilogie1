@@ -306,6 +306,79 @@ const DEFAULTS = {
       { imageUrl: '/ai/generated-images/deck-cards/card_50_front.png', alt: 'Carte 50', label: 'Série' },
     ],
   }),
+  PhotoCinematicCollage: () => ({
+    sectionTitle: 'Scènes immersives',
+    introMarkdown:
+      'Un montage **image-first** : plan principal, narration courte et vignettes de détails pour renforcer l’ambiance.',
+    headline: 'Explorer le jeu comme un carnet visuel',
+    bodyMarkdown:
+      'Cette variante met l’accent sur la **présence** des visuels : lumière, matière et symboles, sans surcharger la lecture.',
+    ctaLabel: 'Voir la galerie',
+    ctaHref: '#',
+    photos: [
+      {
+        imageUrl: '/ai/generated-images/banner-1.png',
+        alt: 'Forêt lumineuse et atmosphère calme',
+        title: 'Plan principal',
+        captionMarkdown: 'Une image large pour installer le **ton** de la section.',
+      },
+      {
+        imageUrl: '/ai/generated-images/deck-cards/card_13_front.png',
+        alt: 'Carte 13',
+        title: 'Détail',
+        captionMarkdown: 'Extrait du deck en gros plan.',
+      },
+      {
+        imageUrl: '/ai/generated-images/deck-cards/card_27_front.png',
+        alt: 'Carte 27',
+        title: 'Palette',
+        captionMarkdown: 'Jeu de couleurs et contraste.',
+      },
+      {
+        imageUrl: '/ai/generated-images/deck-cards/card_46_front.png',
+        alt: 'Carte 46',
+        title: 'Rythme',
+        captionMarkdown: 'Variation visuelle complémentaire.',
+      },
+    ],
+  }),
+  PhotoMasonryCascade: () => ({
+    sectionTitle: 'Mosaic d’ambiances',
+    introMarkdown:
+      'Une grille en **cascade** qui montre la diversité des visuels : ambiances naturelles et faces de cartes.',
+    photos: [
+      {
+        imageUrl: '/ai/generated-images/banner-1.png',
+        alt: 'Lumière à travers les arbres',
+        title: 'Ambiance',
+        captionMarkdown: 'Entrée poétique du set.',
+      },
+      {
+        imageUrl: '/ai/generated-images/deck-cards/card_6_front.png',
+        alt: 'Carte 6',
+        title: 'Focus',
+        captionMarkdown: 'Détail d’une face du deck.',
+      },
+      {
+        imageUrl: '/ai/generated-images/deck-cards/card_18_front.png',
+        alt: 'Carte 18',
+        title: 'Symboles',
+        captionMarkdown: 'Motifs et iconographie.',
+      },
+      {
+        imageUrl: '/ai/generated-images/deck-cards/card_35_front.png',
+        alt: 'Carte 35',
+        title: 'Texture',
+        captionMarkdown: 'Matière et contraste.',
+      },
+      {
+        imageUrl: '/ai/generated-images/deck-cards/card_57_front.png',
+        alt: 'Carte 57',
+        title: 'Finale',
+        captionMarkdown: 'Dernière note de la série.',
+      },
+    ],
+  }),
   FaqAccordion: () => ({
     sectionTitle: 'Questions fréquentes',
     introMarkdown: 'Réponses courtes sur l’usage et le contenu — le livret va plus en profondeur.',

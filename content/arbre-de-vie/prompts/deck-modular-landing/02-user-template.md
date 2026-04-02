@@ -104,7 +104,7 @@ Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck).
     },
     {
       "id": "photo_gallery",
-      "variant": "PhotoSpotlightGrid OU PhotoFilmstripRow",
+      "variant": "PhotoSpotlightGrid OU PhotoFilmstripRow OU PhotoCinematicCollage OU PhotoMasonryCascade",
       "props": {},
       "media": []
     },
@@ -148,7 +148,7 @@ Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck).
 }
 ```
 
-Chaque section doit inclure **`media`** : tableau d’objets slots (voir specs `.spec.md` « Slots médias ») ou `[]` si aucune image. Pour **`HeroCardsFan`**, **`HeroCardsStrip`**, **`HeroCardsMosaic`**, **`CardGalleryGrid`**, **`CardGalleryScroll`**, **`PhotoSpotlightGrid`**, **`PhotoFilmstripRow`**, **`TestimonialStrip`**, **`NewsletterInline`**, **`NewsletterSplit`** : `media` = **`[]`** (images dans `cards[]`, `photos[]`, `items[]`, `quotes[]` ou portrait optionnel `TestimonialSpotlight` selon la variante).
+Chaque section doit inclure **`media`** : tableau d’objets slots (voir specs `.spec.md` « Slots médias ») ou `[]` si aucune image. Pour **`HeroCardsFan`**, **`HeroCardsStrip`**, **`HeroCardsMosaic`**, **`CardGalleryGrid`**, **`CardGalleryScroll`**, **`PhotoSpotlightGrid`**, **`PhotoFilmstripRow`**, **`PhotoCinematicCollage`**, **`PhotoMasonryCascade`**, **`TestimonialStrip`**, **`NewsletterInline`**, **`NewsletterSplit`** : `media` = **`[]`** (images dans `cards[]`, `photos[]`, `items[]`, `quotes[]` ou portrait optionnel `TestimonialSpotlight` selon la variante).
 
 ### Props par variant (obligatoires)
 
@@ -193,6 +193,10 @@ Chaque section doit inclure **`media`** : tableau d’objets slots (voir specs `
 **PhotoSpotlightGrid** : `sectionTitle`, `introMarkdown` (optionnel), `photos` (2 à 6 `{ "imageUrl", "alt", "title?", "captionMarkdown?" }` — URLs sous `/ai/generated-images/…`)
 
 **PhotoFilmstripRow** : `sectionTitle`, `introMarkdown` (optionnel), `items` (3 à 5 `{ "imageUrl", "alt", "label?" }`)
+
+**PhotoCinematicCollage** : `sectionTitle`, `introMarkdown` (optionnel), `headline` (optionnel), `bodyMarkdown` (optionnel), `ctaLabel` / `ctaHref` (optionnels), `photos` (2 à 6 `{ "imageUrl", "alt?" | "imageAlt?", "title?", "captionMarkdown?" }` ; 1 photo lead + vignettes)
+
+**PhotoMasonryCascade** : `sectionTitle`, `introMarkdown` (optionnel), `photos` (2 à 8 `{ "imageUrl", "alt?" | "imageAlt?", "title?", "captionMarkdown?" }`)
 
 **FaqAccordion** : `sectionTitle`, `introMarkdown` (optionnel), `items` (≥ 3 `{ "question", "answerMarkdown" }`)
 

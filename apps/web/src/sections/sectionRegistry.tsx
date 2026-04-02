@@ -50,6 +50,10 @@ import { PhotoSpotlightGrid } from './photo_gallery/PhotoSpotlightGrid'
 import type { PhotoSpotlightGridProps } from './photo_gallery/PhotoSpotlightGrid'
 import { PhotoFilmstripRow } from './photo_gallery/PhotoFilmstripRow'
 import type { PhotoFilmstripRowProps } from './photo_gallery/PhotoFilmstripRow'
+import { PhotoCinematicCollage } from './photo_gallery/PhotoCinematicCollage'
+import type { PhotoCinematicCollageProps } from './photo_gallery/PhotoCinematicCollage'
+import { PhotoMasonryCascade } from './photo_gallery/PhotoMasonryCascade'
+import type { PhotoMasonryCascadeProps } from './photo_gallery/PhotoMasonryCascade'
 import { TestimonialStrip } from './testimonials/TestimonialStrip'
 import type { TestimonialStripProps } from './testimonials/TestimonialStrip'
 import { TestimonialSpotlight } from './testimonials/TestimonialSpotlight'
@@ -81,6 +85,8 @@ type AnyProps =
   | CardGalleryScrollProps
   | PhotoSpotlightGridProps
   | PhotoFilmstripRowProps
+  | PhotoCinematicCollageProps
+  | PhotoMasonryCascadeProps
   | TestimonialStripProps
   | TestimonialSpotlightProps
   | NewsletterInlineProps
@@ -116,6 +122,8 @@ const registry: Record<string, ComponentType<AnyProps>> = {
   CardGalleryScroll: CardGalleryScroll as ComponentType<AnyProps>,
   PhotoSpotlightGrid: PhotoSpotlightGrid as ComponentType<AnyProps>,
   PhotoFilmstripRow: PhotoFilmstripRow as ComponentType<AnyProps>,
+  PhotoCinematicCollage: PhotoCinematicCollage as ComponentType<AnyProps>,
+  PhotoMasonryCascade: PhotoMasonryCascade as ComponentType<AnyProps>,
   TestimonialStrip: TestimonialStrip as ComponentType<AnyProps>,
   TestimonialSpotlight: TestimonialSpotlight as ComponentType<AnyProps>,
   NewsletterInline: NewsletterInline as ComponentType<AnyProps>,

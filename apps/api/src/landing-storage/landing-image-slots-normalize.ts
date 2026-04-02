@@ -54,7 +54,12 @@ export function inferImageSlotPurpose(
     return 'lifestyle';
   }
   if (sectionId === 'photo_gallery') {
-    if (/^photo-\d+$/i.test(slotId) || /^item-\d+$/i.test(slotId)) {
+    if (
+      /^photo-\d+$/i.test(slotId) ||
+      /^item-\d+$/i.test(slotId) ||
+      /^cinematic-\d+$/i.test(slotId) ||
+      /^masonry-\d+$/i.test(slotId)
+    ) {
       return 'lifestyle';
     }
   }
