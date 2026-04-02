@@ -1,9 +1,12 @@
 import type { DeckSectionKey } from '../lib/deckSectionCatalog'
+import { DECK_VARIANT_ALIAS_TO_BASE } from '../lib/deckVariantAliases'
 import { DEMO_HERO_IMAGE, demoCardUrl } from './sectionDemoGlobals'
 
 export type SectionDemoBlock = {
   variant: string
   label: string
+  /** Optionnel : variante d'alias (résolue côté registry). */
+  aliasOf?: string
   fullWidth?: boolean
   props: Record<string, unknown>
 }
@@ -823,4 +826,34 @@ export const SECTION_DEMO_FIXTURES: Record<DeckSectionKey, SectionDemoBlock[]> =
       },
     },
   ],
+}
+
+/**
+ * Retourne la liste complète des blocs de démo pour un type de section :
+ * - variantes "réelles" définies dans les fixtures
+ * - alias de variantes (dupliqués automatiquement depuis leur base)
+ */
+export function getSectionDemoBlocks(
+  sectionType: DeckSectionKey,
+  allowedVariants: readonly string[],
+): SectionDemoBlock[] {
+  const baseBlocks = SECTION_DEMO_FIXTURES[sectionType] ?? []
+  const byVariant = new Map(baseBlocks.map((b) => [b.variant, b]))
+  const out: SectionDemoBlock[] = [...baseBlocks]
+
+  for (const v of allowedVariants) {
+    if (byVariant.has(v)) continue
+    const base = DECK_VARIANT_ALIAS_TO_BASE[v]
+    if (!base) continue
+    const seed = byVariant.get(base)
+    if (!seed) continue
+    out.push({
+      ...seed,
+      variant: v,
+      label: `${v} (alias de ${base})`,
+      aliasOf: base,
+    })
+  }
+
+  return out
 }

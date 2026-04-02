@@ -62,6 +62,7 @@ import { NewsletterInline } from './newsletter_cta/NewsletterInline'
 import type { NewsletterInlineProps } from './newsletter_cta/NewsletterInline'
 import { NewsletterSplit } from './newsletter_cta/NewsletterSplit'
 import type { NewsletterSplitProps } from './newsletter_cta/NewsletterSplit'
+import { DECK_VARIANT_ALIAS_TO_BASE } from '../lib/deckVariantAliases'
 
 type AnyProps =
   | HeroSplitImageRightProps
@@ -151,7 +152,8 @@ function resolveSectionBackground(section: DeckLandingSection): {
 }
 
 export function renderDeckSection(section: DeckLandingSection) {
-  const Cmp = registry[section.variant]
+  const resolvedVariant = DECK_VARIANT_ALIAS_TO_BASE[section.variant] ?? section.variant
+  const Cmp = registry[resolvedVariant]
   if (!Cmp) {
     return (
       <section key={section.id} className="dl-missing">

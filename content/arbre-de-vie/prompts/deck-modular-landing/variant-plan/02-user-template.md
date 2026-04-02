@@ -27,19 +27,19 @@ Chaque bloc décrit **rôle visuel, données attendues, consignes pour l’IA**.
 | Section | Variantes possibles |
 |---------|---------------------|
 | `hero` | `HeroSplitImageRight`, `HeroFullBleed`, `HeroGlowVault`, `HeroParallaxLayers`, `HeroCardsFan`, `HeroCardsStrip`, `HeroCardsMosaic` |
-| `deck_identity` | `IdentityPanel`, `IdentityMinimal` |
-| `for_who` | `ForWhoTwoColumns`, `ForWhoPillars` |
-| `outcomes` | `OutcomesBentoGrid`, `OutcomesSignalStrip` |
-| `how_to_use` | `HowToNumbered`, `HowToTimeline` |
-| `in_the_box` | `IncludedChecklist`, `IncludedHighlightGrid` |
-| `card_gallery` | `CardGalleryGrid`, `CardGalleryScroll` |
-| `photo_gallery` | `PhotoSpotlightGrid`, `PhotoFilmstripRow`, `PhotoCinematicCollage`, `PhotoMasonryCascade` |
-| `faq` | `FaqAccordion`, `FaqTwoColumn` |
-| `creator` | `CreatorSpotlight`, `CreatorQuoteBand` |
-| `testimonials` | `TestimonialStrip`, `TestimonialSpotlight` |
-| `newsletter_cta` | `NewsletterInline`, `NewsletterSplit` |
-| `related_decks` | `RelatedDecksGrid`, `RelatedDecksInline` |
-| `cta_band` | `CtaMarqueeRibbon`, `CtaSplitAction` |
+| `deck_identity` | `IdentityPanel`, `IdentityMinimal`, `IdentityPanelFramed`, `IdentityPanelStory`, `IdentityMinimalCalm`, `IdentityMinimalEditorial` |
+| `for_who` | `ForWhoTwoColumns`, `ForWhoPillars`, `ForWhoTwoColumnsGuide`, `ForWhoTwoColumnsStory`, `ForWhoPillarsInsight`, `ForWhoPillarsCompass` |
+| `outcomes` | `OutcomesBentoGrid`, `OutcomesSignalStrip`, `OutcomesBentoGridAura`, `OutcomesBentoGridFocus`, `OutcomesSignalStripFlow`, `OutcomesSignalStripCalm` |
+| `how_to_use` | `HowToNumbered`, `HowToTimeline`, `HowToNumberedQuickstart`, `HowToNumberedRitual`, `HowToTimelineFlow`, `HowToTimelineCompass` |
+| `in_the_box` | `IncludedChecklist`, `IncludedHighlightGrid`, `IncludedChecklistEssentials`, `IncludedChecklistPremium`, `IncludedHighlightGridTiles`, `IncludedHighlightGridShowcase` |
+| `card_gallery` | `CardGalleryGrid`, `CardGalleryScroll`, `CardGalleryGridCurated`, `CardGalleryGridDense`, `CardGalleryScrollSnap`, `CardGalleryScrollMomentum` |
+| `photo_gallery` | `PhotoSpotlightGrid`, `PhotoFilmstripRow`, `PhotoCinematicCollage`, `PhotoMasonryCascade`, `PhotoSpotlightGridEditorial`, `PhotoFilmstripRowStory`, `PhotoCinematicCollageNarrative`, `PhotoMasonryCascadeAmbient` |
+| `faq` | `FaqAccordion`, `FaqTwoColumn`, `FaqAccordionCalm`, `FaqAccordionDeep`, `FaqTwoColumnGuide`, `FaqTwoColumnBalanced` |
+| `creator` | `CreatorSpotlight`, `CreatorQuoteBand`, `CreatorSpotlightNarrative`, `CreatorSpotlightPortrait`, `CreatorQuoteBandManifesto`, `CreatorQuoteBandSignature` |
+| `testimonials` | `TestimonialStrip`, `TestimonialSpotlight`, `TestimonialStripVoices`, `TestimonialStripMomentum`, `TestimonialSpotlightHuman`, `TestimonialSpotlightImmersive` |
+| `newsletter_cta` | `NewsletterInline`, `NewsletterSplit`, `NewsletterInlineCalm`, `NewsletterInlinePulse`, `NewsletterSplitEditorial`, `NewsletterSplitMinimal` |
+| `related_decks` | `RelatedDecksGrid`, `RelatedDecksInline`, `RelatedDecksGridShowcase`, `RelatedDecksGridCurated`, `RelatedDecksInlineJourney`, `RelatedDecksInlineSimple` |
+| `cta_band` | `CtaMarqueeRibbon`, `CtaSplitAction`, `CtaMarqueeRibbonGlow`, `CtaMarqueeRibbonCalm`, `CtaSplitActionFocus`, `CtaSplitActionDual` |
 
 ---
 

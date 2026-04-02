@@ -9,24 +9,112 @@ const HERO = [
   'HeroCardsStrip',
   'HeroCardsMosaic',
 ] as const;
-const DECK_ID = ['IdentityPanel', 'IdentityMinimal'] as const;
-const FOR_WHO = ['ForWhoTwoColumns', 'ForWhoPillars'] as const;
-const OUTCOMES = ['OutcomesBentoGrid', 'OutcomesSignalStrip'] as const;
-const HOW = ['HowToNumbered', 'HowToTimeline'] as const;
-const IN_BOX = ['IncludedChecklist', 'IncludedHighlightGrid'] as const;
-const CARD_GALLERY = ['CardGalleryGrid', 'CardGalleryScroll'] as const;
+const DECK_ID = [
+  'IdentityPanel',
+  'IdentityMinimal',
+  'IdentityPanelFramed',
+  'IdentityPanelStory',
+  'IdentityMinimalCalm',
+  'IdentityMinimalEditorial',
+] as const;
+const FOR_WHO = [
+  'ForWhoTwoColumns',
+  'ForWhoPillars',
+  'ForWhoTwoColumnsGuide',
+  'ForWhoTwoColumnsStory',
+  'ForWhoPillarsInsight',
+  'ForWhoPillarsCompass',
+] as const;
+const OUTCOMES = [
+  'OutcomesBentoGrid',
+  'OutcomesSignalStrip',
+  'OutcomesBentoGridAura',
+  'OutcomesBentoGridFocus',
+  'OutcomesSignalStripFlow',
+  'OutcomesSignalStripCalm',
+] as const;
+const HOW = [
+  'HowToNumbered',
+  'HowToTimeline',
+  'HowToNumberedQuickstart',
+  'HowToNumberedRitual',
+  'HowToTimelineFlow',
+  'HowToTimelineCompass',
+] as const;
+const IN_BOX = [
+  'IncludedChecklist',
+  'IncludedHighlightGrid',
+  'IncludedChecklistEssentials',
+  'IncludedChecklistPremium',
+  'IncludedHighlightGridTiles',
+  'IncludedHighlightGridShowcase',
+] as const;
+const CARD_GALLERY = [
+  'CardGalleryGrid',
+  'CardGalleryScroll',
+  'CardGalleryGridCurated',
+  'CardGalleryGridDense',
+  'CardGalleryScrollSnap',
+  'CardGalleryScrollMomentum',
+] as const;
 const PHOTO_GALLERY = [
   'PhotoSpotlightGrid',
   'PhotoFilmstripRow',
   'PhotoCinematicCollage',
   'PhotoMasonryCascade',
+  'PhotoSpotlightGridEditorial',
+  'PhotoFilmstripRowStory',
+  'PhotoCinematicCollageNarrative',
+  'PhotoMasonryCascadeAmbient',
 ] as const;
-const FAQ = ['FaqAccordion', 'FaqTwoColumn'] as const;
-const CREATOR = ['CreatorSpotlight', 'CreatorQuoteBand'] as const;
-const TESTIMONIALS = ['TestimonialStrip', 'TestimonialSpotlight'] as const;
-const NEWSLETTER = ['NewsletterInline', 'NewsletterSplit'] as const;
-const RELATED = ['RelatedDecksGrid', 'RelatedDecksInline'] as const;
-const CTA = ['CtaMarqueeRibbon', 'CtaSplitAction'] as const;
+const FAQ = [
+  'FaqAccordion',
+  'FaqTwoColumn',
+  'FaqAccordionCalm',
+  'FaqAccordionDeep',
+  'FaqTwoColumnGuide',
+  'FaqTwoColumnBalanced',
+] as const;
+const CREATOR = [
+  'CreatorSpotlight',
+  'CreatorQuoteBand',
+  'CreatorSpotlightNarrative',
+  'CreatorSpotlightPortrait',
+  'CreatorQuoteBandManifesto',
+  'CreatorQuoteBandSignature',
+] as const;
+const TESTIMONIALS = [
+  'TestimonialStrip',
+  'TestimonialSpotlight',
+  'TestimonialStripVoices',
+  'TestimonialStripMomentum',
+  'TestimonialSpotlightHuman',
+  'TestimonialSpotlightImmersive',
+] as const;
+const NEWSLETTER = [
+  'NewsletterInline',
+  'NewsletterSplit',
+  'NewsletterInlineCalm',
+  'NewsletterInlinePulse',
+  'NewsletterSplitEditorial',
+  'NewsletterSplitMinimal',
+] as const;
+const RELATED = [
+  'RelatedDecksGrid',
+  'RelatedDecksInline',
+  'RelatedDecksGridShowcase',
+  'RelatedDecksGridCurated',
+  'RelatedDecksInlineJourney',
+  'RelatedDecksInlineSimple',
+] as const;
+const CTA = [
+  'CtaMarqueeRibbon',
+  'CtaSplitAction',
+  'CtaMarqueeRibbonGlow',
+  'CtaMarqueeRibbonCalm',
+  'CtaSplitActionFocus',
+  'CtaSplitActionDual',
+] as const;
 
 export class RegisterDeckLandingVariantDto {
   @IsString()

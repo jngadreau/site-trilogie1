@@ -137,6 +137,14 @@
   letter-spacing: 0.02em;
 }
 
+.section-demo__alias-meta {
+  margin-left: 0.5rem;
+  font-size: 0.78rem;
+  font-family: var(--dl-font-body);
+  color: color-mix(in srgb, var(--dl-text) 55%, transparent);
+  font-weight: 500;
+}
+
 @media (max-width: 720px) {
   .section-demo__body {
     flex-direction: column;
