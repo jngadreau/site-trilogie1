@@ -4,6 +4,7 @@ import { DEMO_HERO_IMAGE, demoCardUrl } from './sectionDemoGlobals'
 export type SectionDemoBlock = {
   variant: string
   label: string
+  fullWidth?: boolean
   props: Record<string, unknown>
 }
 
@@ -499,6 +500,7 @@ export const SECTION_DEMO_FIXTURES: Record<DeckSectionKey, SectionDemoBlock[]> =
     {
       variant: 'PhotoCinematicCollage',
       label: 'PhotoCinematicCollage',
+      fullWidth: true,
       props: {
         sectionTitle: 'Scènes immersives',
         introMarkdown:
@@ -539,6 +541,7 @@ export const SECTION_DEMO_FIXTURES: Record<DeckSectionKey, SectionDemoBlock[]> =
     {
       variant: 'PhotoMasonryCascade',
       label: 'PhotoMasonryCascade',
+      fullWidth: true,
       props: {
         sectionTitle: 'Mosaic d’ambiances',
         introMarkdown:

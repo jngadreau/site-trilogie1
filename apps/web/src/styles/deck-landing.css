@@ -96,11 +96,25 @@
   overflow-x: visible;
 }
 
+.dl-section-shell {
+  width: 100%;
+}
+
+.dl-section-shell--full {
+  margin-inline: -1.25rem;
+  padding-inline: 1.25rem;
+}
+
 /* Réduire les marges latérales quand le root est plus étroit. */
 @media (max-width: 640px) {
   .dl-main {
     padding-left: 0.85rem;
     padding-right: 0.85rem;
+  }
+
+  .dl-section-shell--full {
+    margin-inline: -0.85rem;
+    padding-inline: 0.85rem;
   }
 }
 
@@ -111,6 +125,17 @@
   border-radius: var(--dl-radius);
   background-color: color-mix(in srgb, var(--dl-surface) 88%, transparent);
   box-shadow: 0 1px 0 color-mix(in srgb, var(--dl-text) 8%, transparent);
+}
+
+.dl-section-outer--full {
+  margin-inline: -1.25rem;
+  border-radius: 0;
+}
+
+@media (max-width: 640px) {
+  .dl-section-outer--full {
+    margin-inline: -0.85rem;
+  }
 }
 
 .dl-section-title {

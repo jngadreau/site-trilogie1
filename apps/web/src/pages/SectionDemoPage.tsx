@@ -104,6 +104,7 @@ export function SectionDemoPage() {
                   id: `${sectionType}-demo-${i}`,
                   variant: b.variant,
                   props: b.props,
+                  ...(b.fullWidth ? { layout: { fullWidth: true } } : {}),
                   media: [],
                 })}
               </div>

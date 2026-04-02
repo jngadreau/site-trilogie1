@@ -159,6 +159,7 @@ export function renderDeckSection(section: DeckLandingSection) {
       </section>
     )
   }
+  const isFullWidth = section.layout?.fullWidth === true
   const { url, imageAlt } = resolveSectionBackground(section)
   const wrapStyle: CSSProperties | undefined = url
     ? {
@@ -168,12 +169,16 @@ export function renderDeckSection(section: DeckLandingSection) {
       }
     : undefined
   if (!url) {
-    return <Cmp key={section.id} {...(section.props as AnyProps)} />
+    return (
+      <div key={section.id} className={isFullWidth ? 'dl-section-shell dl-section-shell--full' : 'dl-section-shell'}>
+        <Cmp {...(section.props as AnyProps)} />
+      </div>
+    )
   }
   return (
     <div
       key={section.id}
-      className="dl-section-outer"
+      className={`dl-section-outer${isFullWidth ? ' dl-section-outer--full' : ''}`}
       style={wrapStyle}
       {...(imageAlt ? { title: imageAlt } : {})}
     >
