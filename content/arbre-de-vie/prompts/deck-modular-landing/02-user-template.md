@@ -68,79 +68,79 @@ Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck).
     },
     {
       "id": "deck_identity",
-      "variant": "IdentityPanel OU IdentityMinimal",
+      "variant": "IdentityPanel OU IdentityMinimal OU IdentityPanelFramed OU IdentityPanelStory OU IdentityMinimalCalm OU IdentityMinimalEditorial",
       "props": {},
       "media": []
     },
     {
       "id": "for_who",
-      "variant": "ForWhoTwoColumns OU ForWhoPillars",
+      "variant": "ForWhoTwoColumns OU ForWhoPillars OU ForWhoTwoColumnsGuide OU ForWhoTwoColumnsStory OU ForWhoPillarsInsight OU ForWhoPillarsCompass",
       "props": {},
       "media": []
     },
     {
       "id": "outcomes",
-      "variant": "OutcomesBentoGrid OU OutcomesSignalStrip",
+      "variant": "OutcomesBentoGrid OU OutcomesSignalStrip OU OutcomesBentoGridAura OU OutcomesBentoGridFocus OU OutcomesSignalStripFlow OU OutcomesSignalStripCalm",
       "props": {},
       "media": []
     },
     {
       "id": "how_to_use",
-      "variant": "HowToNumbered OU HowToTimeline",
+      "variant": "HowToNumbered OU HowToTimeline OU HowToNumberedQuickstart OU HowToNumberedRitual OU HowToTimelineFlow OU HowToTimelineCompass",
       "props": {},
       "media": []
     },
     {
       "id": "in_the_box",
-      "variant": "IncludedChecklist OU IncludedHighlightGrid",
+      "variant": "IncludedChecklist OU IncludedHighlightGrid OU IncludedChecklistEssentials OU IncludedChecklistPremium OU IncludedHighlightGridTiles OU IncludedHighlightGridShowcase",
       "props": {},
       "media": []
     },
     {
       "id": "card_gallery",
-      "variant": "CardGalleryGrid OU CardGalleryScroll",
+      "variant": "CardGalleryGrid OU CardGalleryScroll OU CardGalleryGridCurated OU CardGalleryGridDense OU CardGalleryScrollSnap OU CardGalleryScrollMomentum",
       "props": {},
       "media": []
     },
     {
       "id": "photo_gallery",
-      "variant": "PhotoSpotlightGrid OU PhotoFilmstripRow",
+      "variant": "PhotoSpotlightGrid OU PhotoFilmstripRow OU PhotoCinematicCollage OU PhotoMasonryCascade OU PhotoSpotlightGridEditorial OU PhotoFilmstripRowStory OU PhotoCinematicCollageNarrative OU PhotoMasonryCascadeAmbient",
       "props": {},
       "media": []
     },
     {
       "id": "faq",
-      "variant": "FaqAccordion OU FaqTwoColumn",
+      "variant": "FaqAccordion OU FaqTwoColumn OU FaqAccordionCalm OU FaqAccordionDeep OU FaqTwoColumnGuide OU FaqTwoColumnBalanced",
       "props": {},
       "media": []
     },
     {
       "id": "creator",
-      "variant": "CreatorSpotlight OU CreatorQuoteBand",
+      "variant": "CreatorSpotlight OU CreatorQuoteBand OU CreatorSpotlightNarrative OU CreatorSpotlightPortrait OU CreatorQuoteBandManifesto OU CreatorQuoteBandSignature",
       "props": {},
       "media": []
     },
     {
       "id": "testimonials",
-      "variant": "TestimonialStrip OU TestimonialSpotlight",
+      "variant": "TestimonialStrip OU TestimonialSpotlight OU TestimonialStripVoices OU TestimonialStripMomentum OU TestimonialSpotlightHuman OU TestimonialSpotlightImmersive",
       "props": {},
       "media": []
     },
     {
       "id": "newsletter_cta",
-      "variant": "NewsletterInline OU NewsletterSplit",
+      "variant": "NewsletterInline OU NewsletterSplit OU NewsletterInlineCalm OU NewsletterInlinePulse OU NewsletterSplitEditorial OU NewsletterSplitMinimal",
       "props": {},
       "media": []
     },
     {
       "id": "related_decks",
-      "variant": "RelatedDecksGrid OU RelatedDecksInline",
+      "variant": "RelatedDecksGrid OU RelatedDecksInline OU RelatedDecksGridShowcase OU RelatedDecksGridCurated OU RelatedDecksInlineJourney OU RelatedDecksInlineSimple",
       "props": {},
       "media": []
     },
     {
       "id": "cta_band",
-      "variant": "CtaMarqueeRibbon OU CtaSplitAction",
+      "variant": "CtaMarqueeRibbon OU CtaSplitAction OU CtaMarqueeRibbonGlow OU CtaMarqueeRibbonCalm OU CtaSplitActionFocus OU CtaSplitActionDual",
       "props": {},
       "media": []
     }
@@ -148,7 +148,7 @@ Renvoie **uniquement** cet objet (types indicatifs ; adapte le contenu au deck).
 }
 ```
 
-Chaque section doit inclure **`media`** : tableau d’objets slots (voir specs `.spec.md` « Slots médias ») ou `[]` si aucune image. Pour **`HeroCardsFan`**, **`HeroCardsStrip`**, **`HeroCardsMosaic`**, **`CardGalleryGrid`**, **`CardGalleryScroll`**, **`PhotoSpotlightGrid`**, **`PhotoFilmstripRow`**, **`TestimonialStrip`**, **`NewsletterInline`**, **`NewsletterSplit`** : `media` = **`[]`** (images dans `cards[]`, `photos[]`, `items[]`, `quotes[]` ou portrait optionnel `TestimonialSpotlight` selon la variante).
+Chaque section doit inclure **`media`** : tableau d’objets slots (voir specs `.spec.md` « Slots médias ») ou `[]` si aucune image. Pour **`HeroCardsFan`**, **`HeroCardsStrip`**, **`HeroCardsMosaic`**, **`CardGalleryGrid`**, **`CardGalleryScroll`**, **`PhotoSpotlightGrid`**, **`PhotoFilmstripRow`**, **`PhotoCinematicCollage`**, **`PhotoMasonryCascade`**, **`TestimonialStrip`**, **`NewsletterInline`**, **`NewsletterSplit`** : `media` = **`[]`** (images dans `cards[]`, `photos[]`, `items[]`, `quotes[]` ou portrait optionnel `TestimonialSpotlight` selon la variante).
 
 ### Props par variant (obligatoires)
 
@@ -166,57 +166,61 @@ Chaque section doit inclure **`media`** : tableau d’objets slots (voir specs `
 
 **HeroCardsMosaic** : `title`, `tagline`, `bodyMarkdown`, `ctaLabel`, `ctaHref`, `cards` (**4 à 6** mêmes objets)
 
-**IdentityPanel** : `deckName`, `tagline`, `bodyMarkdown`, `badge` (optionnel)
+**IdentityPanel** / **IdentityPanelFramed** / **IdentityPanelStory** : `deckName`, `tagline`, `bodyMarkdown`, `badge` (optionnel)
 
-**IdentityMinimal** : `eyebrow`, `title`, `oneLiner`
+**IdentityMinimal** / **IdentityMinimalCalm** / **IdentityMinimalEditorial** : `eyebrow`, `title`, `oneLiner`
 
-**ForWhoTwoColumns** : `title`, `leftMarkdown`, `rightMarkdown`
+**ForWhoTwoColumns** / **ForWhoTwoColumnsGuide** / **ForWhoTwoColumnsStory** : `title`, `leftMarkdown`, `rightMarkdown`
 
-**ForWhoPillars** : `title`, `introMarkdown`, `pillars` (tableau `{ "title", "bodyMarkdown" }`, au moins 3)
+**ForWhoPillars** / **ForWhoPillarsInsight** / **ForWhoPillarsCompass** : `title`, `introMarkdown`, `pillars` (tableau `{ "title", "bodyMarkdown" }`, au moins 3)
 
-**OutcomesBentoGrid** : `sectionTitle`, `introMarkdown`, `cells` (≥ 4 `{ "title", "bodyMarkdown", "span"? }` avec `span` ∈ `wide` | `tall` | `featured`, au moins une `featured`)
+**OutcomesBentoGrid** / **OutcomesBentoGridAura** / **OutcomesBentoGridFocus** : `sectionTitle`, `introMarkdown`, `cells` (≥ 4 `{ "title", "bodyMarkdown", "span"? }` avec `span` ∈ `wide` | `tall` | `featured`, au moins une `featured`)
 
-**OutcomesSignalStrip** : `sectionTitle`, `introMarkdown`, `signals` (≥ 3 `{ "label", "detailMarkdown" }`)
+**OutcomesSignalStrip** / **OutcomesSignalStripFlow** / **OutcomesSignalStripCalm** : `sectionTitle`, `introMarkdown`, `signals` (≥ 3 `{ "label", "detailMarkdown" }`)
 
-**HowToNumbered** : `title`, `introMarkdown` (optionnel), `steps` (≥ 3 `{ "title", "bodyMarkdown" }`)
+**HowToNumbered** / **HowToNumberedQuickstart** / **HowToNumberedRitual** : `title`, `introMarkdown` (optionnel), `steps` (≥ 3 `{ "title", "bodyMarkdown" }`)
 
-**HowToTimeline** : `title`, `introMarkdown`, `steps` (≥ 3 `{ "label", "detailMarkdown" }`)
+**HowToTimeline** / **HowToTimelineFlow** / **HowToTimelineCompass** : `title`, `introMarkdown`, `steps` (≥ 3 `{ "label", "detailMarkdown" }`)
 
-**IncludedChecklist** : `sectionTitle`, `introMarkdown` (optionnel), `items` (≥ 3 `{ "title", "detailMarkdown?" }`)
+**IncludedChecklist** / **IncludedChecklistEssentials** / **IncludedChecklistPremium** : `sectionTitle`, `introMarkdown` (optionnel), `items` (≥ 3 `{ "title", "detailMarkdown?" }`)
 
-**IncludedHighlightGrid** : `sectionTitle`, `introMarkdown` (optionnel), `highlights` (2 à 6 `{ "title", "bodyMarkdown" }`)
+**IncludedHighlightGrid** / **IncludedHighlightGridTiles** / **IncludedHighlightGridShowcase** : `sectionTitle`, `introMarkdown` (optionnel), `highlights` (2 à 6 `{ "title", "bodyMarkdown" }`)
 
-**CardGalleryGrid** : `sectionTitle`, `introMarkdown` (optionnel). **Cartes à afficher** (une seule source, par priorité) : **`cards`** (liste complète d’URLs) **ou** **`cardSlots`** (6 à 12 `{ "cardNumber", "captionMarkdown?", "alt?" }` → `card_{n}_front.png`) **ou** **`cardNumbers`** (tableau de numéros). Optionnel : **`deckCardsBasePath`** (défaut `/ai/generated-images/deck-cards`). Ratio d’affichage **marque-page ~672×1877**.
+**CardGalleryGrid** / **CardGalleryGridCurated** / **CardGalleryGridDense** : `sectionTitle`, `introMarkdown` (optionnel). **Cartes à afficher** (une seule source, par priorité) : **`cards`** (liste complète d’URLs) **ou** **`cardSlots`** (6 à 12 `{ "cardNumber", "captionMarkdown?", "alt?" }` → `card_{n}_front.png`) **ou** **`cardNumbers`** (tableau de numéros). Optionnel : **`deckCardsBasePath`** (défaut `/ai/generated-images/deck-cards`). Ratio d’affichage **marque-page ~672×1877**.
 
-**CardGalleryScroll** : idem, privilégier **`cardNumbers`** ou **`cardSlots`** (8 à 14 entrées) ; `cards` si besoin d’URLs custom.
+**CardGalleryScroll** / **CardGalleryScrollSnap** / **CardGalleryScrollMomentum** : idem, privilégier **`cardNumbers`** ou **`cardSlots`** (8 à 14 entrées) ; `cards` si besoin d’URLs custom.
 
-**PhotoSpotlightGrid** : `sectionTitle`, `introMarkdown` (optionnel), `photos` (2 à 6 `{ "imageUrl", "alt", "title?", "captionMarkdown?" }` — URLs sous `/ai/generated-images/…`)
+**PhotoSpotlightGrid** / **PhotoSpotlightGridEditorial** : `sectionTitle`, `introMarkdown` (optionnel), `photos` (2 à 6 `{ "imageUrl", "alt", "title?", "captionMarkdown?" }` — URLs sous `/ai/generated-images/…`)
 
-**PhotoFilmstripRow** : `sectionTitle`, `introMarkdown` (optionnel), `items` (3 à 5 `{ "imageUrl", "alt", "label?" }`)
+**PhotoFilmstripRow** / **PhotoFilmstripRowStory** : `sectionTitle`, `introMarkdown` (optionnel), `items` (3 à 5 `{ "imageUrl", "alt", "label?" }`)
 
-**FaqAccordion** : `sectionTitle`, `introMarkdown` (optionnel), `items` (≥ 3 `{ "question", "answerMarkdown" }`)
+**PhotoCinematicCollage** / **PhotoCinematicCollageNarrative** : `sectionTitle`, `introMarkdown` (optionnel), `headline` (optionnel), `bodyMarkdown` (optionnel), `ctaLabel` / `ctaHref` (optionnels), `photos` (2 à 6 `{ "imageUrl", "alt?" | "imageAlt?", "title?", "captionMarkdown?" }` ; 1 photo lead + vignettes)
 
-**FaqTwoColumn** : `sectionTitle`, `introMarkdown` (optionnel), `leftColumnTitle` / `rightColumnTitle` (optionnels), `leftItems` / `rightItems` (≥ 2 chacune `{ "question", "answerMarkdown" }`)
+**PhotoMasonryCascade** / **PhotoMasonryCascadeAmbient** : `sectionTitle`, `introMarkdown` (optionnel), `photos` (2 à 8 `{ "imageUrl", "alt?" | "imageAlt?", "title?", "captionMarkdown?" }`)
 
-**CreatorSpotlight** : `sectionTitle`, `name`, `roleLabel`, `bodyMarkdown`, `imageUrl` / `imageAlt` (optionnels), `ctaLabel` / `ctaHref` (optionnels)
+**FaqAccordion** / **FaqAccordionCalm** / **FaqAccordionDeep** : `sectionTitle`, `introMarkdown` (optionnel), `items` (≥ 3 `{ "question", "answerMarkdown" }`)
 
-**CreatorQuoteBand** : `quoteMarkdown`, `name`, `roleLine`
+**FaqTwoColumn** / **FaqTwoColumnGuide** / **FaqTwoColumnBalanced** : `sectionTitle`, `introMarkdown` (optionnel), `leftColumnTitle` / `rightColumnTitle` (optionnels), `leftItems` / `rightItems` (≥ 2 chacune `{ "question", "answerMarkdown" }`)
 
-**TestimonialStrip** : `sectionTitle`, `introMarkdown` (optionnel), `quotes` (2 à 5 `{ "quoteMarkdown", "name?", "role?" }`)
+**CreatorSpotlight** / **CreatorSpotlightNarrative** / **CreatorSpotlightPortrait** : `sectionTitle`, `name`, `roleLabel`, `bodyMarkdown`, `imageUrl` / `imageAlt` (optionnels), `ctaLabel` / `ctaHref` (optionnels)
 
-**TestimonialSpotlight** : `sectionTitle`, `introMarkdown` (optionnel), `quoteMarkdown`, `name`, `roleLine` (optionnel), `imageUrl` / `imageAlt` (optionnels)
+**CreatorQuoteBand** / **CreatorQuoteBandManifesto** / **CreatorQuoteBandSignature** : `quoteMarkdown`, `name`, `roleLine`
 
-**NewsletterInline** : `sectionTitle`, `bodyMarkdown`, `fieldLabel` (optionnel), `buttonLabel`, `footnoteMarkdown` (optionnel)
+**TestimonialStrip** / **TestimonialStripVoices** / **TestimonialStripMomentum** : `sectionTitle`, `introMarkdown` (optionnel), `quotes` (2 à 5 `{ "quoteMarkdown", "name?", "role?" }`)
 
-**NewsletterSplit** : `sectionTitle`, `leadMarkdown`, `fieldLabel` (optionnel), `buttonLabel`, `asideMarkdown` (optionnel)
+**TestimonialSpotlight** / **TestimonialSpotlightHuman** / **TestimonialSpotlightImmersive** : `sectionTitle`, `introMarkdown` (optionnel), `quoteMarkdown`, `name`, `roleLine` (optionnel), `imageUrl` / `imageAlt` (optionnels)
 
-**RelatedDecksGrid** : `sectionTitle`, `introMarkdown` (optionnel), `decks` (2 à 4 `{ "deckName", "tagline", "bodyMarkdown", "href", "ctaLabel?" }`)
+**NewsletterInline** / **NewsletterInlineCalm** / **NewsletterInlinePulse** : `sectionTitle`, `bodyMarkdown`, `fieldLabel` (optionnel), `buttonLabel`, `footnoteMarkdown` (optionnel)
 
-**RelatedDecksInline** : `sectionTitle`, `introMarkdown` (optionnel), `items` (≥ 2 `{ "label", "descriptionMarkdown", "href" }`)
+**NewsletterSplit** / **NewsletterSplitEditorial** / **NewsletterSplitMinimal** : `sectionTitle`, `leadMarkdown`, `fieldLabel` (optionnel), `buttonLabel`, `asideMarkdown` (optionnel)
 
-**CtaMarqueeRibbon** : `eyebrow`, `headline`, `subline`, `ctaLabel`, `ctaHref`, `marqueeText`
+**RelatedDecksGrid** / **RelatedDecksGridShowcase** / **RelatedDecksGridCurated** : `sectionTitle`, `introMarkdown` (optionnel), `decks` (2 à 4 `{ "deckName", "tagline", "bodyMarkdown", "href", "ctaLabel?" }`)
 
-**CtaSplitAction** : `title`, `bodyMarkdown`, `primaryLabel`, `primaryHref`, `secondaryLabel` (optionnel), `secondaryHref` (optionnel)
+**RelatedDecksInline** / **RelatedDecksInlineJourney** / **RelatedDecksInlineSimple** : `sectionTitle`, `introMarkdown` (optionnel), `items` (≥ 2 `{ "label", "descriptionMarkdown", "href" }`)
+
+**CtaMarqueeRibbon** / **CtaMarqueeRibbonGlow** / **CtaMarqueeRibbonCalm** : `eyebrow`, `headline`, `subline`, `ctaLabel`, `ctaHref`, `marqueeText`
+
+**CtaSplitAction** / **CtaSplitActionFocus** / **CtaSplitActionDual** : `title`, `bodyMarkdown`, `primaryLabel`, `primaryHref`, `secondaryLabel` (optionnel), `secondaryHref` (optionnel)
 
 ---
 

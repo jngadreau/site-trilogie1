@@ -7,7 +7,7 @@ import {
   VARIANTS_BY_SECTION,
   type DeckSectionKey,
 } from '../lib/deckSectionCatalog'
-import { SECTION_DEMO_FIXTURES } from '../demo/sectionDemoFixtures'
+import { getSectionDemoBlocks } from '../demo/sectionDemoFixtures'
 import { SECTION_DEMO_GLOBALS } from '../demo/sectionDemoGlobals'
 import '../styles/deck-landing.css'
 import './section-demo.css'
@@ -48,7 +48,7 @@ export function SectionDemoPage() {
     return <Navigate to={`/demo/sections/${FIRST_SECTION}`} replace />
   }
 
-  const blocks = SECTION_DEMO_FIXTURES[sectionType]
+  const blocks = getSectionDemoBlocks(sectionType, VARIANTS_BY_SECTION[sectionType])
   const label = SECTION_LABELS_FR[sectionType]
 
   return (
@@ -99,11 +99,15 @@ export function SectionDemoPage() {
           <main className="section-demo__main dl-main">
             {blocks.map((b, i) => (
               <div key={`${b.variant}-${i}`} className="section-demo__block">
-                <h3 className="section-demo__block-title">{b.label}</h3>
+                <h3 className="section-demo__block-title">
+                  {b.label}
+                  {b.aliasOf ? <span className="section-demo__alias-meta">Alias de {b.aliasOf}</span> : null}
+                </h3>
                 {renderDeckSection({
                   id: `${sectionType}-demo-${i}`,
                   variant: b.variant,
                   props: b.props,
+                  ...(b.fullWidth ? { layout: { fullWidth: true } } : {}),
                   media: [],
                 })}
               </div>

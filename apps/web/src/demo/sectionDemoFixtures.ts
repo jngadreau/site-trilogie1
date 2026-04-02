@@ -1,9 +1,13 @@
 import type { DeckSectionKey } from '../lib/deckSectionCatalog'
+import { DECK_VARIANT_ALIAS_TO_BASE } from '../lib/deckVariantAliases'
 import { DEMO_HERO_IMAGE, demoCardUrl } from './sectionDemoGlobals'
 
 export type SectionDemoBlock = {
   variant: string
   label: string
+  /** Optionnel : variante d'alias (résolue côté registry). */
+  aliasOf?: string
+  fullWidth?: boolean
   props: Record<string, unknown>
 }
 
@@ -496,6 +500,89 @@ export const SECTION_DEMO_FIXTURES: Record<DeckSectionKey, SectionDemoBlock[]> =
         ],
       },
     },
+    {
+      variant: 'PhotoCinematicCollage',
+      label: 'PhotoCinematicCollage',
+      fullWidth: true,
+      props: {
+        sectionTitle: 'Scènes immersives',
+        introMarkdown:
+          'Une composition **image-first** : une scène principale, une narration courte, puis des détails visuels.',
+        headline: 'Un récit visuel autour de l’Arbre',
+        bodyMarkdown:
+          'Idéal pour mettre en valeur les **ambiances** (lumière, matière, gestes) sans quitter la cohérence éditoriale du deck.',
+        ctaLabel: 'Voir la galerie complète',
+        ctaHref: '#',
+        photos: [
+          {
+            imageUrl: DEMO_HERO_IMAGE,
+            alt: 'Forêt dorée au lever du jour',
+            title: 'Lumière de fond',
+            captionMarkdown: 'Le visuel principal crée une **atmosphère** enveloppante.',
+          },
+          {
+            imageUrl: demoCardUrl(13),
+            alt: 'Carte 13 en gros plan',
+            title: 'Carte vedette',
+            captionMarkdown: 'Texture et finesse des détails sur une face Image.',
+          },
+          {
+            imageUrl: demoCardUrl(28),
+            alt: 'Carte 28',
+            title: 'Palette',
+            captionMarkdown: 'Contraste doux et teintes naturelles.',
+          },
+          {
+            imageUrl: demoCardUrl(47),
+            alt: 'Carte 47',
+            title: 'Rythme',
+            captionMarkdown: 'Complément visuel pour soutenir le récit.',
+          },
+        ],
+      },
+    },
+    {
+      variant: 'PhotoMasonryCascade',
+      label: 'PhotoMasonryCascade',
+      fullWidth: true,
+      props: {
+        sectionTitle: 'Mosaic d’ambiances',
+        introMarkdown:
+          'Une grille **cascade** pour montrer la variété des visuels : paysages, détails cartes, nuances de couleur.',
+        photos: [
+          {
+            imageUrl: DEMO_HERO_IMAGE,
+            alt: 'Arbres en lumière diffuse',
+            title: 'Ambiance générale',
+            captionMarkdown: 'Point d’entrée poétique du set.',
+          },
+          {
+            imageUrl: demoCardUrl(4),
+            alt: 'Carte 4',
+            title: 'Focus',
+            captionMarkdown: 'Cadrage serré sur une carte.',
+          },
+          {
+            imageUrl: demoCardUrl(19),
+            alt: 'Carte 19',
+            title: 'Symboles',
+            captionMarkdown: 'Iconographie du deck.',
+          },
+          {
+            imageUrl: demoCardUrl(36),
+            alt: 'Carte 36',
+            title: 'Matière',
+            captionMarkdown: 'Rendu et texture en détail.',
+          },
+          {
+            imageUrl: demoCardUrl(58),
+            alt: 'Carte 58',
+            title: 'Finale',
+            captionMarkdown: 'Dernière note visuelle de la série.',
+          },
+        ],
+      },
+    },
   ],
   faq: [
     {
@@ -739,4 +826,34 @@ export const SECTION_DEMO_FIXTURES: Record<DeckSectionKey, SectionDemoBlock[]> =
       },
     },
   ],
+}
+
+/**
+ * Retourne la liste complète des blocs de démo pour un type de section :
+ * - variantes "réelles" définies dans les fixtures
+ * - alias de variantes (dupliqués automatiquement depuis leur base)
+ */
+export function getSectionDemoBlocks(
+  sectionType: DeckSectionKey,
+  allowedVariants: readonly string[],
+): SectionDemoBlock[] {
+  const baseBlocks = SECTION_DEMO_FIXTURES[sectionType] ?? []
+  const byVariant = new Map(baseBlocks.map((b) => [b.variant, b]))
+  const out: SectionDemoBlock[] = [...baseBlocks]
+
+  for (const v of allowedVariants) {
+    if (byVariant.has(v)) continue
+    const base = DECK_VARIANT_ALIAS_TO_BASE[v]
+    if (!base) continue
+    const seed = byVariant.get(base)
+    if (!seed) continue
+    out.push({
+      ...seed,
+      variant: v,
+      label: `${v} (alias de ${base})`,
+      aliasOf: base,
+    })
+  }
+
+  return out
 }

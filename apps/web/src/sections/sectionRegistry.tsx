@@ -50,6 +50,10 @@ import { PhotoSpotlightGrid } from './photo_gallery/PhotoSpotlightGrid'
 import type { PhotoSpotlightGridProps } from './photo_gallery/PhotoSpotlightGrid'
 import { PhotoFilmstripRow } from './photo_gallery/PhotoFilmstripRow'
 import type { PhotoFilmstripRowProps } from './photo_gallery/PhotoFilmstripRow'
+import { PhotoCinematicCollage } from './photo_gallery/PhotoCinematicCollage'
+import type { PhotoCinematicCollageProps } from './photo_gallery/PhotoCinematicCollage'
+import { PhotoMasonryCascade } from './photo_gallery/PhotoMasonryCascade'
+import type { PhotoMasonryCascadeProps } from './photo_gallery/PhotoMasonryCascade'
 import { TestimonialStrip } from './testimonials/TestimonialStrip'
 import type { TestimonialStripProps } from './testimonials/TestimonialStrip'
 import { TestimonialSpotlight } from './testimonials/TestimonialSpotlight'
@@ -58,6 +62,7 @@ import { NewsletterInline } from './newsletter_cta/NewsletterInline'
 import type { NewsletterInlineProps } from './newsletter_cta/NewsletterInline'
 import { NewsletterSplit } from './newsletter_cta/NewsletterSplit'
 import type { NewsletterSplitProps } from './newsletter_cta/NewsletterSplit'
+import { DECK_VARIANT_ALIAS_TO_BASE } from '../lib/deckVariantAliases'
 
 type AnyProps =
   | HeroSplitImageRightProps
@@ -81,6 +86,8 @@ type AnyProps =
   | CardGalleryScrollProps
   | PhotoSpotlightGridProps
   | PhotoFilmstripRowProps
+  | PhotoCinematicCollageProps
+  | PhotoMasonryCascadeProps
   | TestimonialStripProps
   | TestimonialSpotlightProps
   | NewsletterInlineProps
@@ -116,6 +123,8 @@ const registry: Record<string, ComponentType<AnyProps>> = {
   CardGalleryScroll: CardGalleryScroll as ComponentType<AnyProps>,
   PhotoSpotlightGrid: PhotoSpotlightGrid as ComponentType<AnyProps>,
   PhotoFilmstripRow: PhotoFilmstripRow as ComponentType<AnyProps>,
+  PhotoCinematicCollage: PhotoCinematicCollage as ComponentType<AnyProps>,
+  PhotoMasonryCascade: PhotoMasonryCascade as ComponentType<AnyProps>,
   TestimonialStrip: TestimonialStrip as ComponentType<AnyProps>,
   TestimonialSpotlight: TestimonialSpotlight as ComponentType<AnyProps>,
   NewsletterInline: NewsletterInline as ComponentType<AnyProps>,
@@ -143,7 +152,8 @@ function resolveSectionBackground(section: DeckLandingSection): {
 }
 
 export function renderDeckSection(section: DeckLandingSection) {
-  const Cmp = registry[section.variant]
+  const resolvedVariant = DECK_VARIANT_ALIAS_TO_BASE[section.variant] ?? section.variant
+  const Cmp = registry[resolvedVariant]
   if (!Cmp) {
     return (
       <section key={section.id} className="dl-missing">
@@ -151,6 +161,7 @@ export function renderDeckSection(section: DeckLandingSection) {
       </section>
     )
   }
+  const isFullWidth = section.layout?.fullWidth === true
   const { url, imageAlt } = resolveSectionBackground(section)
   const wrapStyle: CSSProperties | undefined = url
     ? {
@@ -160,12 +171,16 @@ export function renderDeckSection(section: DeckLandingSection) {
       }
     : undefined
   if (!url) {
-    return <Cmp key={section.id} {...(section.props as AnyProps)} />
+    return (
+      <div key={section.id} className={isFullWidth ? 'dl-section-shell dl-section-shell--full' : 'dl-section-shell'}>
+        <Cmp {...(section.props as AnyProps)} />
+      </div>
+    )
   }
   return (
     <div
       key={section.id}
-      className="dl-section-outer"
+      className={`dl-section-outer${isFullWidth ? ' dl-section-outer--full' : ''}`}
       style={wrapStyle}
       {...(imageAlt ? { title: imageAlt } : {})}
     >

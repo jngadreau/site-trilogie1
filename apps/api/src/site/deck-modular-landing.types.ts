@@ -111,6 +111,10 @@ export interface DeckLandingSection {
   id: DeckLandingSectionId;
   variant: string;
   props: Record<string, unknown>;
+  /** Contrôles de layout optionnels (ex: section en pleine largeur). */
+  layout?: {
+    fullWidth?: boolean;
+  };
   /** Slots image décrits par l’IA ; tableau vide si aucun visuel. */
   media?: DeckSectionMediaSlotV1[];
   /** Fond de section (plan image management). */

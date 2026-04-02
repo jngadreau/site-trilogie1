@@ -100,6 +100,10 @@ export interface DeckLandingSection {
   id: SectionId | string
   variant: string
   props: Record<string, unknown>
+  /** Contrôles de layout optionnels (ex: section en pleine largeur). */
+  layout?: {
+    fullWidth?: boolean
+  }
   media?: DeckSectionMediaSlotV1[]
   backgroundImage?: DeckLandingResolvedImageRef
   imageSlots?: DeckLandingImageSlotDefinition[]

@@ -7,6 +7,7 @@ Produire **un seul objet JSON** (aucun texte hors JSON) qui décrit une **combin
 ## Règles strictes
 
 - Les noms de variantes doivent être **exactement** l’un des identifiants autorisés par section (voir le message utilisateur).
+- Certains noms autorisés sont des **alias éditoriaux** d’une variante de base (même contrat de props). Le nom choisi doit néanmoins être conservé tel quel dans le JSON.
 - La **combinaison des quatorze** choix ne doit être **identique ni à `arbre-de-vie-a` ni à `arbre-de-vie-b`** (comparaison stricte des quatorze champs).
 - Justifie le choix dans **`rationaleMarkdown`** (Markdown, français) : cohérence visuelle, rythme de page, public visé, en t’appuyant sur le **contexte deck** et sur les descriptions des specs.
 - Ne pas inventer de types de sections ni de noms de variantes hors liste.
